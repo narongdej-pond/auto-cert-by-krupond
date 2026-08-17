@@ -219,7 +219,7 @@
     </div>
 
     <!-- Page 1: Login Page -->
-    <div id="page-login" class="hidden min-h-screen w-full flex flex-col justify-between bg-gray/100 text-white">
+    <div id="page-login" class="hidden min-h-screen w-full flex flex-col justify-between bg-gray-100 text-gray-800">
       <div class="flex-1 flex items-center justify-center px-4 py-12">
         <div class="bg-white text-gray-800 rounded-2xl card-shadow p-8 max-w-md w-full fade-in relative">
           <button onclick="showPage('guest')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-sm font-semibold flex items-center gap-1">
@@ -320,8 +320,8 @@
               <i class="fas fa-user-shield text-white text-sm"></i>
             </div>
             <div class="overflow-hidden">
-              <p class="text-sm font-bold truncate" id="user-display-name">ผู้ดูแลระบบ</p>
-              <p class="text-xs text-blue-200" id="user-display-role">Admin</p>
+              <p id="user-display-name" class="text-sm font-bold truncate">ผู้ดูแลระบบ</p>
+              <p id="user-display-role" class="text-xs text-blue-200">Admin</p>
             </div>
           </div>
           <button onclick="handleLogout()" class="w-full bg-white/10 hover:bg-white/20 py-2 px-3 rounded-lg flex items-center justify-center gap-2 text-xs font-semibold transition">
@@ -850,7 +850,7 @@
                 </div>
 
                 <button onclick="saveSettingsFromPage()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-base flex items-center justify-center gap-2">
-                <i class="fas fa-save"></i> บันทึกตั้งค่าระบบ
+                  <i class="fas fa-save"></i> บันทึกตั้งค่าระบบ
                 </button>
               </div>
             </div>
@@ -925,7 +925,7 @@
             </div>
           </div>
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
-            <i class="fas fa-info-circle mr-1"></i> <strong>หมายเหตุ:</strong> สมาชิกคนแรกที่สมัครจะได้รับอนุมัติสิทธิ์เป็นแอดมินหลักอัตโนมัติ สำหรับสมาชิกถัดไปจะต้องรอแอดมินหลักอนุมัติสิทธิ์การใช้งาน
+            <i class="fas fa-info-circle mr-1"></i> <strong>หมายเหตุ:</strong> สมาชิกคนแรกที่สมัครจะได้รับอนุมัติสิทธิ์เป็นผู้ดูแลระบบหลักอัตโนมัติ สำหรับสมาชิกถัดไปจะต้องรอผู้ดูแลระบบหลักอนุมัติสิทธิ์การใช้งาน
           </div>
           <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-sm">
             <i class="fas fa-paper-plane mr-2"></i> ยืนยันการสมัครสมาชิก
@@ -1055,7 +1055,7 @@
             <input type="number" id="setting-start-num" min="1" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" value="1">
           </div>
           <button onclick="saveSettings()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-6 rounded-xl btn-hover">
-          <i class="fas fa-save"></i> บันทึกตั้งค่าระบบ
+            <i class="fas fa-save"></i> บันทึกตั้งค่าระบบ
           </button>
         </div>
       </div>
@@ -1247,41 +1247,50 @@
       return 'id_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     }
 
-    // Helper Promisified Call for Native Google Apps Script RPC
-    function callGas(functionName, ...args) {
-      return new Promise((resolve, reject) => {
-        if (typeof google !== 'undefined' && google.script && google.script.run) {
+    // Helper Promisified Call for Native Google Apps Script RPC & External Fetch API
+    async function callGas(functionName, ...args) {
+      // 1. กรณีเปิดใช้งานภายใน iframe ของ Google Apps Script (HtmlService)
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        return new Promise((resolve, reject) => {
           google.script.run
             .withSuccessHandler((res) => resolve(res))
             .withFailureHandler((err) => reject(err))[functionName](...args);
-        } else if (typeof GAS_URL !== 'undefined' && GAS_URL) {
-          fetch(`${GAS_URL}?action=${functionName}`, {
+        });
+      }
+
+      // 2. กรณีเรียกผ่าน Fetch API จากภายนอก (เช่น GitHub Pages / Web Host)
+      if (typeof GAS_URL !== 'undefined' && GAS_URL && GAS_URL.trim() !== '') {
+        try {
+          const response = await fetch(GAS_URL, {
             method: 'POST',
-            mode: 'cors',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: functionName, args: args })
-          })
-          .then(res => res.json())
-          .then(data => resolve(data))
-          .catch(err => {
-            console.warn('Fetch GAS failed, fallback to offline memory:', err);
-            if (functionName === 'getData') resolve(appData);
-            else if (functionName === 'createData') resolve(args[0]);
-            else if (functionName === 'updateData') resolve(args[0]);
-            else if (functionName === 'deleteData') resolve({ isOk: true });
-            else resolve(null);
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8' // เลี่ยง CORS OPTIONS Preflight
+            },
+            body: JSON.stringify({
+              action: functionName,
+              payload: args[0]
+            })
           });
-        } else {
-          console.warn('google.script.run unavailable; running in offline simulation mode.');
-          setTimeout(() => {
-            if (functionName === 'getData') resolve(appData);
-            else if (functionName === 'createData') resolve(args[0]);
-            else if (functionName === 'updateData') resolve(args[0]);
-            else if (functionName === 'deleteData') resolve({ isOk: true });
-            else resolve(null);
-          }, 300);
+
+          const resJson = await response.json();
+          if (resJson && resJson.status === 'success') {
+            return resJson.data; // ถอดแกะเอาข้อมูลเฉพาะก้อน data ออกมาคืนค่า
+          } else {
+            throw new Error(resJson ? resJson.message : 'Unknown response from GAS');
+          }
+        } catch (err) {
+          console.error(`GAS Fetch Error (${functionName}):`, err);
+          throw err;
         }
-      });
+      }
+
+      // 3. Fallback เมื่อไม่มีการเชื่อมต่อ API
+      console.warn(`Running ${functionName} in local memory mode.`);
+      if (functionName === 'getData') return appData;
+      if (functionName === 'createData') return args[0];
+      if (functionName === 'updateData') return args[0];
+      if (functionName === 'deleteData') return true;
+      return null;
     }
 
     // Data SDK Fetch Wrapper mapped to native google.script.run
@@ -1289,9 +1298,10 @@
       create: async function(item) {
         try {
           const savedItem = await callGas('createData', item);
-          appData.push(savedItem || item);
+          const target = savedItem || item;
+          appData.push(target);
           updateUI();
-          return { isOk: true, data: savedItem || item };
+          return { isOk: true, data: target };
         } catch (err) {
           console.warn("GAS create fallback locally:", err);
           appData.push(item);
@@ -1305,6 +1315,7 @@
           const target = updatedItem || item;
           const index = appData.findIndex(d => (d.__backendId && String(d.__backendId) === String(target.__backendId)) || (d.id && String(d.id) === String(target.id)));
           if (index !== -1) appData[index] = target;
+          else appData.push(target);
           updateUI();
           return { isOk: true, data: target };
         } catch (err) {
@@ -1346,7 +1357,7 @@
       loadingTimer = setInterval(() => {
         isAlternateLoadingText = !isAlternateLoadingText;
         if (isAlternateLoadingText) {
-          textEl.innerText = "กำลังโหลด...";
+          textEl.innerText = "กำลังประมวลผล...";
           textEl.className = "text-gray-600 text-lg transition-all duration-300";
         } else {
           textEl.innerText = "กำลังโหลด...";
@@ -2514,12 +2525,12 @@
           <td class="px-4 py-3 text-sm text-gray-600">${m.email || '-'}</td>
           <td class="px-4 py-3">
             <span class="badge ${m.role === 'admin' ? 'badge-info' : 'bg-purple-100 text-purple-800'}">
-              ${m.role === 'admin' ? '👑 แอดมิน' : '👤 ครู/เจ้าหน้าที่'}
+              ${m.role === 'admin' ? 'ผู้ดูแลระบบ' : 'ครู/เจ้าหน้าที่'}
             </span>
           </td>
           <td class="px-4 py-3">
             <span class="badge ${m.status === 'active' ? 'badge-success' : 'badge-warning'}">
-              ${m.status === 'active' ? '✅ อนุมัติแล้ว' : '⏳ รออนุมัติ'}
+              ${m.status === 'active' ? 'อนุมัติแล้ว' : 'รออนุมัติ'}
             </span>
           </td>
           <td class="px-4 py-3 text-center flex items-center justify-center gap-1">
@@ -2601,7 +2612,11 @@
       startLoading();
       try {
         const data = await callGas('getData');
-        appData = (data && data.length > 0) ? data : [...defaultTemplates, ...defaultRecords];
+        if (Array.isArray(data) && data.length > 0) {
+          appData = data;
+        } else {
+          appData = (data && Array.isArray(data)) ? data : [...defaultTemplates, ...defaultRecords];
+        }
       } catch (err) {
         console.warn("Failed to load backend data, initializing defaults:", err);
         appData = [...defaultTemplates, ...defaultRecords];
@@ -2627,7 +2642,7 @@
 
         if (foundMember) {
           if (foundMember.status === 'pending') {
-            showAlert('warning', 'รอการอนุมัติ', 'บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากแอดมินหลัก กรุณาติดต่อแอดมินเพื่อเปิดใช้งานบัญชี');
+            showAlert('warning', 'รอการอนุมัติ', 'บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากผู้ดูแลระบบหลัก กรุณาติดต่อผู้ดูแลระบบเพื่อเปิดใช้งานบัญชี');
             return;
           }
 
@@ -2648,23 +2663,6 @@
           updateUI();
           showAlert('success', 'เข้าสู่ระบบสำเร็จ', `ยินดีต้อนรับ ${currentUser.fullname}`);
           return;
-        }
-
-        if (members.length === 0 && u === 'admin' && p === 'admin123') {
-          currentUser = { username: u, fullname: 'ผู้ดูแลระบบ', role: 'Admin' };
-          const displayNameEl = document.getElementById('user-display-name');
-          if (displayNameEl) displayNameEl.textContent = currentUser.fullname;
-          const displayRoleEl = document.getElementById('user-display-role');
-          if (displayRoleEl) displayRoleEl.textContent = currentUser.role;
-          showPage('main');
-          showView('dashboard');
-          updateUI();
-          showAlert('info', 'เข้าสู่ระบบแล้ว', 'เข้าสู่ระบบด้วยสิทธิ์ผู้ดูแลระบบตั้งต้น กรุณาสมัครสมาชิกคนแรกเพื่อเปิดใช้งานแอดมินหลักถาวร');
-          return;
-        }
-
-        if (members.length === 0) {
-          showAlert('warning', 'ยังไม่มีผู้ใช้งาน', 'ยังไม่มีสมาชิกในระบบ กรุณากดปุ่ม "สมัครสมาชิกใหม่" ด้านล่าง สมาชิกคนแรกจะได้สิทธิ์แอดมินหลักโดยอัตโนมัติ');
         } else {
           showAlert('error', 'เข้าสู่ระบบไม่สำเร็จ', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
         }
@@ -2705,9 +2703,9 @@
 
         if (res.isOk) {
           if (isFirstMember) {
-            showAlert('success', 'สมัครสมาชิกสำเร็จ', 'คุณเป็นสมาชิกคนแรกของระบบ ได้รับอนุมัติสิทธิ์แอดมินหลักอัตโนมัติ! สามารถเข้าสู่ระบบได้ทันที');
+            showAlert('success', 'สมัครสมาชิกสำเร็จ', 'คุณเป็นสมาชิกคนแรกของระบบ ได้รับอนุมัติสิทธิ์ผู้ดูแลระบบหลักอัตโนมัติ! สามารถเข้าสู่ระบบได้ทันที');
           } else {
-            showAlert('info', 'ส่งคำขอสมัครสมาชิกแล้ว', 'การสมัครสมาชิกสำเร็จ! บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากแอดมินหลักก่อนเข้าใช้งาน');
+            showAlert('info', 'ส่งคำขอสมัครสมาชิกแล้ว', 'การสมัครสมาชิกสำเร็จ! บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากผู้ดูแลระบบหลักก่อนเข้าใช้งาน');
           }
         } else {
           showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง');
