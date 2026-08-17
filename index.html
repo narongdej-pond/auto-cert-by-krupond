@@ -1,0 +1,2902 @@
+<!doctype html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบสร้างเกียรติบัตรอัตโนมัติ - วิทยาลัยเทคนิคดอนเมือง</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  
+  <!-- iOS Apple Meta Tags -->
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ระบบเกียรติบัตร">
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then((reg) => console.log('Service worker registered.', reg))
+          .catch((err) => console.log('Service worker not registered.', err));
+      });
+    }
+  </script>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  
+  <!-- Thai Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@300;400;500;600;700&family=Mitr:wght@300;400;500;600;700&family=Mali:wght@300;400;500;600;700&family=Charm:wght@400;700&family=Chakra+Petch:wght@300;400;500;600;700&family=Chonburi&family=Kodchasan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- CDN Libraries for Export & Process -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'sarabun': ['Sarabun', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    * { font-family: 'Sarabun', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%); }
+    .gradient-footer { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%); }
+    .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    .btn-hover { transition: all 0.3s ease; }
+    .btn-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .sidebar-item { transition: all 0.2s ease; }
+    .sidebar-item:hover { background: rgba(255,255,255,0.1); }
+    .sidebar-item.active { background: rgba(255,255,255,0.2); border-left: 4px solid white; }
+    .no-select { user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+    .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+    .table-container { overflow-x: auto; }
+    .table-container::-webkit-scrollbar { height: 8px; }
+    .table-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+    .table-container::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    .badge { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
+    .progress-bar { height: 8px; border-radius: 4px; background: #e2e8f0; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    body { box-sizing: border-box; }
+
+    /* GUEST SEARCH PAGE STYLES */
+    .guest-header {
+      width: 100%;
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+      color: #FFFFFF;
+      text-align: center;
+      padding: 40px 20px 52px;
+      position: relative;
+      overflow: hidden;
+    }
+    .guest-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+      animation: headerPulse 6s ease-in-out infinite;
+    }
+    @keyframes headerPulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+    .search-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      padding: 28px;
+      width: 100%;
+      max-width: 680px;
+      margin: -32px auto 24px;
+      position: relative;
+      z-index: 10;
+    }
+    .cert-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+      border-left: 5px solid #2563eb;
+    }
+    .cert-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+    .export-source-card.active {
+      border-color: #2563eb;
+      background-color: #eff6ff;
+    }
+  </style>
+</head>
+<body class="h-full bg-gray-50 font-sarabun">
+  <div id="app" class="h-full">
+    
+    <!-- Loading Spinner Overlay -->
+    <div id="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center hidden">
+      <div class="text-center">
+        <i class="fas fa-circle-notch spin text-5xl text-primary-500 mb-4"></i>
+        <p id="loadingText" class="text-gray-600 text-lg transition-all duration-300">กำลังโหลด...</p>
+      </div>
+    </div>
+
+    <!-- Page 0: Guest Search & Download -->
+    <div id="page-guest" class="min-h-full flex flex-col justify-between bg-gray-50">
+      <div>
+        <!-- HEADER -->
+        <header class="guest-header">
+          <div class="max-w-4xl mx-auto flex items-center justify-between px-2 mb-2">
+            <div class="flex items-center gap-2">
+              <i class="fas fa-award text-3xl text-yellow-400"></i>
+              <span class="font-bold text-lg">วิทยาลัยเทคนิคดอนเมือง</span>
+            </div>
+            <button onclick="showPage('login')" class="bg-white/10 hover:bg-white/10 text-white text-xs md:text-sm font-semibold px-2 py-2 rounded-xl backdrop-blur transition flex items-center gap-2">
+              <i class="fas fa-user-shield"></i>
+            </button>
+          </div>
+          <div class="relative z-10">
+            <h1 class="text-2xl md:text-3xl font-bold mb-2">ระบบสร้างเกียรติบัตรอัตโนมัติ</h1>
+            <p class="text-sm md:text-base text-blue-100 max-w-auto mx-auto">พิมพ์ชื่อ-นามสกุล หรือเลขที่เกียรติบัตร เพื่อค้นหาและดาวน์โหลดเกียรติบัตรของคุณ</p>
+          </div>
+        </header>
+
+        <!-- SEARCH CONTAINER -->
+        <main class="px-4 pb-12">
+          <div class="search-card border border-gray-100">
+            <label class="block font-bold text-gray-800 text-sm md:text-base mb-2" for="guest-search-input">
+              <i class="fas fa-search text-primary-500 mr-2"></i>พิมพ์ชื่อ-นามสกุล หรือเลขที่เกียรติบัตร
+            </label>
+            <input type="text" id="guest-search-input" onkeydown="if(event.key==='Enter') doGuestSearch()" class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl font-medium focus:border-primary-500 focus:outline-none transition text-base" placeholder="เช่น นายสมชาย ใจดี หรือ CERT-2026/001" autocomplete="off">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 items-end">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-gray-500 mb-1" for="guest-template-select">ค้นหาจากกิจกรรม</label>
+                <select id="guest-template-select" class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm font-medium focus:border-primary-500 focus:outline-none bg-white">
+                  <option value="all">ค้นหาทุกกิจกรรม</option>
+                </select>
+              </div>
+              <button id="btn-guest-search" onclick="doGuestSearch()" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-6 rounded-xl btn-hover text-base flex items-center justify-center gap-2">
+                <i class="fas fa-search"></i> ค้นหา
+              </button>
+            </div>
+          </div>
+
+          <!-- RESULTS AREA -->
+          <div id="guest-results-area" class="max-w-2xl mx-auto space-y-4"></div>
+        </main>
+      </div>
+
+      <!-- FOOTER -->
+      <footer class="gradient-footer text-white py-4 px-6 mt-8">
+        <div class="max-w-6xl mx-auto text-center">
+          <p class="text-sm md:text-base">ระบบสร้างเกียรติบัตรอัตโนมัติ วิทยาลัยเทคนิคดอนเมือง</p>
+          <p class="text-xs text-blue-200 mt-1">พัฒนาโดย ครูปอนด์ นายณรงค์เดช ชัยเดชะ @2026</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Page 1: Login Page -->
+    <div id="page-login" class="hidden min-h-screen w-full flex flex-col justify-between bg-gray/100 text-white">
+      <div class="flex-1 flex items-center justify-center px-4 py-12">
+        <div class="bg-white text-gray-800 rounded-2xl card-shadow p-8 max-w-md w-full fade-in relative">
+          <button onclick="showPage('guest')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-sm font-semibold flex items-center gap-1">
+            <i class="fas fa-arrow-left"></i> กลับหน้าค้นหา
+          </button>
+          <div class="text-center mb-6">
+            <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-award text-4xl text-primary-600"></i>
+            </div>
+            <h2 class="text-2xl font-bold">เข้าสู่ระบบผู้ดูแล/ครู/เจ้าหน้าที่</h2>
+            <p class="text-gray-500 text-sm mt-1">วิทยาลัยเทคนิคดอนเมือง</p>
+          </div>
+          <form id="login-form" class="space-y-4">
+            <div>
+              <label class="block text-gray-700 font-medium mb-1"><i class="fas fa-user mr-2 text-primary-500"></i>ชื่อผู้ใช้</label>
+              <input type="text" id="login-username" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition" placeholder="กรอกชื่อผู้ใช้">
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium mb-1"><i class="fas fa-lock mr-2 text-primary-500"></i>รหัสผ่าน</label>
+              <div class="relative">
+                <input type="password" id="login-password" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition pr-12" placeholder="กรอกรหัสผ่าน">
+                <button type="button" class="password-toggle-btn absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition" data-target="login-password">
+                  <i class="fas fa-eye" id="login-password-icon"></i>
+                </button>
+              </div>
+            </div>
+            <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3.5 px-6 rounded-xl btn-hover text-lg flex items-center justify-center gap-2 mt-2">
+              <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
+            </button>
+            <div class="pt-2 border-t border-gray-100 mt-3 text-center">
+              <p class="text-xs text-gray-500 mb-2">ยังไม่มีบัญชี? สมัครสมาชิก</p>
+              <button type="button" onclick="openRegisterModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                <i class="fas fa-user-plus text-primary-500"></i> สมัครสมาชิกใหม่
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <footer class="gradient-footer text-white py-4 px-6">
+        <div class="max-w-6xl mx-auto text-center">
+          <p class="text-sm md:text-base">ระบบสร้างเกียรติบัตรอัตโนมัติ วิทยาลัยเทคนิคดอนเมือง</p>
+          <p class="text-xs text-blue-200 mt-1">พัฒนาโดย ครูปอนด์ นายณรงค์เดช ชัยเดชะ @2026</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Page 2: Main Dashboard & App Structure -->
+    <div id="page-main" class="hidden h-full flex overflow-hidden">
+      <!-- Sidebar -->
+      <aside id="main-sidebar" class="w-64 gradient-bg text-white flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0">
+        <div class="p-4 border-b border-white/20">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow">
+              <i class="fas fa-award text-xl text-primary-600"></i>
+            </div>
+            <div>
+              <p class="font-bold leading-tight">ระบบเกียรติบัตร</p>
+              <p class="text-xs text-blue-200">วิทยาลัยเทคนิคดอนเมือง</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
+          <button onclick="showView('dashboard')" class="sidebar-item active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="dashboard">
+            <i class="fas fa-chart-pie w-5"></i> แดชบอร์ด
+          </button>
+          <button onclick="showView('members')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center justify-between" data-view="members">
+            <div class="flex items-center gap-3 text-sm font-medium">
+              <i class="fas fa-users-gear w-5"></i> จัดการสมาชิก
+            </div>
+            <span id="sidebar-pending-member-badge" class="badge badge-warning hidden">0</span>
+          </button>
+          <button onclick="showView('records')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center justify-between" data-view="records">
+            <div class="flex items-center gap-3 text-sm font-medium">
+              <i class="fas fa-users-line w-5"></i> จัดการรายชื่อ
+            </div>
+            <span id="sidebar-record-count" class="badge badge-info">0</span>
+          </button>
+          <button onclick="showView('designer')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="designer">
+            <i class="fas fa-palette w-5"></i> ออกแบบ Template
+          </button>
+          <button onclick="showView('export')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="export">
+            <i class="fas fa-file-export w-5"></i> ส่งออก / ดาวน์โหลด
+          </button>
+          <button onclick="showView('settings')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="settings">
+            <i class="fas fa-sliders w-5"></i> ตั้งค่าระบบ
+          </button>
+          <button onclick="showView('profile')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="profile">
+            <i class="fas fa-user-edit w-5"></i> แก้ไขข้อมูลส่วนตัว
+          </button>
+        </nav>
+
+        <!-- User Footer & Logout -->
+        <div class="p-4 border-t border-white/20">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
+              <i class="fas fa-user-shield text-white text-sm"></i>
+            </div>
+            <div class="overflow-hidden">
+              <p class="text-sm font-bold truncate" id="user-display-name">ผู้ดูแลระบบ</p>
+              <p class="text-xs text-blue-200" id="user-display-role">Admin</p>
+            </div>
+          </div>
+          <button onclick="handleLogout()" class="w-full bg-white/10 hover:bg-white/20 py-2 px-3 rounded-lg flex items-center justify-center gap-2 text-xs font-semibold transition">
+            <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content Container -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top Bar Header -->
+        <header class="bg-white shadow-sm px-4 py-3 flex items-center justify-between border-b border-gray-200">
+          <div class="flex items-center gap-4">
+            <button id="toggle-sidebar-btn" onclick="toggleSidebar()" class="text-gray-600 text-xl hover:text-primary-500 transition">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 id="current-view-title" class="text-xl font-bold text-gray-800">แดชบอร์ด</h2>
+          </div>
+          <div class="flex items-center gap-4">
+            <p id="app-datetime" class="text-sm font-medium text-gray-600 hidden md:block"></p>
+            <button onclick="refreshData()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-2 rounded-lg transition" title="รีเฟรชข้อมูล">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- Dynamic Main Views -->
+        <main class="flex-1 overflow-auto p-4 md:p-6 bg-gray-50">
+          
+          <!-- View: Members Management & Approval -->
+          <div id="view-members" class="app-view hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+              <button onclick="openAddMemberModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition self-start md:self-auto">
+                <i class="fas fa-user-plus"></i> เพิ่มสมาชิก
+              </button>
+            </div>
+
+            <!-- Members Data Table -->
+            <div class="bg-white rounded-xl card-shadow overflow-hidden">
+              <div class="table-container">
+                <table class="w-full">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">#</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">ชื่อผู้ใช้</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">ชื่อ-นามสกุล</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">อีเมล</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">บทบาท</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">สถานะ</th>
+                      <th class="px-4 py-3 text-center text-sm font-medium text-gray-600">จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="members-table-body" class="divide-y divide-gray-100">
+                    <tr>
+                      <td colspan="7" class="px-4 py-8 text-center text-gray-500">ไม่พบข้อมูลสมาชิก</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 1: Dashboard -->
+          <div id="view-dashboard" class="app-view">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div onclick="showView('records')" class="bg-white rounded-xl card-shadow p-4 cursor-pointer hover:shadow-lg transition">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-gray-500 text-sm">รายชื่อทั้งหมด</p>
+                    <p id="stat-total" class="text-2xl font-bold text-gray-800">0</p>
+                  </div>
+                  <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                  </div>
+                </div>
+              </div>
+              <div onclick="showView('records')" class="bg-white rounded-xl card-shadow p-4 cursor-pointer hover:shadow-lg transition">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-gray-500 text-sm">สร้างเกียรติบัตรแล้ว</p>
+                    <p id="stat-generated" class="text-2xl font-bold text-green-600">0</p>
+                  </div>
+                  <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-circle-check text-green-600 text-xl"></i>
+                  </div>
+                </div>
+              </div>
+              <div onclick="showView('records')" class="bg-white rounded-xl card-shadow p-4 cursor-pointer hover:shadow-lg transition">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-gray-500 text-sm">รอดำเนินการ</p>
+                    <p id="stat-pending" class="text-2xl font-bold text-yellow-600">0</p>
+                  </div>
+                  <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-hourglass-half text-yellow-600 text-xl"></i>
+                  </div>
+                </div>
+              </div>
+              <div onclick="showView('designer')" class="bg-white rounded-xl card-shadow p-4 cursor-pointer hover:shadow-lg transition">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-gray-500 text-sm">Templates ทั้งหมด</p>
+                    <p id="stat-templates" class="text-2xl font-bold text-purple-600">0</p>
+                  </div>
+                  <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-file-invoice text-purple-600 text-xl"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dashboard Charts & Activity -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div class="bg-white rounded-xl card-shadow p-4">
+                <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-chart-line text-primary-500 mr-2"></i>สถิติการสร้างเกียรติบัตร</h3>
+                <div class="h-64">
+                  <canvas id="chart-certificates"></canvas>
+                </div>
+              </div>
+              <div class="bg-white rounded-xl card-shadow p-4">
+                <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-bolt text-yellow-500 mr-2"></i>ทางลัดการทำงาน</h3>
+                <div class="grid grid-cols-2 gap-3">
+                  <button onclick="showView('records'); showImportSection()" class="p-4 border-2 border-gray-100 hover:border-primary-500 rounded-xl flex items-center gap-3 hover:bg-primary-50 transition text-left">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold">
+                      <i class="fas fa-file-import"></i>
+                    </div>
+                    <div>
+                      <p class="font-bold text-gray-800 text-sm">นำเข้าข้อมูล</p>
+                      <p class="text-xs text-gray-500">Excel / CSV</p>
+                    </div>
+                  </button>
+                  <button onclick="showView('designer')" class="p-4 border-2 border-gray-100 hover:border-primary-500 rounded-xl flex items-center gap-3 hover:bg-primary-50 transition text-left">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold">
+                      <i class="fas fa-pen-ruler"></i>
+                    </div>
+                    <div>
+                      <p class="font-bold text-gray-800 text-sm">ออกแบบ Canvas</p>
+                      <p class="text-xs text-gray-500">จัดการ Template</p>
+                    </div>
+                  </button>
+                  <button onclick="showView('export')" class="p-4 border-2 border-gray-100 hover:border-primary-500 rounded-xl flex items-center gap-3 hover:bg-primary-50 transition text-left">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 font-bold">
+                      <i class="fas fa-file-export"></i>
+                    </div>
+                    <div>
+                      <p class="font-bold text-gray-800 text-sm">Export ZIP/PDF</p>
+                      <p class="text-xs text-gray-500">ดาวน์โหลดผลลัพธ์</p>
+                    </div>
+                  </button>
+                  <button onclick="showModal('settings-modal')" class="p-4 border-2 border-gray-100 hover:border-primary-500 rounded-xl flex items-center gap-3 hover:bg-primary-50 transition text-left">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center text-yellow-600 font-bold">
+                      <i class="fas fa-sliders"></i>
+                    </div>
+                    <div>
+                      <p class="font-bold text-gray-800 text-sm">ตั้งค่าระบบ</p>
+                      <p class="text-xs text-gray-500">รูปแบบรหัส/เลขที่</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Activity Table -->
+            <div class="bg-white rounded-xl card-shadow p-4">
+              <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-history text-primary-500 mr-2"></i>กิจกรรมล่าสุด</h3>
+              <div id="recent-activity-list" class="space-y-3">
+                <p class="text-gray-500 text-center py-4 text-sm">ยังไม่มีกิจกรรม</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 2: Records Management -->
+          <div id="view-records" class="app-view hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+              <div class="flex flex-wrap gap-2">
+                <button onclick="downloadImportTemplate()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition" title="ดาวน์โหลดตัวอย่าง Excel">
+                  <i class="fas fa-file-excel text-green-600"></i> Template Excel
+                </button>
+                <button onclick="toggleImportSection()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition">
+                  <i class="fas fa-file-import"></i> นำเข้าข้อมูล
+                </button>
+                <button onclick="openAddRecordModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition">
+                  <i class="fas fa-user-plus"></i> เพิ่มรายชื่อ
+                </button>
+              </div>
+            </div>
+
+            <!-- Import Section Dropzone -->
+            <div id="import-section" class="bg-white rounded-xl card-shadow p-6 mb-6 hidden fade-in border-2 border-dashed border-primary-300">
+              <div class="flex justify-between items-center mb-4">
+                <h4 class="font-bold text-gray-800"><i class="fas fa-cloud-arrow-up text-primary-500 mr-2"></i>นำเข้าข้อมูลไฟล์ Excel / CSV</h4>
+                <button onclick="toggleImportSection()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+              </div>
+              <div class="text-center py-8 cursor-pointer hover:bg-primary-50/50 rounded-xl transition" onclick="document.getElementById('excel-file-input').click()">
+                <i class="fas fa-file-excel text-5xl text-green-500 mb-3 block"></i>
+                <p class="text-gray-700 font-bold">ลากไฟล์มาวางที่นี่ หรือ คลิกเพื่อเลือกไฟล์</p>
+                <p class="text-xs text-gray-500 mt-1">รองรับนามสกุล .xlsx, .xls, .csv</p>
+                <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleExcelImport(event)">
+              </div>
+              <div id="import-preview-container" class="hidden mt-4 border-t pt-4">
+                <p class="text-sm font-bold text-gray-700 mb-2">ตัวอย่างข้อมูลที่จะนำเข้า (<span id="import-count">0</span> รายการ):</p>
+                <div class="table-container max-h-48 mb-4 border rounded-lg">
+                  <table class="w-full text-xs text-left text-gray-600">
+                    <thead class="bg-gray-100">
+                      <tr>
+                        <th class="p-2">ชื่อ-สกุล</th>
+                        <th class="p-2">โรงเรียน/หน่วยงาน</th>
+                        <th class="p-2">เลขที่</th>
+                        <th class="p-2">วันที่</th>
+                      </tr>
+                    </thead>
+                    <tbody id="import-preview-body" class="divide-y divide-gray-100"></tbody>
+                  </table>
+                </div>
+                <div class="flex justify-between items-center">
+                  <div class="flex gap-4 text-sm">
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="import-mode" value="append" checked class="text-primary-500"> เพิ่มต่อท้าย</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="import-mode" value="replace" class="text-primary-500"> แทนที่ข้อมูลเดิม</label>
+                  </div>
+                  <button onclick="confirmImportData()" class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg text-sm transition">
+                    <i class="fas fa-check mr-1"></i> ยืนยันการนำเข้า
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table Toolbar & Filters -->
+            <div class="bg-white rounded-xl card-shadow p-4 mb-4 flex flex-col md:flex-row gap-3 justify-between items-center">
+              <div class="w-full md:w-72 relative">
+                <input type="text" id="record-search-input" onkeyup="filterRecordsTable()" placeholder="ค้นหาชื่อ, โรงเรียน, เลขที่..." class="w-full pl-9 pr-4 py-2 border-2 border-gray-200 rounded-lg text-sm focus:border-primary-500 focus:outline-none">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+              </div>
+              <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                <select id="record-status-filter" onchange="filterRecordsTable()" class="px-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:border-primary-500 focus:outline-none">
+                  <option value="">สถานะทั้งหมด</option>
+                  <option value="pending">รอดำเนินการ</option>
+                  <option value="generated">สร้างแล้ว</option>
+                </select>
+                <select id="record-school-filter" onchange="filterRecordsTable()" class="px-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:border-primary-500 focus:outline-none">
+                  <option value="">หน่วยงานทั้งหมด</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Bulk Actions Bar -->
+            <div id="bulk-actions-bar" class="hidden bg-primary-50 border-2 border-primary-200 rounded-xl p-3 mb-4 flex items-center justify-between">
+              <span class="text-sm font-bold text-primary-800"><i class="fas fa-check-square mr-2"></i>เลือกแล้ว <span id="selected-count">0</span> รายการ</span>
+              <div class="flex gap-2">
+                <button onclick="bulkGenerateCertificates()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-award mr-1"></i> สร้างเกียรติบัตร</button>
+                <button onclick="bulkDeleteRecords()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-trash mr-1"></i> ลบรายการ</button>
+                <button onclick="clearRecordSelection()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">ยกเลิก</button>
+              </div>
+            </div>
+
+            <!-- Records Data Table -->
+            <div class="bg-white rounded-xl card-shadow overflow-hidden">
+              <div class="table-container">
+                <table class="w-full">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-4 py-3 text-center w-10"><input type="checkbox" id="select-all-records" onchange="toggleSelectAllRecords(this)"></th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">#</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">ชื่อ-นามสกุล</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">โรงเรียน/หน่วยงาน</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">เลขที่เกียรติบัตร</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">วันที่</th>
+                      <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">สถานะ</th>
+                      <th class="px-4 py-3 text-center text-sm font-medium text-gray-600">จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="records-table-body" class="divide-y divide-gray-100">
+                    <tr>
+                      <td colspan="8" class="px-4 py-8 text-center text-gray-500">ไม่พบข้อมูลรายชื่อ</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 3: Canvas Template Designer -->
+          <div id="view-designer" class="app-view hidden">
+            <div class="flex flex-col lg:flex-row gap-4 h-[calc(100vh-140px)]">
+              <!-- Canvas Workshop Area -->
+              <div class="flex-1 bg-gray-200 rounded-xl card-shadow flex flex-col overflow-hidden relative">
+                <!-- Canvas Top Control Toolbar -->
+                <div class="bg-white px-4 py-2 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-3 flex-wrap">
+                    <!-- Template Selector -->
+                    <div class="flex items-center gap-2 bg-primary-50 p-1.5 rounded-xl border border-primary-200">
+                      <label class="text-xs font-bold text-primary-800 flex items-center gap-1 pl-1">
+                        <i class="fas fa-layer-group text-primary-600"></i> Template:
+                      </label>
+                      <select id="designer-template-select" onchange="switchActiveTemplate(this.value)" class="px-2.5 py-1 bg-white text-gray-800 text-xs font-bold rounded-lg border border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="">-- เลือก Template --</option>
+                      </select>
+                      <button onclick="createNewTemplate()" class="bg-primary-600 hover:bg-primary-700 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="สร้าง Template ใหม่">
+                        <i class="fas fa-plus-circle"></i> ใหม่
+                      </button>
+                    </div>
+
+                    <span class="h-5 w-px bg-gray-300 hidden md:block"></span>
+
+                    <div class="flex items-center gap-1">
+                      <button onclick="zoomCanvas(-0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg text-xs" title="ย่อ"><i class="fas fa-minus"></i></button>
+                      <span id="canvas-zoom-text" class="text-xs font-bold text-gray-600 w-12 text-center">30%</span>
+                      <button onclick="zoomCanvas(0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg text-xs" title="ขยาย"><i class="fas fa-plus"></i></button>
+                      <button onclick="resetCanvasZoom()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium" title="พอดีหน้าจอ">100%</button>
+                      <button id="btn-toggle-grid" onclick="toggleCanvasGrid()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-xs font-medium ml-1">
+                        <i class="fas fa-border-all mr-1"></i> เส้นตาราง
+                      </button>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button onclick="openAddFieldModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                      <i class="fas fa-font mr-1"></i> เพิ่มข้อความ
+                    </button>
+                    <button onclick="document.getElementById('designer-bg-input').click()" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                      <i class="fas fa-image mr-1"></i> ภาพพื้นหลัง
+                    </button>
+                    <input type="file" id="designer-bg-input" accept="image/*" class="hidden" onchange="handleBgUpload(event)">
+                    <button onclick="saveCurrentTemplate()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                      <i class="fas fa-save mr-1"></i> บันทึก Template
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Canvas Workspace Wrapper -->
+                <div class="flex-1 overflow-auto p-8 flex items-center justify-center relative bg-gray-300" id="canvas-workspace">
+                  <div class="shadow-2xl bg-white relative transition-transform origin-center" id="canvas-container">
+                    <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair"></canvas>
+                  </div>
+                </div>
+
+                <!-- Preview Switch Bar -->
+                <div class="bg-white px-4 py-2 border-t border-gray-200 flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-gray-600"><i class="fas fa-eye text-primary-500 mr-1"></i> ตัวอย่างข้อมูล:</span>
+                    <select id="designer-preview-select" onchange="changePreviewRecord()" class="px-2 py-1 border rounded text-xs focus:outline-none">
+                      <option value="">-- รายชื่อตัวอย่าง --</option>
+                    </select>
+                  </div>
+                  <span class="text-gray-500" id="canvas-resolution-info">A4 Landscape (3508 x 2480 px)</span>
+                </div>
+              </div>
+
+              <!-- Element Properties Sidebar -->
+              <div class="w-full lg:w-80 bg-white rounded-xl card-shadow p-4 flex flex-col gap-4 overflow-y-auto">
+                <div>
+                  <h4 class="font-bold text-gray-800 mb-3 border-b pb-2 flex items-center justify-between">
+                    <span><i class="fas fa-layer-group text-primary-500 mr-2"></i>รายการองค์ประกอบ</span>
+                  </h4>
+                  <div id="designer-element-list" class="space-y-1.5 max-h-48 overflow-y-auto border rounded-lg p-2 bg-gray-50"></div>
+                </div>
+
+                <!-- Properties Panel -->
+                <div id="element-properties-panel" class="hidden space-y-3 pt-2 border-t">
+                  <h4 class="font-bold text-gray-800 text-sm flex items-center justify-between">
+                    <span><i class="fas fa-sliders text-primary-500 mr-1"></i>ปรับแต่งองค์ประกอบ</span>
+                    <button onclick="deleteSelectedElement()" class="text-red-500 hover:text-red-700 text-xs font-normal"><i class="fas fa-trash mr-1"></i>ลบ</button>
+                  </h4>
+
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">ฟอนต์ (Google Fonts)</label>
+                    <select id="prop-font-family" onchange="updateElementProp('fontFamily', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                      <option value="Sarabun">Sarabun (ทางการ)</option>
+                      <option value="Kanit">Kanit (สมัยใหม่)</option>
+                      <option value="Prompt">Prompt (โมเดิร์น)</option>
+                      <option value="Noto Sans Thai">Noto Sans Thai</option>
+                      <option value="Noto Serif Thai">Noto Serif Thai</option>
+                      <option value="Mitr">Mitr</option>
+                      <option value="Mali">Mali (น่ารัก)</option>
+                      <option value="Charm">Charm (ลายมือ)</option>
+                      <option value="Chakra Petch">Chakra Petch (เทค)</option>
+                      <option value="Chonburi">Chonburi (หัวหนา)</option>
+                      <option value="Kodchasan">Kodchasan</option>
+                    </select>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">ขนาดฟอนต์ (px)</label>
+                      <input type="number" id="prop-font-size" min="10" max="300" onchange="updateElementProp('fontSize', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">สีข้อความ</label>
+                      <input type="color" id="prop-color" onchange="updateElementProp('color', this.value)" class="w-full h-8 p-1 border border-gray-200 rounded-lg cursor-pointer">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">สไตล์ตัวหนังสือ</label>
+                    <div class="flex gap-1">
+                      <button id="prop-btn-bold" onclick="toggleElementStyle('bold')" class="flex-1 py-1 border border-gray-200 rounded text-xs font-bold hover:bg-gray-100">B</button>
+                      <button id="prop-btn-italic" onclick="toggleElementStyle('italic')" class="flex-1 py-1 border border-gray-200 rounded text-xs italic hover:bg-gray-100">I</button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">การจัดตำแหน่ง</label>
+                    <div class="flex gap-1">
+                      <button id="prop-align-left" onclick="updateElementProp('textAlign', 'left')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-left"></i></button>
+                      <button id="prop-align-center" onclick="updateElementProp('textAlign', 'center')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-center"></i></button>
+                      <button id="prop-align-right" onclick="updateElementProp('textAlign', 'right')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-right"></i></button>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">ตำแหน่ง X</label>
+                      <input type="number" id="prop-pos-x" onchange="updateElementProp('x', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">ตำแหน่ง Y</label>
+                      <input type="number" id="prop-pos-y" onchange="updateElementProp('y', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                    </div>
+                  </div>
+
+                  <div id="prop-static-text-box" class="hidden">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">ข้อความระบุเอง</label>
+                    <textarea id="prop-static-text" rows="2" onkeyup="updateElementProp('staticText', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 4: Export & Download -->
+          <div id="view-export" class="app-view hidden">
+            <div class="bg-white rounded-xl card-shadow p-6 mb-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-sliders text-primary-500 mr-2"></i>ตัวเลือกการ Export เกียรติบัตร</h3>
+              
+              <!-- Selectable Export Source Cards -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="border-2 border-primary-500 bg-primary-50/50 rounded-xl p-4 cursor-pointer hover:border-primary-600 transition font-medium text-gray-700 flex items-start justify-between export-source-card active" data-source="all" onclick="selectExportSource('all')">
+                  <div>
+                    <span class="text-primary-700 font-bold text-lg block mb-1"><i class="fas fa-users mr-2"></i>ทั้งหมด</span>
+                    <span class="text-xs text-gray-600">สร้างเกียรติบัตรให้กับทุกรายชื่อในระบบ</span>
+                  </div>
+                  <input type="radio" name="export-source-radio" value="all" checked class="w-5 h-5 text-primary-600 mt-1 cursor-pointer">
+                </div>
+
+                <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card" data-source="pending" onclick="selectExportSource('pending')">
+                  <div>
+                    <span class="text-yellow-600 font-bold text-lg block mb-1"><i class="fas fa-hourglass-half mr-2"></i>เฉพาะรอดำเนินการ</span>
+                    <span class="text-xs text-gray-500">สร้างเฉพาะรายชื่อที่ยังไม่ได้ถูกสร้าง</span>
+                  </div>
+                  <input type="radio" name="export-source-radio" value="pending" class="w-5 h-5 text-primary-600 mt-1 cursor-pointer">
+                </div>
+
+                <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card" data-source="selected" onclick="selectExportSource('selected')">
+                  <div>
+                    <span class="text-purple-600 font-bold text-lg block mb-1"><i class="fas fa-check-square mr-2"></i>เฉพาะที่เลือก (<span id="export-selected-count-badge">0</span>)</span>
+                    <span class="text-xs text-gray-500">สร้างเฉพาะรายการที่ติ๊กเลือกไว้</span>
+                  </div>
+                  <input type="radio" name="export-source-radio" value="selected" class="w-5 h-5 text-primary-600 mt-1 cursor-pointer">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label class="block text-gray-700 font-medium text-sm mb-2">รูปแบบไฟล์ Export</label>
+                  <select id="export-format-select" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
+                    <option value="zip">ไฟล์ ZIP (หลายรูปรวมกัน)</option>
+                    <option value="pdf">Single PDF (หลายหน้ารวมกัน)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium text-sm mb-2">ความละเอียดภาพ</label>
+                  <select id="export-resolution-select" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
+                    <option value="1">Standard High Quality (100%)</option>
+                    <option value="1.5">Ultra Quality (150%)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium text-sm mb-2">รูปแบบชื่อไฟล์</label>
+                  <select id="export-filename-pattern" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
+                    <option value="{certNumber}_{name}">เลขที่_ชื่อ</option>
+                    <option value="{name}_{certNumber}">ชื่อ_เลขที่</option>
+                    <option value="{name}">ชื่ออย่างเดียว</option>
+                  </select>
+                </div>
+              </div>
+
+              <button onclick="startBatchExport()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl btn-hover text-lg flex items-center justify-center gap-2">
+                <i class="fas fa-rocket"></i> เริ่มประมวลผลส่งออก/ดาวน์โหลดเกียรติบัตร
+              </button>
+            </div>
+
+            <!-- Export Progress Bar Card -->
+            <div id="export-progress-card" class="bg-white rounded-xl card-shadow p-6 mb-6 hidden border-2 border-primary-200">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-bold text-gray-800 text-sm" id="export-progress-detail">กำลังเตรียมการ...</span>
+                <span class="font-bold text-primary-600 text-sm" id="export-progress-percent">0%</span>
+              </div>
+              <div class="progress-bar w-full bg-gray-200">
+                <div id="export-progress-bar-fill" class="progress-fill bg-primary-600" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 5: System Settings Page -->
+          <div id="view-settings" class="app-view hidden">
+            <div class="max-w-2xl mx-auto bg-white rounded-xl card-shadow p-6">
+              <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <i class="fas fa-sliders text-3xl text-yellow-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">ตั้งค่าระบบเกียรติบัตร</h3>
+                <p class="text-xs text-gray-500">จัดการค่าเริ่มต้นของระบบเกียรติบัตร</p>
+              </div>
+
+              <div class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="p-4 border-2 border-gray-100 rounded-xl bg-gray-50/50">
+                    <label class="block text-gray-800 font-bold mb-1 text-sm"><i class="fas fa-hashtag text-primary-500 mr-2"></i>คำนำหน้าเลขที่อัตโนมัติ</label>
+                    <input type="text" id="setting-page-prefix" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm mt-1" value="CERT-2026/">
+                    <p class="text-xs text-gray-500 mt-1">ตัวอย่าง: CERT-2026/001</p>
+                  </div>
+
+                  <div class="p-4 border-2 border-gray-100 rounded-xl bg-gray-50/50">
+                    <label class="block text-gray-800 font-bold mb-1 text-sm"><i class="fas fa-list-ol text-blue-500 mr-2"></i>ลำดับเลขที่เริ่มต้นอัตโนมัติ</label>
+                    <input type="number" id="setting-page-start-num" min="1" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm mt-1" value="1">
+                    <p class="text-xs text-gray-500 mt-1">กำหนดลำดับตัวเลขเริ่มต้นในการเพิ่มรายชื่อใหม่</p>
+                  </div>
+                </div>
+
+                <button onclick="saveSettingsFromPage()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-base flex items-center justify-center gap-2">
+                <i class="fas fa-save"></i> บันทึกตั้งค่าระบบ
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 6: Profile Edit -->
+          <div id="view-profile" class="app-view hidden">
+            <div class="max-w-xl mx-auto bg-white rounded-xl card-shadow p-6">
+              <div class="text-center mb-6">
+                <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <i class="fas fa-user-edit text-3xl text-primary-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">แก้ไขข้อมูลส่วนตัว</h3>
+              </div>
+              <form id="user-profile-form" class="space-y-4">
+                <div>
+                  <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ-นามสกุล</label>
+                  <input type="text" id="profile-fullname" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-1 text-sm">อีเมล</label>
+                  <input type="email" id="profile-email" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-1 text-sm">รหัสผ่านใหม่ (เว้นว่างไว้ถ้าไม่เปลี่ยน)</label>
+                  <div class="relative">
+                    <input type="password" id="profile-password" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none pr-12">
+                    <button type="button" class="password-toggle-btn absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition" data-target="profile-password">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover">
+                  <i class="fas fa-save mr-2"></i> บันทึกข้อมูลส่วนตัว
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Modal: Member Registration -->
+    <div id="register-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+          <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-user-plus text-primary-500 mr-2"></i>สมัครสมาชิกใหม่</h3>
+          <button onclick="hideModal('register-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <form id="register-form" class="space-y-4">
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อผู้ใช้</label>
+            <input type="text" id="reg-username" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="เช่น teacher_somchai">
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ-นามสกุล</label>
+            <input type="text" id="reg-fullname" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="เช่น นายสมชาย ใจดี">
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">อีเมล</label>
+            <input type="email" id="reg-email" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="somchai@example.com">
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">รหัสผ่าน</label>
+            <div class="relative">
+              <input type="password" id="reg-password" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm pr-12" placeholder="กรอกรหัสผ่าน">
+              <button type="button" class="password-toggle-btn absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition" data-target="reg-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
+            <i class="fas fa-info-circle mr-1"></i> <strong>หมายเหตุ:</strong> สมาชิกคนแรกที่สมัครจะได้รับอนุมัติสิทธิ์เป็นแอดมินหลักอัตโนมัติ สำหรับสมาชิกถัดไปจะต้องรอแอดมินหลักอนุมัติสิทธิ์การใช้งาน
+          </div>
+          <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-sm">
+            <i class="fas fa-paper-plane mr-2"></i> ยืนยันการสมัครสมาชิก
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Add / Edit Member (By Admin) -->
+    <div id="member-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+          <h3 id="member-modal-title" class="text-lg font-bold text-gray-800">จัดการข้อมูลสมาชิก</h3>
+          <button onclick="hideModal('member-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <form id="member-form" class="space-y-4">
+          <input type="hidden" id="member-edit-id">
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อผู้ใช้</label>
+            <input type="text" id="member-username" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">รหัสผ่าน (เว้นว่างไว้ถ้าไม่เปลี่ยน)</label>
+            <div class="relative">
+              <input type="password" id="member-password" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm pr-12">
+              <button type="button" class="password-toggle-btn absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition" data-target="member-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ-นามสกุล</label>
+            <input type="text" id="member-fullname" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">อีเมล</label>
+            <input type="email" id="member-email" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-gray-700 font-medium mb-1 text-sm">บทบาท</label>
+              <select id="member-role" class="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
+                <option value="admin">ผู้ดูแลระบบ</option>
+                <option value="teacher">ครู/เจ้าหน้าที่</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium mb-1 text-sm">สถานะ</label>
+              <select id="member-status" class="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
+                <option value="active">อนุมัติแล้ว</option>
+                <option value="pending">รออนุมัติ</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-sm mt-2">
+            <i class="fas fa-save mr-2"></i> บันทึกข้อมูลสมาชิก
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Add/Edit Record -->
+    <div id="record-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-lg mx-4 fade-in">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+          <h3 id="record-modal-title" class="text-lg font-bold text-gray-800">เพิ่มรายชื่อผู้รับเกียรติบัตร</h3>
+          <button onclick="hideModal('record-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <form id="record-form" class="space-y-4">
+          <input type="hidden" id="record-edit-id">
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ-นามสกุล</label>
+            <input type="text" id="record-name" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="เช่น นายสมชาย ใจดี">
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">โรงเรียน / หน่วยงาน</label>
+            <input type="text" id="record-school" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="เช่น วิทยาลัยเทคนิคดอนเมือง">
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-gray-700 font-medium mb-1 text-sm">เลขที่เกียรติบัตร</label>
+              <input type="text" id="record-cert-number" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="CERT-2026/001">
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium mb-1 text-sm">วันที่ออกเกียรติบัตร</label>
+              <input type="text" id="record-date" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="16 สิงหาคม 2569">
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover mt-2">
+            <i class="fas fa-save mr-2"></i> บันทึกข้อมูล
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Add Designer Field -->
+    <div id="add-field-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+          <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-plus-circle text-primary-500 mr-2"></i>เลือกประเภทข้อความที่จะเพิ่ม</h3>
+          <button onclick="hideModal('add-field-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="addCanvasElement('name')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-user mr-2 text-primary-500"></i>ชื่อ-นามสกุล</button>
+          <button onclick="addCanvasElement('school')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-school mr-2 text-primary-500"></i>โรงเรียน/หน่วยงาน</button>
+          <button onclick="addCanvasElement('certNumber')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-hashtag mr-2 text-primary-500"></i>เลขที่เกียรติบัตร</button>
+          <button onclick="addCanvasElement('date')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-calendar mr-2 text-primary-500"></i>วันที่ออกเกียรติบัตร</button>
+          <button onclick="addCanvasElement('static')" class="col-span-2 p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-font mr-2 text-primary-500"></i>ข้อความคงที่ (ระบุเอง)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Settings (Dashboard Shortcut Modal) -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+          <h3 class="text-lg font-bold text-gray-800">ตั้งค่าระบบเกียรติบัตร</h3>
+          <button onclick="hideModal('settings-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">คำนำหน้าเลขที่เกียรติบัตรอัตโนมัติ</label>
+            <input type="text" id="setting-prefix" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" value="CERT-2026/">
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ลำดับเลขที่เริ่มต้นอัตโนมัติ</label>
+            <input type="number" id="setting-start-num" min="1" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" value="1">
+          </div>
+          <button onclick="saveSettings()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-6 rounded-xl btn-hover">
+          <i class="fas fa-save"></i> บันทึกตั้งค่าระบบ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Alert -->
+    <div id="alert-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-sm mx-4 fade-in text-center">
+        <div id="alert-icon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"></div>
+        <h3 id="alert-title" class="text-xl font-bold text-gray-800 mb-2"></h3>
+        <p id="alert-message" class="text-gray-600 mb-6 text-sm"></p>
+        <button onclick="hideModal('alert-modal')" class="bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-8 rounded-xl transition"> ตกลง </button>
+      </div>
+    </div>
+
+    <!-- Modal: Confirm Delete -->
+    <div id="confirm-delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-sm mx-4 fade-in text-center">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">ยืนยันการลบ</h3>
+        <p id="delete-message" class="text-gray-600 mb-6 text-sm">คุณต้องการลบรายการนี้ใช่หรือไม่?</p>
+        <div class="flex gap-3">
+          <button onclick="hideModal('confirm-delete-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition"> ยกเลิก </button>
+          <button id="confirm-delete-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-xl transition"> ลบ </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Guest Cert Preview -->
+    <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-4xl max-h-[90vh] flex flex-col fade-in">
+        <div class="flex items-center justify-between pb-3 border-b mb-4">
+          <h3 id="guest-preview-title" class="font-bold text-gray-800 text-lg flex items-center gap-2">
+            <i class="fas fa-award text-yellow-500"></i> ตัวอย่างเกียรติบัตร
+          </h3>
+          <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="flex-1 overflow-auto bg-gray-200 rounded-xl p-4 flex items-center justify-center min-h-[300px]">
+          <canvas id="guestPreviewCanvas" class="max-w-full max-h-[60vh] h-auto shadow-lg bg-white rounded"></canvas>
+        </div>
+        <div class="mt-4 flex flex-wrap justify-end gap-2 pt-2 border-t">
+          <button onclick="hideModal('guest-preview-modal')" class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-sm transition">ปิด</button>
+          <button id="btn-download-preview-png" class="px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
+            <i class="fas fa-file-image"></i> ดาวน์โหลด PNG
+          </button>
+          <button id="btn-download-preview-pdf" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
+            <i class="fas fa-file-pdf"></i> ดาวน์โหลด PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Save Template -->
+    <div id="save-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+          <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-save text-green-500 mr-2"></i>บันทึก Template</h3>
+          <button onclick="hideModal('save-template-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <form id="save-template-form" class="space-y-4">
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ Template *</label>
+            <input type="text" id="save-template-name-input" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="กรอกชื่อ Template">
+          </div>
+          <div class="flex gap-3 pt-2">
+            <button type="button" onclick="hideModal('save-template-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition text-sm"> ยกเลิก </button>
+            <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-4 rounded-xl btn-hover text-sm flex items-center justify-center gap-1">
+              <i class="fas fa-save"></i> บันทึก Template
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Create New Template -->
+    <div id="create-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+          <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-plus-circle text-primary-500 mr-2"></i>สร้าง Template ใหม่</h3>
+          <button onclick="hideModal('create-template-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <form id="create-template-form" class="space-y-4">
+          <div>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ Template ใหม่ *</label>
+            <input type="text" id="create-template-name-input" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="เช่น เกียรติบัตรอบรมวิชาการ">
+          </div>
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
+            <i class="fas fa-info-circle mr-1"></i> ระบบจะสร้างโครงร่าง Template เริ่มต้นให้ คุณสามารถปรับแต่งข้อความและอัปโหลดรูปพื้นหลังได้ทันที
+          </div>
+          <div class="flex gap-3 pt-2">
+            <button type="button" onclick="hideModal('create-template-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition text-sm"> ยกเลิก </button>
+            <button type="submit" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl btn-hover text-sm flex items-center justify-center gap-1">
+              <i class="fas fa-check"></i> ยืนยันสร้างใหม่
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // -------------------------------------------------------------
+    // IMPORTANT: URL ของ Web App ที่ได้จาก Google Apps Script
+    // -------------------------------------------------------------
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzV-u9CDmWjn1_6DqEgscTbrEUJFtvLED-ynYbTF4D-bfRKJGjZiMgntQHkx4AXNK3YZw/exec';
+
+    let SPREADSHEET_ID = '176RCjWx2VequADvLbCmE9HenKQ1EIqZEfgFezLxASsQ';
+
+    // Global Settings Configuration
+    let systemSettings = {
+      prefix: 'CERT-2026/',
+      startNumber: 1,
+      defaultFont: 'Sarabun'
+    };
+
+    // Application State Variables
+    let appData = [];
+    let currentUser = null;
+    let selectedExportSource = 'all';
+    let selectedRecordIds = new Set();
+    let deleteCallback = null;
+    let canvas, ctx;
+    let canvasZoom = 0.3;
+    let showCanvasGrid = false;
+    let isDraggingElement = false;
+    let dragOffsetX = 0, dragOffsetY = 0;
+    let selectedElementIndex = null;
+    let activeTemplateId = null;
+    let loadingTimer = null;
+    let isAlternateLoadingText = false;
+    let parsedImportRows = [];
+
+    // Default Fallback Template
+    const defaultTemplates = [
+      {
+        id: 'tpl_default_1',
+        type: 'template',
+        name: 'เกียรติบัตรเข้าร่วมกิจกรรมมาตรฐาน',
+        width: 3508,
+        height: 2480,
+        bgImg: null,
+        elements: [
+          { id: 'el_1', field: 'static', staticText: 'วิทยาลัยเทคนิคดอนเมือง ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า', x: 1754, y: 750, fontSize: 60, fontFamily: 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: false, italic: false },
+          { id: 'el_2', field: 'name', staticText: '[ชื่อ-นามสกุล]', x: 1754, y: 1050, fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', textAlign: 'center', bold: true, italic: false },
+          { id: 'el_3', field: 'static', staticText: 'ได้ผ่านการเข้าร่วมโครงการพัฒนาทักษะวิชาชีพและคุณธรรมจริยธรรม', x: 1754, y: 1300, fontSize: 55, fontFamily: 'Sarabun', color: '#475569', textAlign: 'center', bold: false, italic: false },
+          { id: 'el_4', field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: 1754, y: 1500, fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', textAlign: 'center', bold: true, italic: false },
+          { id: 'el_5', field: 'certNumber', staticText: 'เลขที่ CERT-2026/001', x: 3100, y: 250, fontSize: 40, fontFamily: 'Sarabun', color: '#64748b', textAlign: 'right', bold: false, italic: false },
+          { id: 'el_6', field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: 1754, y: 1850, fontSize: 45, fontFamily: 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false }
+        ]
+      }
+    ];
+
+    // Default Sample Records
+    const defaultRecords = [
+      { id: 'rec_1', type: 'record', name: 'นายสมชาย ใจดี', school: 'วิทยาลัยเทคนิคดอนเมือง', certNumber: 'CERT-2026/001', date: '16 สิงหาคม 2569', status: 'pending' },
+      { id: 'rec_2', type: 'record', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
+    ];
+
+    // Helper Data Selectors
+    function getMembers() {
+      return appData.filter(d => d && d.type === 'member');
+    }
+
+    function getTemplates() {
+      const tpls = appData.filter(d => d && d.type === 'template');
+      return tpls.length > 0 ? tpls : defaultTemplates;
+    }
+
+    function getRecords() {
+      const recs = appData.filter(d => d && d.type === 'record');
+      return recs.length > 0 ? recs : defaultRecords;
+    }
+
+    function getActiveTemplate() {
+      const templates = getTemplates();
+      if (!activeTemplateId && templates.length > 0) {
+        activeTemplateId = String(templates[0].id || templates[0].__backendId);
+      }
+      return templates.find(t => String(t.id) === String(activeTemplateId) || String(t.__backendId) === String(activeTemplateId)) || templates[0];
+    }
+
+    function generateId() {
+      return 'id_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    }
+
+    // Helper Promisified Call for Native Google Apps Script RPC
+    function callGas(functionName, ...args) {
+      return new Promise((resolve, reject) => {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler((res) => resolve(res))
+            .withFailureHandler((err) => reject(err))[functionName](...args);
+        } else if (typeof GAS_URL !== 'undefined' && GAS_URL) {
+          fetch(`${GAS_URL}?action=${functionName}`, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: functionName, args: args })
+          })
+          .then(res => res.json())
+          .then(data => resolve(data))
+          .catch(err => {
+            console.warn('Fetch GAS failed, fallback to offline memory:', err);
+            if (functionName === 'getData') resolve(appData);
+            else if (functionName === 'createData') resolve(args[0]);
+            else if (functionName === 'updateData') resolve(args[0]);
+            else if (functionName === 'deleteData') resolve({ isOk: true });
+            else resolve(null);
+          });
+        } else {
+          console.warn('google.script.run unavailable; running in offline simulation mode.');
+          setTimeout(() => {
+            if (functionName === 'getData') resolve(appData);
+            else if (functionName === 'createData') resolve(args[0]);
+            else if (functionName === 'updateData') resolve(args[0]);
+            else if (functionName === 'deleteData') resolve({ isOk: true });
+            else resolve(null);
+          }, 300);
+        }
+      });
+    }
+
+    // Data SDK Fetch Wrapper mapped to native google.script.run
+    window.dataSdk = {
+      create: async function(item) {
+        try {
+          const savedItem = await callGas('createData', item);
+          appData.push(savedItem || item);
+          updateUI();
+          return { isOk: true, data: savedItem || item };
+        } catch (err) {
+          console.warn("GAS create fallback locally:", err);
+          appData.push(item);
+          updateUI();
+          return { isOk: true, data: item };
+        }
+      },
+      update: async function(item) {
+        try {
+          const updatedItem = await callGas('updateData', item);
+          const target = updatedItem || item;
+          const index = appData.findIndex(d => (d.__backendId && String(d.__backendId) === String(target.__backendId)) || (d.id && String(d.id) === String(target.id)));
+          if (index !== -1) appData[index] = target;
+          updateUI();
+          return { isOk: true, data: target };
+        } catch (err) {
+          console.warn("GAS update fallback locally:", err);
+          const index = appData.findIndex(d => (d.__backendId && String(d.__backendId) === String(item.__backendId)) || (d.id && String(d.id) === String(item.id)));
+          if (index !== -1) appData[index] = item;
+          updateUI();
+          return { isOk: true, data: item };
+        }
+      },
+      delete: async function(item) {
+        try {
+          await callGas('deleteData', item);
+          appData = appData.filter(d => (d.__backendId ? String(d.__backendId) !== String(item.__backendId) : String(d.id) !== String(item.id)));
+          updateUI();
+          return { isOk: true };
+        } catch (err) {
+          console.warn("GAS delete fallback locally:", err);
+          appData = appData.filter(d => (d.__backendId ? String(d.__backendId) !== String(item.__backendId) : String(d.id) !== String(item.id)));
+          updateUI();
+          return { isOk: true };
+        }
+      }
+    };
+
+    // Loading Screen Control
+    function startLoading() {
+      const loadingEl = document.getElementById('loading');
+      const textEl = document.getElementById('loadingText');
+      if (!loadingEl || !textEl) return;
+      
+      loadingEl.classList.remove('hidden');
+      textEl.innerText = "กำลังโหลด...";
+      textEl.className = "text-gray-600 text-lg transition-all duration-300";
+      isAlternateLoadingText = false;
+
+      if (loadingTimer) clearInterval(loadingTimer);
+
+      loadingTimer = setInterval(() => {
+        isAlternateLoadingText = !isAlternateLoadingText;
+        if (isAlternateLoadingText) {
+          textEl.innerText = "กำลังโหลด...";
+          textEl.className = "text-gray-600 text-lg transition-all duration-300";
+        } else {
+          textEl.innerText = "กำลังโหลด...";
+          textEl.className = "text-gray-600 text-lg transition-all duration-300";
+        }
+      }, 3000);
+    }
+
+    function stopLoading() {
+      if (loadingTimer) clearInterval(loadingTimer);
+      const loadingEl = document.getElementById('loading');
+      if (loadingEl) loadingEl.classList.add('hidden');
+    }
+
+    // Password Toggle Utility
+    function setupPasswordHoldToReveal() {
+      const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+      toggleButtons.forEach(btn => {
+        const targetId = btn.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const icon = btn.querySelector('i');
+        if (!input || !icon) return;
+
+        const showPass = (e) => {
+          e.preventDefault();
+          input.type = 'text';
+          if (icon) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+          }
+        };
+
+        const hidePass = (e) => {
+          e.preventDefault();
+          input.type = 'password';
+          if (icon) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          }
+        };
+
+        btn.addEventListener('mousedown', showPass);
+        btn.addEventListener('mouseup', hidePass);
+        btn.addEventListener('mouseleave', hidePass);
+        btn.addEventListener('touchstart', showPass, { passive: false });
+        btn.addEventListener('touchend', hidePass);
+        btn.addEventListener('touchcancel', hidePass);
+      });
+    }
+
+    // Modal & Page Navigation Controls
+    function showModal(id) {
+      if (id === 'settings-modal') {
+        const modalPrefix = document.getElementById('setting-prefix');
+        const modalStartNum = document.getElementById('setting-start-num');
+        if (modalPrefix) modalPrefix.value = systemSettings.prefix;
+        if (modalStartNum) modalStartNum.value = systemSettings.startNumber;
+      }
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    }
+
+    function hideModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    }
+
+    function showAlert(type, title, message) {
+      const iconEl = document.getElementById('alert-icon');
+      const titleEl = document.getElementById('alert-title');
+      const messageEl = document.getElementById('alert-message');
+      
+      if (iconEl) {
+        if (type === 'success') {
+          iconEl.className = 'w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4';
+          iconEl.innerHTML = '<i class="fas fa-check text-3xl text-green-500"></i>';
+        } else if (type === 'error') {
+          iconEl.className = 'w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4';
+          iconEl.innerHTML = '<i class="fas fa-times text-3xl text-red-500"></i>';
+        } else if (type === 'warning') {
+          iconEl.className = 'w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4';
+          iconEl.innerHTML = '<i class="fas fa-exclamation text-3xl text-yellow-500"></i>';
+        } else {
+          iconEl.className = 'w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4';
+          iconEl.innerHTML = '<i class="fas fa-info text-3xl text-blue-500"></i>';
+        }
+      }
+      
+      if (titleEl) titleEl.textContent = title;
+      if (messageEl) messageEl.textContent = message;
+      showModal('alert-modal');
+    }
+
+    function showConfirmDelete(message, callback) {
+      const msgEl = document.getElementById('delete-message');
+      const btnEl = document.getElementById('confirm-delete-btn');
+      if (msgEl) msgEl.textContent = message;
+      deleteCallback = callback;
+      if (btnEl) {
+        btnEl.onclick = async () => {
+          if (deleteCallback) await deleteCallback();
+          hideModal('confirm-delete-modal');
+        };
+      }
+      showModal('confirm-delete-modal');
+    }
+
+    function showPage(pageName) {
+      const pGuest = document.getElementById('page-guest');
+      const pLogin = document.getElementById('page-login');
+      const pMain = document.getElementById('page-main');
+
+      if (pGuest) pGuest.classList.add('hidden');
+      if (pLogin) pLogin.classList.add('hidden');
+      if (pMain) pMain.classList.add('hidden');
+
+      const targetPage = document.getElementById(`page-${pageName}`);
+      if (targetPage) targetPage.classList.remove('hidden');
+    }
+
+    function showView(viewName) {
+      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+      const targetView = document.getElementById(`view-${viewName}`);
+      if (targetView) targetView.classList.remove('hidden');
+
+      document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.view === viewName) item.classList.add('active');
+      });
+
+      const titles = {
+        'dashboard': 'แดชบอร์ด',
+        'members': 'จัดการสมาชิก',
+        'records': 'จัดการรายชื่อ',
+        'designer': 'ออกแบบ Template',
+        'export': 'Export / ดาวน์โหลด',
+        'settings': 'ตั้งค่าระบบ',
+        'profile': 'แก้ไขข้อมูลส่วนตัว'
+      };
+      const titleEl = document.getElementById('current-view-title');
+      if (titleEl) titleEl.textContent = titles[viewName] || 'แดชบอร์ด';
+
+      if (viewName === 'designer') {
+        updateTemplateSelectors();
+        setTimeout(renderCanvas, 100);
+      }
+      if (viewName === 'export') {
+        const badge = document.getElementById('export-selected-count-badge');
+        if (badge) badge.textContent = selectedRecordIds.size;
+      }
+      if (viewName === 'profile' && currentUser) {
+        const nameInput = document.getElementById('profile-fullname');
+        const emailInput = document.getElementById('profile-email');
+        if (nameInput) nameInput.value = currentUser.fullname || '';
+        if (emailInput) emailInput.value = currentUser.email || '';
+      }
+      if (viewName === 'settings') {
+        const prefixInput = document.getElementById('setting-page-prefix');
+        const startNumInput = document.getElementById('setting-page-start-num');
+        if (prefixInput) prefixInput.value = systemSettings.prefix;
+        if (startNumInput) startNumInput.value = systemSettings.startNumber;
+      }
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      showPage('guest');
+      showAlert('info', 'ออกจากระบบ', 'ออกจากระบบเรียบร้อยแล้ว');
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('main-sidebar');
+      if (sidebar) sidebar.classList.toggle('-ml-64');
+    }
+
+    function populateGuestTemplates() {
+      const select = document.getElementById('guest-template-select');
+      if (!select) return;
+      const templates = getTemplates();
+      select.innerHTML = '<option value="all">ค้นหาทุกกิจกรรม</option>' +
+        templates.map(t => `<option value="${t.id || t.__backendId}">${t.name}</option>`).join('');
+    }
+
+    function getTemplateForRecord(record, selectedTemplateId) {
+      const templates = getTemplates();
+      if (selectedTemplateId && selectedTemplateId !== 'all') {
+        const found = templates.find(t => String(t.id) === String(selectedTemplateId) || String(t.__backendId) === String(selectedTemplateId));
+        if (found) return found;
+      }
+      if (record && record.templateId) {
+        const found = templates.find(t => String(t.id) === String(record.templateId) || String(t.__backendId) === String(record.templateId));
+        if (found) return found;
+      }
+      return getActiveTemplate();
+    }
+
+    function doGuestSearch() {
+      const input = (document.getElementById('guest-search-input')?.value || '').trim().toLowerCase();
+      const templateVal = document.getElementById('guest-template-select')?.value;
+      const resultsArea = document.getElementById('guest-results-area');
+
+      if (!resultsArea) return;
+
+      if (!input) {
+        resultsArea.innerHTML = `
+          <div class="bg-yellow-50 border-2 border-yellow-200 text-yellow-800 rounded-2xl p-6 text-center text-sm font-medium">
+            <i class="fas fa-exclamation-circle text-2xl mb-2 text-yellow-500 block"></i>
+            กรุณากรอกชื่อ-นามสกุล หรือเลขที่เกียรติบัตรเพื่อค้นหา
+          </div>
+        `;
+        return;
+      }
+
+      resultsArea.innerHTML = `
+        <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500">
+          <i class="fas fa-circle-notch spin text-4xl text-primary-500 mb-3 block"></i>
+          <p class="font-medium text-gray-700">กำลังค้นหาเกียรติบัตร...</p>
+        </div>
+      `;
+
+      setTimeout(() => {
+        const records = getRecords();
+        const matches = records.filter(r => {
+          const nameMatch = (r.name || '').toLowerCase().includes(input);
+          const certMatch = (r.certNumber || '').toLowerCase().includes(input);
+          const schoolMatch = (r.school || '').toLowerCase().includes(input);
+          return (nameMatch || certMatch || schoolMatch);
+        });
+
+        if (matches.length === 0) {
+          resultsArea.innerHTML = `
+            <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500">
+              <i class="fas fa-search-minus text-5xl text-gray-300 mb-3 block"></i>
+              <p class="text-lg font-bold text-gray-700">ไม่พบข้อมูลเกียรติบัตร</p>
+              <p class="text-xs mt-1">โปรดตรวจสอบการสะกดชื่อ-นามสกุล หรือลองค้นหาด้วยคำค้นหาอื่น</p>
+            </div>
+          `;
+          return;
+        }
+
+        resultsArea.innerHTML = `
+          <div class="flex items-center justify-between mb-2 px-1">
+            <h3 class="font-bold text-gray-800 text-sm md:text-base"><i class="fas fa-list-check text-primary-500 mr-2"></i>พบเกียรติบัตร ${matches.length} รายการ</h3>
+          </div>
+        ` + matches.map(r => {
+          const recId = r.id || r.__backendId;
+          return `
+            <div class="cert-card fade-in">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h4 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+                    <i class="fas fa-award text-primary-600"></i> ${r.name}
+                  </h4>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="badge badge-info"><i class="fas fa-hashtag mr-1"></i>${r.certNumber || '-'}</span>
+                    <span class="badge bg-blue-50 text-blue-700"><i class="fas fa-school mr-1"></i>${r.school || '-'}</span>
+                    <span class="badge bg-purple-50 text-purple-700"><i class="fas fa-calendar mr-1"></i>${r.date || '-'}</span>
+                  </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
+                  <button onclick="previewGuestCert('${recId}')" class="flex-1 md:flex-initial bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-1.5" title="ดูตัวอย่าง">
+                    <i class="fas fa-eye text-primary-500"></i> ดูตัวอย่าง
+                  </button>
+                  <button onclick="downloadGuestCertFormat('${recId}', 'png')" class="flex-1 md:flex-initial bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ PNG">
+                    <i class="fas fa-file-image"></i> PNG
+                  </button>
+                  <button onclick="downloadGuestCertFormat('${recId}', 'pdf')" class="flex-1 md:flex-initial bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์เอกสาร PDF">
+                    <i class="fas fa-file-pdf"></i> PDF
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }, 300);
+    }
+
+    async function generateCertCanvasForRecord(record, tpl) {
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (e) {
+          console.warn('Font loading wait warning:', e);
+        }
+      }
+
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = tpl.width || 3508;
+      tempCanvas.height = tpl.height || 2480;
+      const tctx = tempCanvas.getContext('2d');
+
+      if (tpl.bgImg) {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.src = tpl.bgImg;
+        await new Promise(res => {
+          img.onload = res;
+          img.onerror = () => {
+            tctx.fillStyle = '#ffffff';
+            tctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            res();
+          };
+        });
+        tctx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+      } else {
+        tctx.fillStyle = '#ffffff';
+        tctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      }
+
+      (tpl.elements || []).forEach(el => {
+        tctx.save();
+        tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize || 50}px "${el.fontFamily || 'Sarabun'}", sans-serif`;
+        tctx.fillStyle = el.color || '#000000';
+        tctx.textAlign = el.textAlign || 'center';
+
+        let text = el.staticText || '';
+        if (el.field === 'name') text = record.name || '';
+        if (el.field === 'school') text = record.school || '';
+        if (el.field === 'certNumber') text = record.certNumber || '';
+        if (el.field === 'date') text = record.date || '';
+
+        tctx.fillText(text, el.x, el.y);
+        tctx.restore();
+      });
+
+      return tempCanvas;
+    }
+
+    async function previewGuestCert(recordId, tplId = null) {
+      const record = appData.find(d => String(d.id) === String(recordId) || String(d.__backendId) === String(recordId));
+      if (!record) {
+        showAlert('error', 'ไม่พบข้อมูล', 'ไม่พบข้อมูลเกียรติบัตรในระบบ');
+        return;
+      }
+      const selectedTplId = tplId || document.getElementById('guest-template-select')?.value;
+      const tpl = getTemplateForRecord(record, selectedTplId);
+
+      startLoading();
+      try {
+        const certCanvas = await generateCertCanvasForRecord(record, tpl);
+        const modalCanvas = document.getElementById('guestPreviewCanvas');
+        if (modalCanvas) {
+          modalCanvas.width = certCanvas.width;
+          modalCanvas.height = certCanvas.height;
+          const mctx = modalCanvas.getContext('2d');
+          mctx.drawImage(certCanvas, 0, 0);
+        }
+
+        const titleEl = document.getElementById('guest-preview-title');
+        if (titleEl) {
+          titleEl.innerHTML = `<i class="fas fa-award text-yellow-500 mr-2"></i> เกียรติบัตร: ${record.name}`;
+        }
+
+        const btnPng = document.getElementById('btn-download-preview-png');
+        if (btnPng) {
+          btnPng.onclick = () => downloadGuestCertFormat(recordId, 'png', selectedTplId);
+        }
+
+        const btnPdf = document.getElementById('btn-download-preview-pdf');
+        if (btnPdf) {
+          btnPdf.onclick = () => downloadGuestCertFormat(recordId, 'pdf', selectedTplId);
+        }
+
+        showModal('guest-preview-modal');
+      } catch (err) {
+        console.error('Preview Cert Error:', err);
+        showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างตัวอย่างเกียรติบัตรได้');
+      } finally {
+        stopLoading();
+      }
+    }
+
+    async function downloadGuestCertFormat(recordId, format = 'png', tplId = null) {
+      const record = appData.find(d => String(d.id) === String(recordId) || String(d.__backendId) === String(recordId));
+      if (!record) {
+        showAlert('error', 'ไม่พบข้อมูล', 'ไม่พบข้อมูลเกียรติบัตรในระบบ');
+        return;
+      }
+      const selectedTplId = tplId || document.getElementById('guest-template-select')?.value;
+      const tpl = getTemplateForRecord(record, selectedTplId);
+
+      startLoading();
+      try {
+        const certCanvas = await generateCertCanvasForRecord(record, tpl);
+        const filename = `${record.certNumber || 'CERT'}_${(record.name || 'guest').replace(/\s+/g, '_')}`;
+
+        if (format === 'pdf') {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({
+            orientation: tpl.width > tpl.height ? 'landscape' : 'portrait',
+            unit: 'px',
+            format: [tpl.width, tpl.height]
+          });
+          const imgData = certCanvas.toDataURL('image/png');
+          pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
+          pdf.save(`${filename}.pdf`);
+        } else {
+          const link = document.createElement('a');
+          link.download = `${filename}.png`;
+          link.href = certCanvas.toDataURL('image/png');
+          link.click();
+        }
+        showAlert('success', 'ดาวน์โหลดสำเร็จ', `ดาวน์โหลดเกียรติบัตร (${format.toUpperCase()}) ของ ${record.name} เรียบร้อยแล้ว`);
+      } catch (err) {
+        console.error('Download Cert Error:', err);
+        showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างไฟล์ดาวน์โหลดได้');
+      } finally {
+        stopLoading();
+      }
+    }
+
+    function initCanvas() {
+      canvas = document.getElementById('certCanvas');
+      if (canvas) {
+        ctx = canvas.getContext('2d');
+        canvas.addEventListener('mousedown', handleCanvasMouseDown);
+        canvas.addEventListener('mousemove', handleCanvasMouseMove);
+        canvas.addEventListener('mouseup', handleCanvasMouseUp);
+      }
+    }
+
+    function renderCanvas() {
+      if (!canvas || !ctx) return;
+      const tpl = getActiveTemplate();
+      if (!tpl) return;
+
+      canvas.width = tpl.width || 3508;
+      canvas.height = tpl.height || 2480;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (tpl.bgImg) {
+        const img = new Image();
+        img.src = tpl.bgImg;
+        if (img.complete) {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          renderCanvasElements(tpl);
+        } else {
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            renderCanvasElements(tpl);
+          };
+        }
+      } else {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        renderCanvasElements(tpl);
+      }
+    }
+
+    function renderCanvasElements(tpl) {
+      if (showCanvasGrid) {
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 2;
+        for (let x = 0; x < canvas.width; x += 100) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += 100) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+        }
+      }
+
+      const previewId = document.getElementById('designer-preview-select')?.value;
+      const records = getRecords();
+      const sample = records.find(r => (String(r.id) === String(previewId) || String(r.__backendId) === String(previewId))) || records[0] || {
+        name: '[ชื่อ-นามสกุล]',
+        school: '[โรงเรียน/หน่วยงาน]',
+        certNumber: 'CERT-2026/XXX',
+        date: '16 สิงหาคม 2569'
+      };
+
+      (tpl.elements || []).forEach((el, index) => {
+        ctx.save();
+        ctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
+        ctx.fillStyle = el.color || '#000000';
+        ctx.textAlign = el.textAlign || 'center';
+
+        let text = el.staticText || '';
+        if (el.field === 'name') text = sample.name;
+        if (el.field === 'school') text = sample.school;
+        if (el.field === 'certNumber') text = sample.certNumber;
+        if (el.field === 'date') text = sample.date;
+
+        ctx.fillText(text, el.x, el.y);
+
+        if (index === selectedElementIndex) {
+          ctx.strokeStyle = '#2563eb';
+          ctx.lineWidth = 4;
+          const metrics = ctx.measureText(text);
+          const w = metrics.width + 40;
+          const h = el.fontSize + 20;
+          let bx = el.x - w / 2;
+          if (el.textAlign === 'left') bx = el.x;
+          if (el.textAlign === 'right') bx = el.x - w;
+          ctx.strokeRect(bx, el.y - el.fontSize, w, h);
+        }
+
+        ctx.restore();
+      });
+
+      updateDesignerElementList();
+    }
+
+    function handleCanvasMouseDown(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
+
+      const tpl = getActiveTemplate();
+      selectedElementIndex = null;
+
+      (tpl.elements || []).forEach((el, idx) => {
+        ctx.font = `${el.fontSize}px "${el.fontFamily}"`;
+        const metrics = ctx.measureText(el.staticText || 'Text');
+        const w = metrics.width + 40;
+        let bx = el.x - w / 2;
+        if (el.textAlign === 'left') bx = el.x;
+        if (el.textAlign === 'right') bx = el.x - w;
+
+        if (mx >= bx && mx <= bx + w && my >= el.y - el.fontSize && my <= el.y + 20) {
+          selectedElementIndex = idx;
+          isDraggingElement = true;
+          dragOffsetX = mx - el.x;
+          dragOffsetY = my - el.y;
+        }
+      });
+
+      renderCanvas();
+      updateElementPropertiesPanel();
+    }
+
+    function handleCanvasMouseMove(e) {
+      if (!isDraggingElement || selectedElementIndex === null) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
+
+      const tpl = getActiveTemplate();
+      const el = tpl.elements[selectedElementIndex];
+      el.x = Math.round(mx - dragOffsetX);
+      el.y = Math.round(my - dragOffsetY);
+
+      renderCanvas();
+      updateElementPropertiesPanel();
+    }
+
+    function handleCanvasMouseUp() {
+      isDraggingElement = false;
+    }
+
+    function zoomCanvas(delta) {
+      canvasZoom = Math.max(0.1, Math.min(1.0, canvasZoom + delta));
+      document.getElementById('canvas-zoom-text').textContent = Math.round(canvasZoom * 100) + '%';
+      document.getElementById('canvas-container').style.transform = `scale(${canvasZoom})`;
+    }
+
+    function resetCanvasZoom() {
+      canvasZoom = 0.3;
+      document.getElementById('canvas-zoom-text').textContent = '30%';
+      document.getElementById('canvas-container').style.transform = `scale(0.3)`;
+    }
+
+    function toggleCanvasGrid() {
+      showCanvasGrid = !showCanvasGrid;
+      renderCanvas();
+    }
+
+    function handleBgUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const tpl = getActiveTemplate();
+        tpl.bgImg = evt.target.result;
+        renderCanvas();
+        showAlert('success', 'สำเร็จ', 'อัปเดตภาพพื้นหลัง Template เรียบร้อย');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateDesignerPreviewSelect() {
+      const select = document.getElementById('designer-preview-select');
+      if (!select) return;
+      const records = getRecords();
+      select.innerHTML = '<option value="">-- รายชื่อตัวอย่าง --</option>';
+      records.forEach(r => {
+        select.innerHTML += `<option value="${r.id || r.__backendId}">${r.name}</option>`;
+      });
+    }
+
+    function changePreviewRecord() {
+      renderCanvas();
+    }
+
+    function updateDesignerElementList() {
+      const container = document.getElementById('designer-element-list');
+      if (!container) return;
+      const tpl = getActiveTemplate();
+      container.innerHTML = (tpl.elements || []).map((el, i) => `
+        <div onclick="selectElement(${i})" class="p-2 rounded text-xs flex justify-between items-center cursor-pointer transition ${i === selectedElementIndex ? 'bg-primary-100 text-primary-800 font-bold' : 'hover:bg-gray-100 text-gray-700'}">
+          <span><i class="fas fa-font text-primary-500 mr-1.5"></i>${el.field === 'static' ? el.staticText : el.field}</span>
+          <span class="text-[10px] text-gray-400">${el.fontSize}px</span>
+        </div>
+      `).join('');
+    }
+
+    function selectElement(index) {
+      selectedElementIndex = index;
+      renderCanvas();
+      updateElementPropertiesPanel();
+    }
+
+    function updateElementPropertiesPanel() {
+      const panel = document.getElementById('element-properties-panel');
+      if (!panel) return;
+      if (selectedElementIndex === null) {
+        panel.classList.add('hidden');
+        return;
+      }
+      panel.classList.remove('hidden');
+
+      const tpl = getActiveTemplate();
+      const el = tpl.elements[selectedElementIndex];
+
+      document.getElementById('prop-font-family').value = el.fontFamily || 'Sarabun';
+      document.getElementById('prop-font-size').value = el.fontSize;
+      document.getElementById('prop-color').value = el.color || '#000000';
+      document.getElementById('prop-pos-x').value = el.x;
+      document.getElementById('prop-pos-y').value = el.y;
+
+      document.getElementById('prop-static-text-box').classList.toggle('hidden', el.field !== 'static');
+      if (el.field === 'static') document.getElementById('prop-static-text').value = el.staticText || '';
+    }
+
+    function updateElementProp(key, value) {
+      if (selectedElementIndex === null) return;
+      const tpl = getActiveTemplate();
+      tpl.elements[selectedElementIndex][key] = value;
+      renderCanvas();
+    }
+
+    function toggleElementStyle(styleKey) {
+      if (selectedElementIndex === null) return;
+      const tpl = getActiveTemplate();
+      const el = tpl.elements[selectedElementIndex];
+      el[styleKey] = !el[styleKey];
+      renderCanvas();
+    }
+
+    function openAddFieldModal() {
+      showModal('add-field-modal');
+    }
+
+    function addCanvasElement(fieldType) {
+      const tpl = getActiveTemplate();
+      if (!tpl.elements) tpl.elements = [];
+      tpl.elements.push({
+        id: generateId(),
+        field: fieldType,
+        staticText: fieldType === 'static' ? 'ข้อความระบุเอง' : '',
+        x: 1754,
+        y: 1200,
+        fontSize: 60,
+        fontFamily: 'Sarabun',
+        color: '#000000',
+        textAlign: 'center',
+        bold: false,
+        italic: false
+      });
+      hideModal('add-field-modal');
+      selectedElementIndex = tpl.elements.length - 1;
+      renderCanvas();
+      updateElementPropertiesPanel();
+    }
+
+    function deleteSelectedElement() {
+      if (selectedElementIndex === null) return;
+      const tpl = getActiveTemplate();
+      tpl.elements.splice(selectedElementIndex, 1);
+      selectedElementIndex = null;
+      renderCanvas();
+      updateElementPropertiesPanel();
+    }
+
+    function saveCurrentTemplate() {
+      const tpl = getActiveTemplate();
+      const input = document.getElementById('save-template-name-input');
+      if (input) {
+        input.value = tpl ? (tpl.name || '') : '';
+      }
+      showModal('save-template-modal');
+    }
+
+    function createNewTemplate() {
+      const input = document.getElementById('create-template-name-input');
+      if (input) input.value = '';
+      showModal('create-template-modal');
+    }
+
+    function switchActiveTemplate(id) {
+      if (!id) return;
+      activeTemplateId = String(id);
+      selectedElementIndex = null;
+      updateTemplateSelectors();
+      renderCanvas();
+      updateElementPropertiesPanel();
+    }
+
+    function updateTemplateSelectors() {
+      const designerSelect = document.getElementById('designer-template-select');
+      const templates = getTemplates();
+      if (designerSelect) {
+        designerSelect.innerHTML = '<option value="">-- เลือก Template --</option>' +
+          templates.map(t => {
+            const tId = String(t.id || t.__backendId);
+            const isSelected = tId === String(activeTemplateId);
+            return `<option value="${tId}" ${isSelected ? 'selected' : ''}>${t.name}</option>`;
+          }).join('');
+      }
+    }
+
+    async function approveMember(id) {
+      const member = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
+      if (!member) return;
+
+      const updated = { ...member, status: 'active' };
+      const res = await window.dataSdk.update(updated);
+      if (res.isOk) {
+        showAlert('success', 'สำเร็จ', `อนุมัติสมาชิก ${member.fullname || member.username} เรียบร้อยแล้ว`);
+      }
+    }
+
+    function openRegisterModal() {
+      const form = document.getElementById('register-form');
+      if (form) form.reset();
+      showModal('register-modal');
+    }
+
+    function openAddMemberModal() {
+      document.getElementById('member-edit-id').value = '';
+      document.getElementById('member-username').value = '';
+      document.getElementById('member-password').value = '';
+      document.getElementById('member-fullname').value = '';
+      document.getElementById('member-email').value = '';
+      document.getElementById('member-role').value = 'teacher';
+      document.getElementById('member-status').value = 'active';
+      document.getElementById('member-modal-title').textContent = 'เพิ่มสมาชิกใหม่';
+      showModal('member-modal');
+    }
+
+    function openEditMemberModal(id) {
+      const member = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
+      if (!member) return;
+
+      document.getElementById('member-edit-id').value = id;
+      document.getElementById('member-username').value = member.username;
+      document.getElementById('member-password').value = '';
+      document.getElementById('member-fullname').value = member.fullname || '';
+      document.getElementById('member-email').value = member.email || '';
+      document.getElementById('member-role').value = member.role || 'teacher';
+      document.getElementById('member-status').value = member.status || 'active';
+      document.getElementById('member-modal-title').textContent = 'แก้ไขข้อมูลสมาชิก';
+      showModal('member-modal');
+    }
+
+    function deleteMember(id) {
+      showConfirmDelete('คุณต้องการลบสมาชิกนี้ใช่หรือไม่?', async () => {
+        const member = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
+        if (member) {
+          const res = await window.dataSdk.delete(member);
+          if (res.isOk) showAlert('success', 'สำเร็จ', 'ลบสมาชิกเรียบร้อยแล้ว');
+        }
+      });
+    }
+
+    function openAddRecordModal() {
+      const recordsCount = getRecords().length;
+      const nextNum = (recordsCount + systemSettings.startNumber).toString().padStart(3, '0');
+
+      document.getElementById('record-edit-id').value = '';
+      document.getElementById('record-name').value = '';
+      document.getElementById('record-school').value = 'วิทยาลัยเทคนิคดอนเมือง';
+      document.getElementById('record-cert-number').value = systemSettings.prefix + nextNum;
+      document.getElementById('record-date').value = '16 สิงหาคม 2569';
+      document.getElementById('record-modal-title').textContent = 'เพิ่มรายชื่อผู้รับเกียรติบัตร';
+      showModal('record-modal');
+    }
+
+    function openEditRecordModal(id) {
+      const record = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
+      if (!record) return;
+
+      document.getElementById('record-edit-id').value = id;
+      document.getElementById('record-name').value = record.name;
+      document.getElementById('record-school').value = record.school || '';
+      document.getElementById('record-cert-number').value = record.certNumber || '';
+      document.getElementById('record-date').value = record.date || '';
+      document.getElementById('record-modal-title').textContent = 'แก้ไขรายชื่อผู้รับเกียรติบัตร';
+      showModal('record-modal');
+    }
+
+    function deleteRecord(id) {
+      showConfirmDelete('คุณต้องการลบรายชื่อนี้ใช่หรือไม่?', async () => {
+        const record = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
+        if (record) {
+          const res = await window.dataSdk.delete(record);
+          if (res.isOk) showAlert('success', 'สำเร็จ', 'ลบข้อมูลรายชื่อแล้ว');
+        }
+      });
+    }
+
+    function filterRecordsTable() {
+      updateRecordsTable();
+    }
+
+    function toggleSelectAllRecords(checkbox) {
+      const records = getRecords();
+      if (checkbox.checked) {
+        records.forEach(r => selectedRecordIds.add(String(r.id || r.__backendId)));
+      } else {
+        selectedRecordIds.clear();
+      }
+      updateBulkActionsBar();
+      filterRecordsTable();
+    }
+
+    function toggleRecordSelection(id) {
+      const idStr = String(id);
+      if (selectedRecordIds.has(idStr)) {
+        selectedRecordIds.delete(idStr);
+      } else {
+        selectedRecordIds.add(idStr);
+      }
+      updateBulkActionsBar();
+    }
+
+    function updateBulkActionsBar() {
+      const bar = document.getElementById('bulk-actions-bar');
+      const countEl = document.getElementById('selected-count');
+      if (countEl) countEl.textContent = selectedRecordIds.size;
+      if (bar) bar.classList.toggle('hidden', selectedRecordIds.size === 0);
+    }
+
+    function clearRecordSelection() {
+      selectedRecordIds.clear();
+      const checkbox = document.getElementById('select-all-records');
+      if (checkbox) checkbox.checked = false;
+      updateBulkActionsBar();
+      filterRecordsTable();
+    }
+
+    function bulkDeleteRecords() {
+      showConfirmDelete(`คุณต้องการลบรายชื่อ ${selectedRecordIds.size} รายการที่เลือกใช่หรือไม่?`, async () => {
+        for (let id of selectedRecordIds) {
+          const record = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
+          if (record) await window.dataSdk.delete(record);
+        }
+        clearRecordSelection();
+        showAlert('success', 'สำเร็จ', 'ลบรายการที่เลือกเรียบร้อยแล้ว');
+      });
+    }
+
+    function bulkGenerateCertificates() {
+      selectExportSource('selected');
+      showView('export');
+    }
+
+    function showImportSection() {
+      const sec = document.getElementById('import-section');
+      if (sec) sec.classList.remove('hidden');
+    }
+
+    function toggleImportSection() {
+      const sec = document.getElementById('import-section');
+      if (sec) sec.classList.toggle('hidden');
+    }
+
+    function downloadImportTemplate() {
+      const data = [
+        ['ชื่อ-นามสกุล', 'โรงเรียน', 'เลขที่', 'วันที่'],
+        ['นายสมชาย ใจดี', 'วิทยาลัยเทคนิคดอนเมือง', 'CERT-2026/001', '16 สิงหาคม 2569']
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'รายชื่อ');
+      XLSX.writeFile(wb, 'Template_Import_Names.xlsx');
+    }
+
+    function handleExcelImport(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet);
+
+        parsedImportRows = json.map((row, idx) => ({
+          id: generateId(),
+          type: 'record',
+          name: row['ชื่อ-นามสกุล'] || row['ชื่อ'] || row['Name'] || '',
+          school: row['โรงเรียน'] || row['หน่วยงาน'] || row['School'] || '',
+          certNumber: row['เลขที่'] || `CERT-2026/${(getRecords().length + idx + 1).toString().padStart(3, '0')}`,
+          date: row['วันที่'] || '16 สิงหาคม 2569',
+          status: 'pending'
+        })).filter(r => r.name);
+
+        document.getElementById('import-count').textContent = parsedImportRows.length;
+        document.getElementById('import-preview-body').innerHTML = parsedImportRows.slice(0, 5).map(r => `
+          <tr>
+            <td class="p-2 font-medium">${r.name}</td>
+            <td class="p-2">${r.school}</td>
+            <td class="p-2">${r.certNumber}</td>
+            <td class="p-2">${r.date}</td>
+          </tr>
+        `).join('');
+
+        document.getElementById('import-preview-container').classList.remove('hidden');
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    async function confirmImportData() {
+      if (parsedImportRows.length === 0) return;
+      startLoading();
+
+      const mode = document.querySelector('input[name="import-mode"]:checked').value;
+      if (mode === 'replace') {
+        const existing = getRecords();
+        for (let r of existing) await window.dataSdk.delete(r);
+      }
+
+      for (let r of parsedImportRows) {
+        await window.dataSdk.create(r);
+      }
+
+      stopLoading();
+      toggleImportSection();
+      parsedImportRows = [];
+      showAlert('success', 'สำเร็จ', 'นำเข้าข้อมูลรายชื่อเรียบร้อยแล้ว');
+    }
+
+    function saveSettingsFromPage() {
+      const newPrefix = document.getElementById('setting-page-prefix')?.value.trim();
+      const newStartNum = parseInt(document.getElementById('setting-page-start-num')?.value) || 1;
+
+      systemSettings.prefix = newPrefix || 'CERT-2026/';
+      systemSettings.startNumber = newStartNum;
+
+      const modalPrefix = document.getElementById('setting-prefix');
+      if (modalPrefix) modalPrefix.value = systemSettings.prefix;
+
+      showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว');
+    }
+
+    function saveSettings() {
+      const newPrefix = document.getElementById('setting-prefix')?.value.trim();
+      const newStartNum = parseInt(document.getElementById('setting-start-num')?.value) || 1;
+
+      if (newPrefix) systemSettings.prefix = newPrefix;
+      systemSettings.startNumber = newStartNum;
+
+      const pagePrefix = document.getElementById('setting-page-prefix');
+      if (pagePrefix) pagePrefix.value = systemSettings.prefix;
+
+      const pageStartNum = document.getElementById('setting-page-start-num');
+      if (pageStartNum) pageStartNum.value = systemSettings.startNumber;
+
+      hideModal('settings-modal');
+      showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว');
+    }
+
+    function selectExportSource(source) {
+      selectedExportSource = source;
+      document.querySelectorAll('.export-source-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.source === source);
+      });
+    }
+
+    async function startBatchExport() {
+      let targets = getRecords();
+      if (selectedExportSource === 'pending') targets = targets.filter(r => r.status === 'pending');
+      if (selectedExportSource === 'selected') targets = targets.filter(r => selectedRecordIds.has(String(r.id || r.__backendId)));
+
+      if (targets.length === 0) {
+        showAlert('warning', 'ไม่มีรายการ', 'ไม่พบรายชื่อที่จะส่งออกเกียรติบัตร');
+        return;
+      }
+
+      const format = document.getElementById('export-format-select').value;
+      const tpl = getActiveTemplate();
+      const card = document.getElementById('export-progress-card');
+      const bar = document.getElementById('export-progress-bar-fill');
+      const percentEl = document.getElementById('export-progress-percent');
+      const detailEl = document.getElementById('export-progress-detail');
+
+      if (card) card.classList.remove('hidden');
+
+      const zip = new JSZip();
+      const pdf = (format === 'pdf') ? new window.jspdf.jsPDF('landscape', 'px', [tpl.width, tpl.height]) : null;
+
+      for (let i = 0; i < targets.length; i++) {
+        const r = targets[i];
+        const pct = Math.round(((i + 1) / targets.length) * 100);
+        if (bar) bar.style.width = pct + '%';
+        if (percentEl) percentEl.textContent = pct + '%';
+        if (detailEl) detailEl.textContent = `กำลังสร้าง (${i + 1}/${targets.length}): ${r.name}`;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = tpl.width;
+        tempCanvas.height = tpl.height;
+        const tctx = tempCanvas.getContext('2d');
+
+        if (tpl.bgImg) {
+          const img = new Image();
+          img.src = tpl.bgImg;
+          await new Promise(res => { img.onload = res; img.onerror = res; });
+          tctx.drawImage(img, 0, 0, tpl.width, tpl.height);
+        } else {
+          tctx.fillStyle = '#ffffff';
+          tctx.fillRect(0, 0, tpl.width, tpl.height);
+        }
+
+        (tpl.elements || []).forEach(el => {
+          tctx.save();
+          tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
+          tctx.fillStyle = el.color || '#000000';
+          tctx.textAlign = el.textAlign || 'center';
+
+          let text = el.staticText || '';
+          if (el.field === 'name') text = r.name;
+          if (el.field === 'school') text = r.school;
+          if (el.field === 'certNumber') text = r.certNumber;
+          if (el.field === 'date') text = r.date;
+
+          tctx.fillText(text, el.x, el.y);
+          tctx.restore();
+        });
+
+        const imgData = tempCanvas.toDataURL('image/png');
+
+        if (format === 'zip') {
+          const filename = `${r.certNumber || 'CERT'}_${r.name}.png`;
+          zip.file(filename, imgData.split(',')[1], { base64: true });
+        } else if (format === 'pdf') {
+          if (i > 0) pdf.addPage([tpl.width, tpl.height], 'landscape');
+          pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
+        }
+
+        r.status = 'generated';
+        await window.dataSdk.update(r);
+      }
+
+      if (detailEl) detailEl.textContent = 'กำลังรวบรวมไฟล์ดาวน์โหลด...';
+
+      if (format === 'zip') {
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Certificates_${Date.now()}.zip`;
+        link.click();
+      } else if (format === 'pdf') {
+        pdf.save(`Certificates_${Date.now()}.pdf`);
+      }
+
+      if (card) card.classList.add('hidden');
+      showAlert('success', 'สำเร็จ', 'สร้างและดาวน์โหลดไฟล์เกียรติบัตรเรียบร้อยแล้ว');
+      updateUI();
+    }
+
+    async function refreshData() {
+      startLoading();
+      try {
+        const data = await callGas('getData');
+        appData = (data && data.length > 0) ? data : appData;
+        updateUI();
+        showAlert('success', 'สำเร็จ', 'รีเฟรชข้อมูลเรียบร้อยแล้ว');
+      } catch (err) {
+        showAlert('error', 'ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+      } finally {
+        stopLoading();
+      }
+    }
+
+    function updateUI() {
+      populateGuestTemplates();
+      updateTemplateSelectors();
+      updateDashboardStats();
+      updateMembersTable();
+      updateRecordsTable();
+      updateDesignerPreviewSelect();
+    }
+
+    function updateDashboardStats() {
+      const records = getRecords();
+      const templates = getTemplates();
+      
+      const total = records.length;
+      const generated = records.filter(r => r.status === 'generated').length;
+      const pending = records.filter(r => r.status === 'pending').length;
+      const tplCount = templates.length;
+
+      const elTotal = document.getElementById('stat-total');
+      const elGen = document.getElementById('stat-generated');
+      const elPend = document.getElementById('stat-pending');
+      const elTpl = document.getElementById('stat-templates');
+
+      if (elTotal) elTotal.textContent = total;
+      if (elGen) elGen.textContent = generated;
+      if (elPend) elPend.textContent = pending;
+      if (elTpl) elTpl.textContent = tplCount;
+
+      const canvasChart = document.getElementById('chart-certificates');
+      if (canvasChart && window.Chart) {
+        const existingChart = Chart.getChart(canvasChart);
+        if (existingChart) existingChart.destroy();
+        
+        new Chart(canvasChart, {
+          type: 'doughnut',
+          data: {
+            labels: ['สร้างแล้ว', 'รอดำเนินการ'],
+            datasets: [{
+              data: [generated, pending],
+              backgroundColor: ['#22c55e', '#eab308']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+      }
+    }
+
+    function updateMembersTable() {
+      const tbody = document.getElementById('members-table-body');
+      if (!tbody) return;
+
+      const members = getMembers();
+      const pendingCount = members.filter(m => m.status === 'pending').length;
+
+      const badgeEl = document.getElementById('sidebar-pending-member-badge');
+      if (badgeEl) {
+        badgeEl.textContent = pendingCount;
+        badgeEl.classList.toggle('hidden', pendingCount === 0);
+      }
+
+      if (members.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">ไม่พบข้อมูลสมาชิกในระบบ</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = members.map((m, i) => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 text-sm">${i + 1}</td>
+          <td class="px-4 py-3 text-sm font-mono font-medium text-gray-800">${m.username}</td>
+          <td class="px-4 py-3 text-sm font-medium text-gray-800">${m.fullname || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${m.email || '-'}</td>
+          <td class="px-4 py-3">
+            <span class="badge ${m.role === 'admin' ? 'badge-info' : 'bg-purple-100 text-purple-800'}">
+              ${m.role === 'admin' ? '👑 แอดมิน' : '👤 ครู/เจ้าหน้าที่'}
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="badge ${m.status === 'active' ? 'badge-success' : 'badge-warning'}">
+              ${m.status === 'active' ? '✅ อนุมัติแล้ว' : '⏳ รออนุมัติ'}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-center flex items-center justify-center gap-1">
+            ${m.status === 'pending' ? `
+              <button onclick="approveMember('${m.__backendId || m.id}')" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="อนุมัติสมาชิก">
+                <i class="fas fa-check"></i> อนุมัติ
+              </button>
+            ` : ''}
+            <button onclick="openEditMemberModal('${m.__backendId || m.id}')" class="text-primary-500 hover:text-primary-700 px-2 py-1" title="แก้ไข"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteMember('${m.__backendId || m.id}')" class="text-red-500 hover:text-red-700 px-2 py-1" title="ลบ"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateRecordsTable() {
+      const tbody = document.getElementById('records-table-body');
+      if (!tbody) return;
+
+      const records = getRecords();
+      const searchInput = (document.getElementById('record-search-input')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('record-status-filter')?.value || '';
+      const schoolFilter = document.getElementById('record-school-filter')?.value || '';
+
+      const schoolSelect = document.getElementById('record-school-filter');
+      if (schoolSelect) {
+        const schools = [...new Set(records.map(r => r.school).filter(Boolean))].sort();
+        const currentVal = schoolSelect.value;
+        schoolSelect.innerHTML = '<option value="">หน่วยงานทั้งหมด</option>' + 
+          schools.map(s => `<option value="${s}" ${s === currentVal ? 'selected' : ''}>${s}</option>`).join('');
+      }
+
+      const recordCountEl = document.getElementById('sidebar-record-count');
+      if (recordCountEl) recordCountEl.textContent = records.length;
+
+      let filtered = records.filter(r => {
+        const matchSearch = !searchInput || 
+          (r.name || '').toLowerCase().includes(searchInput) ||
+          (r.school || '').toLowerCase().includes(searchInput) ||
+          (r.certNumber || '').toLowerCase().includes(searchInput);
+        const matchStatus = !statusFilter || r.status === statusFilter;
+        const matchSchool = !schoolFilter || r.school === schoolFilter;
+        return matchSearch && matchStatus && matchSchool;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">ไม่พบข้อมูลรายชื่อ</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((r, i) => {
+        const recId = String(r.id || r.__backendId);
+        const isSelected = selectedRecordIds.has(recId);
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 text-center">
+              <input type="checkbox" value="${recId}" ${isSelected ? 'checked' : ''} onchange="toggleRecordSelection('${recId}')">
+            </td>
+            <td class="px-4 py-3 text-sm">${i + 1}</td>
+            <td class="px-4 py-3 text-sm font-medium text-gray-800">${r.name}</td>
+            <td class="px-4 py-3 text-sm text-gray-600">${r.school || '-'}</td>
+            <td class="px-4 py-3 text-sm font-sarabun text-gray-600">${r.certNumber || '-'}</td>
+            <td class="px-4 py-3 text-sm text-gray-600">${r.date || '-'}</td>
+            <td class="px-4 py-3">
+              <span class="badge ${r.status === 'generated' ? 'badge-success' : 'badge-warning'}">
+                ${r.status === 'generated' ? 'สร้างแล้ว' : 'รอดำเนินการ'}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-center">
+              <button onclick="openEditRecordModal('${r.__backendId || r.id}')" class="text-primary-500 hover:text-primary-700 mx-1" title="แก้ไข"><i class="fas fa-edit"></i></button>
+              <button onclick="deleteRecord('${r.__backendId || r.id}')" class="text-red-500 hover:text-red-700 mx-1" title="ลบ"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function initApp() {
+      startLoading();
+      try {
+        const data = await callGas('getData');
+        appData = (data && data.length > 0) ? data : [...defaultTemplates, ...defaultRecords];
+      } catch (err) {
+        console.warn("Failed to load backend data, initializing defaults:", err);
+        appData = [...defaultTemplates, ...defaultRecords];
+      } finally {
+        stopLoading();
+        setupPasswordHoldToReveal();
+        initCanvas();
+        populateGuestTemplates();
+        showPage('guest');
+      }
+    }
+
+    // Event Binding Handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      // Login Form Submission
+      document.getElementById('login-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const u = document.getElementById('login-username').value.trim();
+        const p = document.getElementById('login-password').value;
+
+        const members = getMembers();
+        const foundMember = members.find(m => m.username === u && m.password === p);
+
+        if (foundMember) {
+          if (foundMember.status === 'pending') {
+            showAlert('warning', 'รอการอนุมัติ', 'บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากแอดมินหลัก กรุณาติดต่อแอดมินเพื่อเปิดใช้งานบัญชี');
+            return;
+          }
+
+          currentUser = {
+            id: foundMember.id || foundMember.__backendId,
+            username: foundMember.username,
+            fullname: foundMember.fullname || foundMember.username,
+            role: foundMember.role === 'admin' ? 'Admin' : 'ครู/เจ้าหน้าที่'
+          };
+
+          const displayNameEl = document.getElementById('user-display-name');
+          if (displayNameEl) displayNameEl.textContent = currentUser.fullname;
+          const displayRoleEl = document.getElementById('user-display-role');
+          if (displayRoleEl) displayRoleEl.textContent = currentUser.role;
+
+          showPage('main');
+          showView('dashboard');
+          updateUI();
+          showAlert('success', 'เข้าสู่ระบบสำเร็จ', `ยินดีต้อนรับ ${currentUser.fullname}`);
+          return;
+        }
+
+        if (members.length === 0 && u === 'admin' && p === 'admin123') {
+          currentUser = { username: u, fullname: 'ผู้ดูแลระบบ', role: 'Admin' };
+          const displayNameEl = document.getElementById('user-display-name');
+          if (displayNameEl) displayNameEl.textContent = currentUser.fullname;
+          const displayRoleEl = document.getElementById('user-display-role');
+          if (displayRoleEl) displayRoleEl.textContent = currentUser.role;
+          showPage('main');
+          showView('dashboard');
+          updateUI();
+          showAlert('info', 'เข้าสู่ระบบแล้ว', 'เข้าสู่ระบบด้วยสิทธิ์ผู้ดูแลระบบตั้งต้น กรุณาสมัครสมาชิกคนแรกเพื่อเปิดใช้งานแอดมินหลักถาวร');
+          return;
+        }
+
+        if (members.length === 0) {
+          showAlert('warning', 'ยังไม่มีผู้ใช้งาน', 'ยังไม่มีสมาชิกในระบบ กรุณากดปุ่ม "สมัครสมาชิกใหม่" ด้านล่าง สมาชิกคนแรกจะได้สิทธิ์แอดมินหลักโดยอัตโนมัติ');
+        } else {
+          showAlert('error', 'เข้าสู่ระบบไม่สำเร็จ', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+        }
+      });
+
+      // Member Register Form
+      document.getElementById('register-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('reg-username').value.trim();
+        const password = document.getElementById('reg-password').value;
+        const fullname = document.getElementById('reg-fullname').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+
+        const existingMembers = getMembers();
+        if (existingMembers.some(m => m.username.toLowerCase() === username.toLowerCase())) {
+          showAlert('warning', 'คำเตือน', 'ชื่อผู้ใช้นี้มีผู้ใช้งานแล้ว กรุณาใช้ชื่อผู้ใช้อื่น');
+          return;
+        }
+
+        const isFirstMember = existingMembers.length === 0;
+        const newMember = {
+          id: generateId(),
+          type: 'member',
+          username,
+          password,
+          fullname,
+          email,
+          role: isFirstMember ? 'admin' : 'teacher',
+          status: isFirstMember ? 'active' : 'pending',
+          createdAt: new Date().toISOString()
+        };
+
+        startLoading();
+        const res = await window.dataSdk.create(newMember);
+        stopLoading();
+
+        hideModal('register-modal');
+
+        if (res.isOk) {
+          if (isFirstMember) {
+            showAlert('success', 'สมัครสมาชิกสำเร็จ', 'คุณเป็นสมาชิกคนแรกของระบบ ได้รับอนุมัติสิทธิ์แอดมินหลักอัตโนมัติ! สามารถเข้าสู่ระบบได้ทันที');
+          } else {
+            showAlert('info', 'ส่งคำขอสมัครสมาชิกแล้ว', 'การสมัครสมาชิกสำเร็จ! บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากแอดมินหลักก่อนเข้าใช้งาน');
+          }
+        } else {
+          showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง');
+        }
+      });
+
+      // Add/Edit Member Form
+      document.getElementById('member-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('member-edit-id').value;
+        const username = document.getElementById('member-username').value.trim();
+        const password = document.getElementById('member-password').value;
+        const fullname = document.getElementById('member-fullname').value.trim();
+        const email = document.getElementById('member-email').value.trim();
+        const role = document.getElementById('member-role').value;
+        const status = document.getElementById('member-status').value;
+
+        if (editId) {
+          const member = appData.find(d => String(d.id) === String(editId) || String(d.__backendId) === String(editId));
+          if (member) {
+            const updated = { ...member, username, fullname, email, role, status };
+            if (password) updated.password = password;
+            const res = await window.dataSdk.update(updated);
+            if (res.isOk) showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
+          }
+        } else {
+          const existingMembers = getMembers();
+          if (existingMembers.some(m => m.username.toLowerCase() === username.toLowerCase())) {
+            showAlert('warning', 'คำเตือน', 'ชื่อผู้ใช้นี้มีผู้ใช้งานแล้ว');
+            return;
+          }
+
+          const newMember = {
+            id: generateId(),
+            type: 'member',
+            username,
+            password: password || '123456',
+            fullname,
+            email,
+            role,
+            status,
+            createdAt: new Date().toISOString()
+          };
+          const res = await window.dataSdk.create(newMember);
+          if (res.isOk) showAlert('success', 'สำเร็จ', 'เพิ่มสมาชิกใหม่เรียบร้อยแล้ว');
+        }
+
+        hideModal('member-modal');
+      });
+
+      // Record Form Submission
+      document.getElementById('record-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('record-edit-id').value;
+        const name = document.getElementById('record-name').value;
+        const school = document.getElementById('record-school').value;
+        const certNumber = document.getElementById('record-cert-number').value;
+        const date = document.getElementById('record-date').value;
+
+        if (editId) {
+          const record = appData.find(d => String(d.id) === String(editId) || String(d.__backendId) === String(editId));
+          if (record) {
+            const updated = { ...record, name, school, certNumber, date };
+            const res = await window.dataSdk.update(updated);
+            if (res.isOk) showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลรายชื่อเรียบร้อยแล้ว');
+          }
+        } else {
+          const newRecord = {
+            id: generateId(),
+            type: 'record',
+            name, school, certNumber, date,
+            status: 'pending'
+          };
+          const res = await window.dataSdk.create(newRecord);
+          if (res.isOk) showAlert('success', 'สำเร็จ', 'เพิ่มรายชื่อใหม่เรียบร้อยแล้ว');
+        }
+
+        hideModal('record-modal');
+      });
+
+      // User Profile Form Submission
+      document.getElementById('user-profile-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentUser) return;
+
+        const fullname = document.getElementById('profile-fullname').value.trim();
+        const email = document.getElementById('profile-email').value.trim();
+        const password = document.getElementById('profile-password').value;
+
+        const member = appData.find(d => String(d.id) === String(currentUser.id) || String(d.__backendId) === String(currentUser.id) || d.username === currentUser.username);
+        if (member) {
+          const updated = { ...member, fullname, email };
+          if (password) updated.password = password;
+
+          startLoading();
+          const res = await window.dataSdk.update(updated);
+          stopLoading();
+
+          if (res.isOk) {
+            currentUser.fullname = fullname;
+            currentUser.email = email;
+            if (password) currentUser.password = password;
+
+            const displayNameEl = document.getElementById('user-display-name');
+            if (displayNameEl) displayNameEl.textContent = fullname;
+            document.getElementById('profile-password').value = '';
+            showAlert('success', 'สำเร็จ', 'บันทึกข้อมูลส่วนตัวเรียบร้อยแล้ว');
+          } else {
+            showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลส่วนตัวได้');
+          }
+        } else {
+          currentUser.fullname = fullname;
+          currentUser.email = email;
+          const displayNameEl = document.getElementById('user-display-name');
+          if (displayNameEl) displayNameEl.textContent = fullname;
+          document.getElementById('profile-password').value = '';
+          showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลส่วนตัวเรียบร้อยแล้ว');
+        }
+      });
+
+      // Save Template Form Submission
+      document.getElementById('save-template-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newName = document.getElementById('save-template-name-input').value.trim();
+        if (!newName) return;
+
+        const tpl = getActiveTemplate();
+        tpl.name = newName;
+
+        hideModal('save-template-modal');
+        startLoading();
+        const res = await window.dataSdk.update(tpl);
+        stopLoading();
+
+        if (res.isOk) {
+          updateUI();
+          showAlert('success', 'สำเร็จ', `บันทึก Template "${tpl.name}" เรียบร้อยแล้ว`);
+        } else {
+          showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถบันทึก Template ได้');
+        }
+      });
+
+      // Create New Template Form Submission
+      document.getElementById('create-template-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('create-template-name-input').value.trim();
+        if (!name) return;
+
+        const newTpl = {
+          id: generateId(),
+          type: 'template',
+          name: name,
+          width: 3508,
+          height: 2480,
+          bgImg: null,
+          elements: [
+            { id: generateId(), field: 'static', staticText: 'วิทยาลัยเทคนิคดอนเมือง ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า', x: 1754, y: 800, fontSize: 60, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: false, italic: false },
+            { id: generateId(), field: 'name', staticText: '[ชื่อ-นามสกุล]', x: 1754, y: 1100, fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', textAlign: 'center', bold: true, italic: false },
+            { id: generateId(), field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: 1754, y: 1450, fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', textAlign: 'center', bold: true, italic: false },
+            { id: generateId(), field: 'certNumber', staticText: 'เลขที่ ' + systemSettings.prefix + '001', x: 3100, y: 250, fontSize: 40, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'right', bold: false, italic: false },
+            { id: generateId(), field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: 1754, y: 1800, fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false }
+          ]
+        };
+
+        hideModal('create-template-modal');
+        startLoading();
+        try {
+          const res = await window.dataSdk.create(newTpl);
+          if (res && res.data) {
+            activeTemplateId = String(res.data.id || res.data.__backendId);
+          } else {
+            activeTemplateId = String(newTpl.id);
+          }
+          selectedElementIndex = null;
+          updateUI();
+          showView('designer');
+          renderCanvas();
+          updateElementPropertiesPanel();
+          showAlert('success', 'สำเร็จ', `สร้าง Template "${newTpl.name}" เรียบร้อยแล้ว`);
+        } catch (err) {
+          showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้าง Template ได้');
+        } finally {
+          stopLoading();
+        }
+      });
+    });
+
+    // Window Init Event
+    window.onload = initApp;
+  </script>
+</body>
+</html>
