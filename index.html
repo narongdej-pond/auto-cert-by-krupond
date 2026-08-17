@@ -155,18 +155,15 @@
 <body class="h-full bg-gray-50 font-sarabun">
   <div id="app" class="h-full">
     
-    <!-- Loading Spinner Overlay -->
     <div id="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center hidden">
       <div class="text-center">
         <i class="fas fa-circle-notch spin text-5xl text-primary-500 mb-4"></i>
-        <p id="loadingText" class="text-gray-600 text-lg transition-all duration-300">กำลังโหลด...</p>
+        <p id="loadingText" class="text-gray-600 text-lg transition-all duration-300">กำลังส่งคำขอไปยังระบบ...</p>
       </div>
     </div>
 
-    <!-- Page 0: Guest Search & Download -->
     <div id="page-guest" class="min-h-full flex flex-col justify-between bg-gray-50">
       <div>
-        <!-- HEADER -->
         <header class="guest-header">
           <div class="max-w-4xl mx-auto flex items-center justify-between px-2 mb-2">
             <div class="flex items-center gap-2">
@@ -183,7 +180,6 @@
           </div>
         </header>
 
-        <!-- SEARCH CONTAINER -->
         <main class="px-4 pb-12">
           <div class="search-card border border-gray-100">
             <label class="block font-bold text-gray-800 text-sm md:text-base mb-2" for="guest-search-input">
@@ -204,12 +200,10 @@
             </div>
           </div>
 
-          <!-- RESULTS AREA -->
           <div id="guest-results-area" class="max-w-2xl mx-auto space-y-4"></div>
         </main>
       </div>
 
-      <!-- FOOTER -->
       <footer class="gradient-footer text-white py-4 px-6 mt-8">
         <div class="max-w-6xl mx-auto text-center">
           <p class="text-sm md:text-base">ระบบสร้างเกียรติบัตรอัตโนมัติ วิทยาลัยเทคนิคดอนเมือง</p>
@@ -218,7 +212,6 @@
       </footer>
     </div>
 
-    <!-- Page 1: Login Page -->
     <div id="page-login" class="hidden min-h-screen w-full flex flex-col justify-between bg-gray-100 text-gray-800">
       <div class="flex-1 flex items-center justify-center px-4 py-12">
         <div class="bg-white text-gray-800 rounded-2xl card-shadow p-8 max-w-md w-full fade-in relative">
@@ -266,7 +259,6 @@
       </footer>
     </div>
 
-    <!-- Page 2: Main Dashboard & App Structure -->
     <div id="page-main" class="hidden h-full flex overflow-hidden">
       <!-- Sidebar -->
       <aside id="main-sidebar" class="w-64 gradient-bg text-white flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0">
@@ -282,17 +274,18 @@
           </div>
         </div>
 
-        <!-- Navigation Menu -->
         <nav class="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
           <button onclick="showView('dashboard')" class="sidebar-item active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="dashboard">
             <i class="fas fa-chart-pie w-5"></i> แดชบอร์ด
           </button>
-          <button onclick="showView('members')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center justify-between" data-view="members">
+          
+          <button id="sidebar-members-btn" onclick="showView('members')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center justify-between hidden" data-view="members">
             <div class="flex items-center gap-3 text-sm font-medium">
               <i class="fas fa-users-gear w-5"></i> จัดการสมาชิก
             </div>
             <span id="sidebar-pending-member-badge" class="badge badge-warning hidden">0</span>
           </button>
+
           <button onclick="showView('records')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center justify-between" data-view="records">
             <div class="flex items-center gap-3 text-sm font-medium">
               <i class="fas fa-users-line w-5"></i> จัดการรายชื่อ
@@ -313,7 +306,6 @@
           </button>
         </nav>
 
-        <!-- User Footer & Logout -->
         <div class="p-4 border-t border-white/20">
           <div class="flex items-center gap-3 mb-3">
             <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
@@ -330,9 +322,7 @@
         </div>
       </aside>
 
-      <!-- Main Content Container -->
       <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Top Bar Header -->
         <header class="bg-white shadow-sm px-4 py-3 flex items-center justify-between border-b border-gray-200">
           <div class="flex items-center gap-4">
             <button id="toggle-sidebar-btn" onclick="toggleSidebar()" class="text-gray-600 text-xl hover:text-primary-500 transition">
@@ -348,10 +338,7 @@
           </div>
         </header>
 
-        <!-- Dynamic Main Views -->
         <main class="flex-1 overflow-auto p-4 md:p-6 bg-gray-50">
-          
-          <!-- View: Members Management & Approval -->
           <div id="view-members" class="app-view hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <button onclick="openAddMemberModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition self-start md:self-auto">
@@ -359,7 +346,6 @@
               </button>
             </div>
 
-            <!-- Members Data Table -->
             <div class="bg-white rounded-xl card-shadow overflow-hidden">
               <div class="table-container">
                 <table class="w-full">
@@ -384,7 +370,6 @@
             </div>
           </div>
 
-          <!-- View 1: Dashboard -->
           <div id="view-dashboard" class="app-view">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div onclick="showView('records')" class="bg-white rounded-xl card-shadow p-4 cursor-pointer hover:shadow-lg transition">
@@ -433,7 +418,6 @@
               </div>
             </div>
 
-            <!-- Dashboard Charts & Activity -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div class="bg-white rounded-xl card-shadow p-4">
                 <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-chart-line text-primary-500 mr-2"></i>สถิติการสร้างเกียรติบัตร</h3>
@@ -484,7 +468,6 @@
               </div>
             </div>
 
-            <!-- Recent Activity Table -->
             <div class="bg-white rounded-xl card-shadow p-4">
               <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-history text-primary-500 mr-2"></i>กิจกรรมล่าสุด</h3>
               <div id="recent-activity-list" class="space-y-3">
@@ -493,7 +476,6 @@
             </div>
           </div>
 
-          <!-- View 2: Records Management -->
           <div id="view-records" class="app-view hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <div class="flex flex-wrap gap-2">
@@ -509,7 +491,6 @@
               </div>
             </div>
 
-            <!-- Import Section Dropzone -->
             <div id="import-section" class="bg-white rounded-xl card-shadow p-6 mb-6 hidden fade-in border-2 border-dashed border-primary-300">
               <div class="flex justify-between items-center mb-4">
                 <h4 class="font-bold text-gray-800"><i class="fas fa-cloud-arrow-up text-primary-500 mr-2"></i>นำเข้าข้อมูลไฟล์ Excel / CSV</h4>
@@ -548,7 +529,6 @@
               </div>
             </div>
 
-            <!-- Table Toolbar & Filters -->
             <div class="bg-white rounded-xl card-shadow p-4 mb-4 flex flex-col md:flex-row gap-3 justify-between items-center">
               <div class="w-full md:w-72 relative">
                 <input type="text" id="record-search-input" onkeyup="filterRecordsTable()" placeholder="ค้นหาชื่อ, โรงเรียน, เลขที่..." class="w-full pl-9 pr-4 py-2 border-2 border-gray-200 rounded-lg text-sm focus:border-primary-500 focus:outline-none">
@@ -566,7 +546,6 @@
               </div>
             </div>
 
-            <!-- Bulk Actions Bar -->
             <div id="bulk-actions-bar" class="hidden bg-primary-50 border-2 border-primary-200 rounded-xl p-3 mb-4 flex items-center justify-between">
               <span class="text-sm font-bold text-primary-800"><i class="fas fa-check-square mr-2"></i>เลือกแล้ว <span id="selected-count">0</span> รายการ</span>
               <div class="flex gap-2">
@@ -576,7 +555,6 @@
               </div>
             </div>
 
-            <!-- Records Data Table -->
             <div class="bg-white rounded-xl card-shadow overflow-hidden">
               <div class="table-container">
                 <table class="w-full">
@@ -602,15 +580,11 @@
             </div>
           </div>
 
-          <!-- View 3: Canvas Template Designer -->
           <div id="view-designer" class="app-view hidden">
             <div class="flex flex-col lg:flex-row gap-4 h-[calc(100vh-140px)]">
-              <!-- Canvas Workshop Area -->
               <div class="flex-1 bg-gray-200 rounded-xl card-shadow flex flex-col overflow-hidden relative">
-                <!-- Canvas Top Control Toolbar -->
                 <div class="bg-white px-4 py-2 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
                   <div class="flex items-center gap-3 flex-wrap">
-                    <!-- Template Selector -->
                     <div class="flex items-center gap-2 bg-primary-50 p-1.5 rounded-xl border border-primary-200">
                       <label class="text-xs font-bold text-primary-800 flex items-center gap-1 pl-1">
                         <i class="fas fa-layer-group text-primary-600"></i> Template:
@@ -649,14 +623,12 @@
                   </div>
                 </div>
 
-                <!-- Canvas Workspace Wrapper -->
                 <div class="flex-1 overflow-auto p-8 flex items-center justify-center relative bg-gray-300" id="canvas-workspace">
                   <div class="shadow-2xl bg-white relative transition-transform origin-center" id="canvas-container">
                     <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair"></canvas>
                   </div>
                 </div>
 
-                <!-- Preview Switch Bar -->
                 <div class="bg-white px-4 py-2 border-t border-gray-200 flex items-center justify-between text-xs">
                   <div class="flex items-center gap-2">
                     <span class="font-bold text-gray-600"><i class="fas fa-eye text-primary-500 mr-1"></i> ตัวอย่างข้อมูล:</span>
@@ -668,7 +640,6 @@
                 </div>
               </div>
 
-              <!-- Element Properties Sidebar -->
               <div class="w-full lg:w-80 bg-white rounded-xl card-shadow p-4 flex flex-col gap-4 overflow-y-auto">
                 <div>
                   <h4 class="font-bold text-gray-800 mb-3 border-b pb-2 flex items-center justify-between">
@@ -677,7 +648,6 @@
                   <div id="designer-element-list" class="space-y-1.5 max-h-48 overflow-y-auto border rounded-lg p-2 bg-gray-50"></div>
                 </div>
 
-                <!-- Properties Panel -->
                 <div id="element-properties-panel" class="hidden space-y-3 pt-2 border-t">
                   <h4 class="font-bold text-gray-800 text-sm flex items-center justify-between">
                     <span><i class="fas fa-sliders text-primary-500 mr-1"></i>ปรับแต่งองค์ประกอบ</span>
@@ -749,12 +719,10 @@
             </div>
           </div>
 
-          <!-- View 4: Export & Download -->
           <div id="view-export" class="app-view hidden">
             <div class="bg-white rounded-xl card-shadow p-6 mb-6">
               <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-sliders text-primary-500 mr-2"></i>ตัวเลือกการ Export เกียรติบัตร</h3>
               
-              <!-- Selectable Export Source Cards -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="border-2 border-primary-500 bg-primary-50/50 rounded-xl p-4 cursor-pointer hover:border-primary-600 transition font-medium text-gray-700 flex items-start justify-between export-source-card active" data-source="all" onclick="selectExportSource('all')">
                   <div>
@@ -811,7 +779,6 @@
               </button>
             </div>
 
-            <!-- Export Progress Bar Card -->
             <div id="export-progress-card" class="bg-white rounded-xl card-shadow p-6 mb-6 hidden border-2 border-primary-200">
               <div class="flex items-center justify-between mb-2">
                 <span class="font-bold text-gray-800 text-sm" id="export-progress-detail">กำลังเตรียมการ...</span>
@@ -823,7 +790,6 @@
             </div>
           </div>
 
-          <!-- View 5: System Settings Page -->
           <div id="view-settings" class="app-view hidden">
             <div class="max-w-2xl mx-auto bg-white rounded-xl card-shadow p-6">
               <div class="text-center mb-6">
@@ -831,7 +797,6 @@
                   <i class="fas fa-sliders text-3xl text-yellow-600"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800">ตั้งค่าระบบเกียรติบัตร</h3>
-                <p class="text-xs text-gray-500">จัดการค่าเริ่มต้นของระบบเกียรติบัตร</p>
               </div>
 
               <div class="space-y-5">
@@ -856,7 +821,6 @@
             </div>
           </div>
 
-          <!-- View 6: Profile Edit -->
           <div id="view-profile" class="app-view hidden">
             <div class="max-w-xl mx-auto bg-white rounded-xl card-shadow p-6">
               <div class="text-center mb-6">
@@ -895,7 +859,6 @@
     </div>
 
     <!-- Modals -->
-    <!-- Modal: Member Registration -->
     <div id="register-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -934,7 +897,6 @@
       </div>
     </div>
 
-    <!-- Modal: Add / Edit Member (By Admin) -->
     <div id="member-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -987,7 +949,6 @@
       </div>
     </div>
 
-    <!-- Modal: Add/Edit Record -->
     <div id="record-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-lg mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1021,7 +982,6 @@
       </div>
     </div>
 
-    <!-- Modal: Add Designer Field -->
     <div id="add-field-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1038,7 +998,6 @@
       </div>
     </div>
 
-    <!-- Modal: Settings (Dashboard Shortcut Modal) -->
     <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1061,7 +1020,6 @@
       </div>
     </div>
 
-    <!-- Modal: Alert -->
     <div id="alert-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-sm mx-4 fade-in text-center">
         <div id="alert-icon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"></div>
@@ -1071,7 +1029,6 @@
       </div>
     </div>
 
-    <!-- Modal: Confirm Delete -->
     <div id="confirm-delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-sm mx-4 fade-in text-center">
         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1086,7 +1043,6 @@
       </div>
     </div>
 
-    <!-- Modal: Guest Cert Preview -->
     <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-4xl max-h-[90vh] flex flex-col fade-in">
         <div class="flex items-center justify-between pb-3 border-b mb-4">
@@ -1110,7 +1066,6 @@
       </div>
     </div>
 
-    <!-- Modal: Save Template -->
     <div id="save-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1119,7 +1074,7 @@
         </div>
         <form id="save-template-form" class="space-y-4">
           <div>
-            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ Template *</label>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ Template</label>
             <input type="text" id="save-template-name-input" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="กรอกชื่อ Template">
           </div>
           <div class="flex gap-3 pt-2">
@@ -1132,7 +1087,6 @@
       </div>
     </div>
 
-    <!-- Modal: Create New Template -->
     <div id="create-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1141,7 +1095,7 @@
         </div>
         <form id="create-template-form" class="space-y-4">
           <div>
-            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ Template ใหม่ *</label>
+            <label class="block text-gray-700 font-medium mb-1 text-sm">ชื่อ Template ใหม่</label>
             <input type="text" id="create-template-name-input" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="เช่น เกียรติบัตรอบรมวิชาการ">
           </div>
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
@@ -1164,7 +1118,7 @@
 
   <script>
     // -------------------------------------------------------------
-    // IMPORTANT: URL ของ Web App ที่ได้จาก Google Apps Script
+    // URL ของ Web App ที่ได้จาก Google Apps Script
     // -------------------------------------------------------------
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzV-u9CDmWjn1_6DqEgscTbrEUJFtvLED-ynYbTF4D-bfRKJGjZiMgntQHkx4AXNK3YZw/exec';
 
@@ -1193,11 +1147,13 @@
     let loadingTimer = null;
     let isAlternateLoadingText = false;
     let parsedImportRows = [];
+    let activityLogs = [];
 
     // Default Fallback Template
     const defaultTemplates = [
       {
         id: 'tpl_default_1',
+        member_id: '',
         type: 'template',
         name: 'เกียรติบัตรเข้าร่วมกิจกรรมมาตรฐาน',
         width: 3508,
@@ -1216,23 +1172,35 @@
 
     // Default Sample Records
     const defaultRecords = [
-      { id: 'rec_1', type: 'record', name: 'นายสมชาย ใจดี', school: 'วิทยาลัยเทคนิคดอนเมือง', certNumber: 'CERT-2026/001', date: '16 สิงหาคม 2569', status: 'pending' },
-      { id: 'rec_2', type: 'record', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
+      { id: 'rec_1', member_id: '', type: 'record', name: 'นายสมชาย ใจดี', school: 'วิทยาลัยเทคนิคดอนเมือง', certNumber: 'CERT-2026/001', date: '16 สิงหาคม 2569', status: 'pending' },
+      { id: 'rec_2', member_id: '', type: 'record', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
     ];
 
-    // Helper Data Selectors
+    function isAdmin() {
+      return currentUser && (currentUser.role === 'admin' || currentUser.role === 'Admin');
+    }
+
     function getMembers() {
       return appData.filter(d => d && d.type === 'member');
     }
 
     function getTemplates() {
       const tpls = appData.filter(d => d && d.type === 'template');
-      return tpls.length > 0 ? tpls : defaultTemplates;
+      const pool = tpls.length > 0 ? tpls : defaultTemplates;
+      
+      if (!currentUser || isAdmin()) return pool;
+
+      const userTpls = pool.filter(t => !t.member_id || String(t.member_id) === String(currentUser.id));
+      return userTpls.length > 0 ? userTpls : defaultTemplates;
     }
 
     function getRecords() {
       const recs = appData.filter(d => d && d.type === 'record');
-      return recs.length > 0 ? recs : defaultRecords;
+      const pool = recs.length > 0 ? recs : defaultRecords;
+
+      if (!currentUser || isAdmin()) return pool;
+
+      return pool.filter(r => !r.member_id || String(r.member_id) === String(currentUser.id));
     }
 
     function getActiveTemplate() {
@@ -1247,53 +1215,86 @@
       return 'id_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     }
 
-    // Helper Promisified Call for Native Google Apps Script RPC & External Fetch API
-    async function callGas(functionName, ...args) {
-      // 1. กรณีเปิดใช้งานภายใน iframe ของ Google Apps Script (HtmlService)
+    function logActivity(message) {
+      const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      activityLogs.unshift({ message, time: timeStr });
+      if (activityLogs.length > 10) activityLogs.pop();
+      renderActivityLogs();
+    }
+
+    function renderActivityLogs() {
+      const container = document.getElementById('recent-activity-list');
+      if (!container) return;
+      if (activityLogs.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-4 text-sm">ยังไม่มีกิจกรรม</p>';
+        return;
+      }
+      container.innerHTML = activityLogs.map(log => `
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-700">
+          <span class="font-medium"><i class="fas fa-check-circle text-green-500 mr-2"></i>${log.message}</span>
+          <span class="text-gray-400 font-sarabun">${log.time}</span>
+        </div>
+      `).join('');
+    }
+
+    // -------------------------------------------------------------
+    // ฟังก์ชันเชื่อมต่อกับ Google Apps Script (Code.gs)
+    // -------------------------------------------------------------
+    async function callGas(functionName, payloadArg) {
+      console.log(`[API Call] Sending request: ${functionName}`, payloadArg);
+
+      // 1. กรณีเปิดใช้งานภายใน iframe ของ Google Apps Script (google.script.run)
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         return new Promise((resolve, reject) => {
           google.script.run
-            .withSuccessHandler((res) => resolve(res))
-            .withFailureHandler((err) => reject(err))[functionName](...args);
+            .withSuccessHandler((res) => {
+              console.log(`[API Response - native] ${functionName}:`, res);
+              resolve(res);
+            })
+            .withFailureHandler((err) => {
+              console.error(`[API Error - native] ${functionName}:`, err);
+              reject(err);
+            })[functionName](payloadArg);
         });
       }
 
-      // 2. กรณีเรียกผ่าน Fetch API จากภายนอก (เช่น GitHub Pages / Web Host)
+      // 2. กรณีเรียกผ่าน HTTP Fetch POST จากภายนอก (Web Host / Localhost)
       if (typeof GAS_URL !== 'undefined' && GAS_URL && GAS_URL.trim() !== '') {
         try {
           const response = await fetch(GAS_URL, {
             method: 'POST',
             headers: {
-              'Content-Type': 'text/plain;charset=utf-8' // เลี่ยง CORS OPTIONS Preflight
+              'Content-Type': 'text/plain;charset=utf-8'
             },
             body: JSON.stringify({
               action: functionName,
-              payload: args[0]
+              payload: payloadArg
             })
           });
 
           const resJson = await response.json();
+          console.log(`[API Response - fetch] ${functionName}:`, resJson);
+
           if (resJson && resJson.status === 'success') {
-            return resJson.data; // ถอดแกะเอาข้อมูลเฉพาะก้อน data ออกมาคืนค่า
+            return resJson.data;
           } else {
-            throw new Error(resJson ? resJson.message : 'Unknown response from GAS');
+            throw new Error(resJson ? resJson.message : 'Unknown response from Google Apps Script API');
           }
         } catch (err) {
-          console.error(`GAS Fetch Error (${functionName}):`, err);
+          console.error(`[API Fetch Error] ${functionName}:`, err);
           throw err;
         }
       }
 
-      // 3. Fallback เมื่อไม่มีการเชื่อมต่อ API
-      console.warn(`Running ${functionName} in local memory mode.`);
+      console.warn(`[API Fallback] GAS_URL or google.script.run not found. Local memory fallback for ${functionName}.`);
       if (functionName === 'getData') return appData;
-      if (functionName === 'createData') return args[0];
-      if (functionName === 'updateData') return args[0];
+      if (functionName === 'createData') return payloadArg;
+      if (functionName === 'updateData') return payloadArg;
       if (functionName === 'deleteData') return true;
       return null;
     }
 
-    // Data SDK Fetch Wrapper mapped to native google.script.run
+    // Data SDK Fetch Wrapper
     window.dataSdk = {
       create: async function(item) {
         try {
@@ -1341,14 +1342,13 @@
       }
     };
 
-    // Loading Screen Control
     function startLoading() {
       const loadingEl = document.getElementById('loading');
       const textEl = document.getElementById('loadingText');
       if (!loadingEl || !textEl) return;
       
       loadingEl.classList.remove('hidden');
-      textEl.innerText = "กำลังโหลด...";
+      textEl.innerText = "กำลังส่งคำขอไปยังระบบ...";
       textEl.className = "text-gray-600 text-lg transition-all duration-300";
       isAlternateLoadingText = false;
 
@@ -1356,13 +1356,7 @@
 
       loadingTimer = setInterval(() => {
         isAlternateLoadingText = !isAlternateLoadingText;
-        if (isAlternateLoadingText) {
-          textEl.innerText = "กำลังประมวลผล...";
-          textEl.className = "text-gray-600 text-lg transition-all duration-300";
-        } else {
-          textEl.innerText = "กำลังโหลด...";
-          textEl.className = "text-gray-600 text-lg transition-all duration-300";
-        }
+        textEl.innerText = isAlternateLoadingText ? "กำลังประมวลผลข้อมูล..." : "กำลังส่งคำขอไปยังระบบ...";
       }, 3000);
     }
 
@@ -1372,7 +1366,6 @@
       if (loadingEl) loadingEl.classList.add('hidden');
     }
 
-    // Password Toggle Utility
     function setupPasswordHoldToReveal() {
       const toggleButtons = document.querySelectorAll('.password-toggle-btn');
       toggleButtons.forEach(btn => {
@@ -1408,7 +1401,6 @@
       });
     }
 
-    // Modal & Page Navigation Controls
     function showModal(id) {
       if (id === 'settings-modal') {
         const modalPrefix = document.getElementById('setting-prefix');
@@ -1479,6 +1471,11 @@
     }
 
     function showView(viewName) {
+      if (viewName === 'members' && !isAdmin()) {
+        showAlert('warning', 'ไม่มีสิทธิ์เข้าถึง', 'สิทธิ์การจัดการสมาชิกเปิดใช้งานเฉพาะสำหรับผู้ดูแลระบบเท่านั้น');
+        return;
+      }
+
       document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
       const targetView = document.getElementById(`view-${viewName}`);
       if (targetView) targetView.classList.remove('hidden');
@@ -1523,6 +1520,7 @@
     }
 
     function handleLogout() {
+      logActivity(`ผู้ใช้ ${currentUser?.fullname || ''} ออกจากระบบ`);
       currentUser = null;
       showPage('guest');
       showAlert('info', 'ออกจากระบบ', 'ออกจากระบบเรียบร้อยแล้ว');
@@ -1533,9 +1531,24 @@
       if (sidebar) sidebar.classList.toggle('-ml-64');
     }
 
-    function populateGuestTemplates() {
+    // -------------------------------------------------------------
+    // ค้นหาและดึง Template สาธารณะสำหรับ Guest
+    // -------------------------------------------------------------
+    async function populateGuestTemplates() {
       const select = document.getElementById('guest-template-select');
       if (!select) return;
+
+      try {
+        const res = await callGas('publicTemplates');
+        if (res && res.status && Array.isArray(res.templates) && res.templates.length > 0) {
+          select.innerHTML = '<option value="all">ค้นหาทุกกิจกรรม</option>' +
+            res.templates.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+          return;
+        }
+      } catch (err) {
+        console.warn('Failed to fetch public templates via API, fallback to local templates:', err);
+      }
+
       const templates = getTemplates();
       select.innerHTML = '<option value="all">ค้นหาทุกกิจกรรม</option>' +
         templates.map(t => `<option value="${t.id || t.__backendId}">${t.name}</option>`).join('');
@@ -1554,9 +1567,9 @@
       return getActiveTemplate();
     }
 
-    function doGuestSearch() {
-      const input = (document.getElementById('guest-search-input')?.value || '').trim().toLowerCase();
-      const templateVal = document.getElementById('guest-template-select')?.value;
+    async function doGuestSearch() {
+      const input = (document.getElementById('guest-search-input')?.value || '').trim();
+      const templateVal = document.getElementById('guest-template-select')?.value || 'all';
       const resultsArea = document.getElementById('guest-results-area');
 
       if (!resultsArea) return;
@@ -1578,14 +1591,22 @@
         </div>
       `;
 
-      setTimeout(() => {
-        const records = getRecords();
-        const matches = records.filter(r => {
-          const nameMatch = (r.name || '').toLowerCase().includes(input);
-          const certMatch = (r.certNumber || '').toLowerCase().includes(input);
-          const schoolMatch = (r.school || '').toLowerCase().includes(input);
-          return (nameMatch || certMatch || schoolMatch);
-        });
+      try {
+        let matches = [];
+        // ค้นหาเกียรติบัตรไปยัง Google Apps Script
+        const apiRes = await callGas('guestSearch', { query: input, templateId: templateVal });
+        if (apiRes && apiRes.status && Array.isArray(apiRes.results)) {
+          matches = apiRes.results;
+        } else {
+          // Fallback Local Filtering
+          const records = appData.filter(d => d && d.type === 'record');
+          matches = records.filter(r => {
+            const nameMatch = (r.name || '').toLowerCase().includes(input.toLowerCase());
+            const certMatch = (r.certNumber || '').toLowerCase().includes(input.toLowerCase());
+            const schoolMatch = (r.school || '').toLowerCase().includes(input.toLowerCase());
+            return (nameMatch || certMatch || schoolMatch);
+          });
+        }
 
         if (matches.length === 0) {
           resultsArea.innerHTML = `
@@ -1632,16 +1653,20 @@
             </div>
           `;
         }).join('');
-      }, 300);
+
+      } catch (err) {
+        console.error("Guest Search Error:", err);
+        resultsArea.innerHTML = `
+          <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-sm">
+            เกิดข้อผิดพลาดในการเชื่อมต่อ API ค้นหา
+          </div>
+        `;
+      }
     }
 
     async function generateCertCanvasForRecord(record, tpl) {
       if (document.fonts && document.fonts.ready) {
-        try {
-          await document.fonts.ready;
-        } catch (e) {
-          console.warn('Font loading wait warning:', e);
-        }
+        try { await document.fonts.ready; } catch (e) {}
       }
 
       const tempCanvas = document.createElement('canvas');
@@ -1712,18 +1737,13 @@
         }
 
         const btnPng = document.getElementById('btn-download-preview-png');
-        if (btnPng) {
-          btnPng.onclick = () => downloadGuestCertFormat(recordId, 'png', selectedTplId);
-        }
+        if (btnPng) btnPng.onclick = () => downloadGuestCertFormat(recordId, 'png', selectedTplId);
 
         const btnPdf = document.getElementById('btn-download-preview-pdf');
-        if (btnPdf) {
-          btnPdf.onclick = () => downloadGuestCertFormat(recordId, 'pdf', selectedTplId);
-        }
+        if (btnPdf) btnPdf.onclick = () => downloadGuestCertFormat(recordId, 'pdf', selectedTplId);
 
         showModal('guest-preview-modal');
       } catch (err) {
-        console.error('Preview Cert Error:', err);
         showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างตัวอย่างเกียรติบัตรได้');
       } finally {
         stopLoading();
@@ -1762,7 +1782,6 @@
         }
         showAlert('success', 'ดาวน์โหลดสำเร็จ', `ดาวน์โหลดเกียรติบัตร (${format.toUpperCase()}) ของ ${record.name} เรียบร้อยแล้ว`);
       } catch (err) {
-        console.error('Download Cert Error:', err);
         showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างไฟล์ดาวน์โหลดได้');
       } finally {
         stopLoading();
@@ -2049,9 +2068,7 @@
     function saveCurrentTemplate() {
       const tpl = getActiveTemplate();
       const input = document.getElementById('save-template-name-input');
-      if (input) {
-        input.value = tpl ? (tpl.name || '') : '';
-      }
+      if (input) input.value = tpl ? (tpl.name || '') : '';
       showModal('save-template-modal');
     }
 
@@ -2083,13 +2100,24 @@
       }
     }
 
+    // -------------------------------------------------------------
+    // อนุมัติสมาชิก
+    // -------------------------------------------------------------
     async function approveMember(id) {
+      if (!isAdmin()) {
+        showAlert('warning', 'ไม่มีสิทธิ์', 'เฉพาะผู้ดูแลระบบเท่านั้นที่อนุมัติสมาชิกได้');
+        return;
+      }
       const member = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
       if (!member) return;
 
       const updated = { ...member, status: 'active' };
+      startLoading();
       const res = await window.dataSdk.update(updated);
+      stopLoading();
+
       if (res.isOk) {
+        logActivity(`อนุมัติสมาชิก: ${member.fullname || member.username}`);
         showAlert('success', 'สำเร็จ', `อนุมัติสมาชิก ${member.fullname || member.username} เรียบร้อยแล้ว`);
       }
     }
@@ -2101,6 +2129,7 @@
     }
 
     function openAddMemberModal() {
+      if (!isAdmin()) return;
       document.getElementById('member-edit-id').value = '';
       document.getElementById('member-username').value = '';
       document.getElementById('member-password').value = '';
@@ -2113,6 +2142,7 @@
     }
 
     function openEditMemberModal(id) {
+      if (!isAdmin()) return;
       const member = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
       if (!member) return;
 
@@ -2127,19 +2157,28 @@
       showModal('member-modal');
     }
 
+    // -------------------------------------------------------------
+    // ลบสมาชิก
+    // -------------------------------------------------------------
     function deleteMember(id) {
+      if (!isAdmin()) return;
       showConfirmDelete('คุณต้องการลบสมาชิกนี้ใช่หรือไม่?', async () => {
         const member = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
         if (member) {
+          startLoading();
           const res = await window.dataSdk.delete(member);
-          if (res.isOk) showAlert('success', 'สำเร็จ', 'ลบสมาชิกเรียบร้อยแล้ว');
+          stopLoading();
+          if (res.isOk) {
+            logActivity(`ลบสมาชิก: ${member.fullname || member.username}`);
+            showAlert('success', 'สำเร็จ', 'ลบสมาชิกเรียบร้อยแล้ว');
+          }
         }
       });
     }
 
     function openAddRecordModal() {
-      const recordsCount = getRecords().length;
-      const nextNum = (recordsCount + systemSettings.startNumber).toString().padStart(3, '0');
+      const userRecords = getRecords();
+      const nextNum = (userRecords.length + systemSettings.startNumber).toString().padStart(3, '0');
 
       document.getElementById('record-edit-id').value = '';
       document.getElementById('record-name').value = '';
@@ -2163,12 +2202,20 @@
       showModal('record-modal');
     }
 
+    // -------------------------------------------------------------
+    // ลบรายชื่อ
+    // -------------------------------------------------------------
     function deleteRecord(id) {
       showConfirmDelete('คุณต้องการลบรายชื่อนี้ใช่หรือไม่?', async () => {
         const record = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
         if (record) {
+          startLoading();
           const res = await window.dataSdk.delete(record);
-          if (res.isOk) showAlert('success', 'สำเร็จ', 'ลบข้อมูลรายชื่อแล้ว');
+          stopLoading();
+          if (res.isOk) {
+            logActivity(`ลบรายชื่อ: ${record.name}`);
+            showAlert('success', 'สำเร็จ', 'ลบข้อมูลรายชื่อแล้ว');
+          }
         }
       });
     }
@@ -2215,10 +2262,13 @@
 
     function bulkDeleteRecords() {
       showConfirmDelete(`คุณต้องการลบรายชื่อ ${selectedRecordIds.size} รายการที่เลือกใช่หรือไม่?`, async () => {
+        startLoading();
         for (let id of selectedRecordIds) {
           const record = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
           if (record) await window.dataSdk.delete(record);
         }
+        stopLoading();
+        logActivity(`ลบรายชื่อจำนวน ${selectedRecordIds.size} รายการ`);
         clearRecordSelection();
         showAlert('success', 'สำเร็จ', 'ลบรายการที่เลือกเรียบร้อยแล้ว');
       });
@@ -2263,6 +2313,7 @@
 
         parsedImportRows = json.map((row, idx) => ({
           id: generateId(),
+          member_id: currentUser ? currentUser.id : '',
           type: 'record',
           name: row['ชื่อ-นามสกุล'] || row['ชื่อ'] || row['Name'] || '',
           school: row['โรงเรียน'] || row['หน่วยงาน'] || row['School'] || '',
@@ -2286,6 +2337,9 @@
       reader.readAsArrayBuffer(file);
     }
 
+    // -------------------------------------------------------------
+    // บันทึกการนำเข้าข้อมูล Excel สู่ Google Sheet
+    // -------------------------------------------------------------
     async function confirmImportData() {
       if (parsedImportRows.length === 0) return;
       startLoading();
@@ -2302,29 +2356,70 @@
 
       stopLoading();
       toggleImportSection();
+      logActivity(`นำเข้าข้อมูลรายชื่อ ${parsedImportRows.length} รายการ`);
       parsedImportRows = [];
       showAlert('success', 'สำเร็จ', 'นำเข้าข้อมูลรายชื่อเรียบร้อยแล้ว');
     }
 
-    function saveSettingsFromPage() {
+    // -------------------------------------------------------------
+    // บันทึกตั้งค่าระบบลง Google Sheets (ชีต Settings)
+    // -------------------------------------------------------------
+    async function saveSettingsFromPage() {
       const newPrefix = document.getElementById('setting-page-prefix')?.value.trim();
       const newStartNum = parseInt(document.getElementById('setting-page-start-num')?.value) || 1;
 
       systemSettings.prefix = newPrefix || 'CERT-2026/';
       systemSettings.startNumber = newStartNum;
 
+      startLoading();
+      const existingSetting = appData.find(d => d.type === 'setting' || d.type === 'settings');
+      const settingItem = {
+        id: existingSetting ? (existingSetting.id || existingSetting.__backendId) : generateId(),
+        type: 'setting',
+        member_id: currentUser ? currentUser.id : '',
+        prefix: systemSettings.prefix,
+        start_number: systemSettings.startNumber,
+        default_font: systemSettings.defaultFont || 'Sarabun'
+      };
+
+      if (existingSetting) {
+        await window.dataSdk.update(settingItem);
+      } else {
+        await window.dataSdk.create(settingItem);
+      }
+      stopLoading();
+
       const modalPrefix = document.getElementById('setting-prefix');
       if (modalPrefix) modalPrefix.value = systemSettings.prefix;
 
-      showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว');
+      logActivity('บันทึกการตั้งค่าระบบ');
+      showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบลงฐานข้อมูลเรียบร้อยแล้ว');
     }
 
-    function saveSettings() {
+    async function saveSettings() {
       const newPrefix = document.getElementById('setting-prefix')?.value.trim();
       const newStartNum = parseInt(document.getElementById('setting-start-num')?.value) || 1;
 
       if (newPrefix) systemSettings.prefix = newPrefix;
       systemSettings.startNumber = newStartNum;
+
+      startLoading();
+      const existingSetting = appData.find(d => d.type === 'setting' || d.type === 'settings');
+      const settingItem = {
+        id: existingSetting ? (existingSetting.id || existingSetting.__backendId) : generateId(),
+        type: 'setting',
+        member_id: currentUser ? currentUser.id : '',
+        prefix: systemSettings.prefix,
+        start_number: systemSettings.startNumber,
+        default_font: systemSettings.defaultFont || 'Sarabun'
+      };
+
+      if (existingSetting) {
+        await window.dataSdk.update(settingItem);
+      } else {
+        await window.dataSdk.create(settingItem);
+      }
+      stopLoading();
 
       const pagePrefix = document.getElementById('setting-page-prefix');
       if (pagePrefix) pagePrefix.value = systemSettings.prefix;
@@ -2333,6 +2428,7 @@
       if (pageStartNum) pageStartNum.value = systemSettings.startNumber;
 
       hideModal('settings-modal');
+      logActivity('บันทึกการตั้งค่าระบบ');
       showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว');
     }
 
@@ -2354,7 +2450,10 @@
       }
 
       const format = document.getElementById('export-format-select').value;
+      const resolutionScale = parseFloat(document.getElementById('export-resolution-select').value) || 1.0;
+      const filenamePattern = document.getElementById('export-filename-pattern').value;
       const tpl = getActiveTemplate();
+
       const card = document.getElementById('export-progress-card');
       const bar = document.getElementById('export-progress-bar-fill');
       const percentEl = document.getElementById('export-progress-percent');
@@ -2373,9 +2472,10 @@
         if (detailEl) detailEl.textContent = `กำลังสร้าง (${i + 1}/${targets.length}): ${r.name}`;
 
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = tpl.width;
-        tempCanvas.height = tpl.height;
+        tempCanvas.width = tpl.width * resolutionScale;
+        tempCanvas.height = tpl.height * resolutionScale;
         const tctx = tempCanvas.getContext('2d');
+        tctx.scale(resolutionScale, resolutionScale);
 
         if (tpl.bgImg) {
           const img = new Image();
@@ -2405,9 +2505,13 @@
 
         const imgData = tempCanvas.toDataURL('image/png');
 
+        let cleanFileName = filenamePattern
+          .replace('{certNumber}', r.certNumber || 'CERT')
+          .replace('{name}', r.name || 'guest')
+          .replace(/[\/\\?%*:|"<>]/g, '_');
+
         if (format === 'zip') {
-          const filename = `${r.certNumber || 'CERT'}_${r.name}.png`;
-          zip.file(filename, imgData.split(',')[1], { base64: true });
+          zip.file(`${cleanFileName}.png`, imgData.split(',')[1], { base64: true });
         } else if (format === 'pdf') {
           if (i > 0) pdf.addPage([tpl.width, tpl.height], 'landscape');
           pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
@@ -2430,19 +2534,33 @@
       }
 
       if (card) card.classList.add('hidden');
+      logActivity(`Export เกียรติบัตรสำเร็จจำนวน ${targets.length} รายการ (${format.toUpperCase()})`);
       showAlert('success', 'สำเร็จ', 'สร้างและดาวน์โหลดไฟล์เกียรติบัตรเรียบร้อยแล้ว');
       updateUI();
     }
 
+    // -------------------------------------------------------------
+    // ดึงข้อมูลใหม่ล่าสุดจาก Google Sheets
+    // -------------------------------------------------------------
     async function refreshData() {
       startLoading();
       try {
         const data = await callGas('getData');
         appData = (data && data.length > 0) ? data : appData;
+
+        // อัปเดตค่าตั้งค่าที่ดึงมาจากชีต Settings
+        const savedSetting = appData.find(d => d.type === 'setting' || d.type === 'settings');
+        if (savedSetting) {
+          if (savedSetting.prefix) systemSettings.prefix = savedSetting.prefix;
+          if (savedSetting.start_number || savedSetting.startNumber) {
+            systemSettings.startNumber = parseFloat(savedSetting.start_number || savedSetting.startNumber);
+          }
+        }
+
         updateUI();
-        showAlert('success', 'สำเร็จ', 'รีเฟรชข้อมูลเรียบร้อยแล้ว');
+        showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลเรียบร้อยแล้ว');
       } catch (err) {
-        showAlert('error', 'ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+        showAlert('error', 'ผิดพลาด', 'ไม่สามารถอัปเดตข้อมูลสดได้');
       } finally {
         stopLoading();
       }
@@ -2455,6 +2573,15 @@
       updateMembersTable();
       updateRecordsTable();
       updateDesignerPreviewSelect();
+
+      const membersBtn = document.getElementById('sidebar-members-btn');
+      if (membersBtn) {
+        if (isAdmin()) {
+          membersBtn.classList.remove('hidden');
+        } else {
+          membersBtn.classList.add('hidden');
+        }
+      }
     }
 
     function updateDashboardStats() {
@@ -2520,7 +2647,7 @@
       tbody.innerHTML = members.map((m, i) => `
         <tr class="hover:bg-gray-50">
           <td class="px-4 py-3 text-sm">${i + 1}</td>
-          <td class="px-4 py-3 text-sm font-mono font-medium text-gray-800">${m.username}</td>
+          <td class="px-4 py-3 text-sm font-sarabun font-medium text-gray-800">${m.username}</td>
           <td class="px-4 py-3 text-sm font-medium text-gray-800">${m.fullname || '-'}</td>
           <td class="px-4 py-3 text-sm text-gray-600">${m.email || '-'}</td>
           <td class="px-4 py-3">
@@ -2614,8 +2741,15 @@
         const data = await callGas('getData');
         if (Array.isArray(data) && data.length > 0) {
           appData = data;
+          const savedSetting = appData.find(d => d.type === 'setting' || d.type === 'settings');
+          if (savedSetting) {
+            if (savedSetting.prefix) systemSettings.prefix = savedSetting.prefix;
+            if (savedSetting.start_number || savedSetting.startNumber) {
+              systemSettings.startNumber = parseFloat(savedSetting.start_number || savedSetting.startNumber);
+            }
+          }
         } else {
-          appData = (data && Array.isArray(data)) ? data : [...defaultTemplates, ...defaultRecords];
+          appData = [...defaultTemplates, ...defaultRecords];
         }
       } catch (err) {
         console.warn("Failed to load backend data, initializing defaults:", err);
@@ -2624,18 +2758,31 @@
         stopLoading();
         setupPasswordHoldToReveal();
         initCanvas();
-        populateGuestTemplates();
+        await populateGuestTemplates();
         showPage('guest');
       }
     }
 
-    // Event Binding Handlers
     document.addEventListener('DOMContentLoaded', () => {
-      // Login Form Submission
-      document.getElementById('login-form')?.addEventListener('submit', (e) => {
+      // -------------------------------------------------------------
+      // ดึงข้อมูลเมื่อกดเข้าสู่ระบบ
+      // -------------------------------------------------------------
+      document.getElementById('login-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const u = document.getElementById('login-username').value.trim();
         const p = document.getElementById('login-password').value;
+
+        startLoading();
+        try {
+          const freshData = await callGas('getData');
+          if (Array.isArray(freshData) && freshData.length > 0) {
+            appData = freshData;
+          }
+        } catch (err) {
+          console.warn("Could not sync fresh member data before login:", err);
+        } finally {
+          stopLoading();
+        }
 
         const members = getMembers();
         const foundMember = members.find(m => m.username === u && m.password === p);
@@ -2650,17 +2797,18 @@
             id: foundMember.id || foundMember.__backendId,
             username: foundMember.username,
             fullname: foundMember.fullname || foundMember.username,
-            role: foundMember.role === 'admin' ? 'Admin' : 'ครู/เจ้าหน้าที่'
+            role: foundMember.role
           };
 
           const displayNameEl = document.getElementById('user-display-name');
           if (displayNameEl) displayNameEl.textContent = currentUser.fullname;
           const displayRoleEl = document.getElementById('user-display-role');
-          if (displayRoleEl) displayRoleEl.textContent = currentUser.role;
+          if (displayRoleEl) displayRoleEl.textContent = currentUser.role === 'admin' ? 'ผู้ดูแลระบบ' : 'ครู/เจ้าหน้าที่';
 
           showPage('main');
           showView('dashboard');
           updateUI();
+          logActivity(`ผู้ใช้ ${currentUser.fullname} เข้าสู่ระบบ`);
           showAlert('success', 'เข้าสู่ระบบสำเร็จ', `ยินดีต้อนรับ ${currentUser.fullname}`);
           return;
         } else {
@@ -2668,7 +2816,9 @@
         }
       });
 
-      // Member Register Form
+      // -------------------------------------------------------------
+      // สมัครสมาชิกใหม่
+      // -------------------------------------------------------------
       document.getElementById('register-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = document.getElementById('reg-username').value.trim();
@@ -2702,6 +2852,7 @@
         hideModal('register-modal');
 
         if (res.isOk) {
+          logActivity(`สมาชิกใหม่ลงทะเบียน: ${fullname} (${username})`);
           if (isFirstMember) {
             showAlert('success', 'สมัครสมาชิกสำเร็จ', 'คุณเป็นสมาชิกคนแรกของระบบ ได้รับอนุมัติสิทธิ์ผู้ดูแลระบบหลักอัตโนมัติ! สามารถเข้าสู่ระบบได้ทันที');
           } else {
@@ -2712,9 +2863,12 @@
         }
       });
 
-      // Add/Edit Member Form
+      // -------------------------------------------------------------
+      // เพิ่ม/แก้ไขข้อมูลสมาชิกโดย Admin
+      // -------------------------------------------------------------
       document.getElementById('member-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (!isAdmin()) return;
         const editId = document.getElementById('member-edit-id').value;
         const username = document.getElementById('member-username').value.trim();
         const password = document.getElementById('member-password').value;
@@ -2728,8 +2882,13 @@
           if (member) {
             const updated = { ...member, username, fullname, email, role, status };
             if (password) updated.password = password;
+            startLoading();
             const res = await window.dataSdk.update(updated);
-            if (res.isOk) showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
+            stopLoading();
+            if (res.isOk) {
+              logActivity(`แก้ไขข้อมูลสมาชิก: ${fullname}`);
+              showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
+            }
           }
         } else {
           const existingMembers = getMembers();
@@ -2749,14 +2908,21 @@
             status,
             createdAt: new Date().toISOString()
           };
+          startLoading();
           const res = await window.dataSdk.create(newMember);
-          if (res.isOk) showAlert('success', 'สำเร็จ', 'เพิ่มสมาชิกใหม่เรียบร้อยแล้ว');
+          stopLoading();
+          if (res.isOk) {
+            logActivity(`เพิ่มสมาชิกใหม่: ${fullname}`);
+            showAlert('success', 'สำเร็จ', 'เพิ่มสมาชิกใหม่เรียบร้อยแล้ว');
+          }
         }
 
         hideModal('member-modal');
       });
 
-      // Record Form Submission
+      // -------------------------------------------------------------
+      // เพิ่ม/แก้ไขรายชื่อผู้รับเกียรติบัตร
+      // -------------------------------------------------------------
       document.getElementById('record-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const editId = document.getElementById('record-edit-id').value;
@@ -2769,24 +2935,37 @@
           const record = appData.find(d => String(d.id) === String(editId) || String(d.__backendId) === String(editId));
           if (record) {
             const updated = { ...record, name, school, certNumber, date };
+            startLoading();
             const res = await window.dataSdk.update(updated);
-            if (res.isOk) showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลรายชื่อเรียบร้อยแล้ว');
+            stopLoading();
+            if (res.isOk) {
+              logActivity(`แก้ไขข้อมูลรายชื่อ: ${name}`);
+              showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลรายชื่อเรียบร้อยแล้ว');
+            }
           }
         } else {
           const newRecord = {
             id: generateId(),
+            member_id: currentUser ? currentUser.id : '',
             type: 'record',
             name, school, certNumber, date,
             status: 'pending'
           };
+          startLoading();
           const res = await window.dataSdk.create(newRecord);
-          if (res.isOk) showAlert('success', 'สำเร็จ', 'เพิ่มรายชื่อใหม่เรียบร้อยแล้ว');
+          stopLoading();
+          if (res.isOk) {
+            logActivity(`เพิ่มรายชื่อผู้รับเกียรติบัตร: ${name}`);
+            showAlert('success', 'สำเร็จ', 'เพิ่มรายชื่อใหม่เรียบร้อยแล้ว');
+          }
         }
 
         hideModal('record-modal');
       });
 
-      // User Profile Form Submission
+      // -------------------------------------------------------------
+      // แก้ไขข้อมูลส่วนตัว
+      // -------------------------------------------------------------
       document.getElementById('user-profile-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!currentUser) return;
@@ -2807,26 +2986,20 @@
           if (res.isOk) {
             currentUser.fullname = fullname;
             currentUser.email = email;
-            if (password) currentUser.password = password;
-
             const displayNameEl = document.getElementById('user-display-name');
             if (displayNameEl) displayNameEl.textContent = fullname;
             document.getElementById('profile-password').value = '';
+            logActivity('อัปเดตข้อมูลส่วนตัว');
             showAlert('success', 'สำเร็จ', 'บันทึกข้อมูลส่วนตัวเรียบร้อยแล้ว');
           } else {
             showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลส่วนตัวได้');
           }
-        } else {
-          currentUser.fullname = fullname;
-          currentUser.email = email;
-          const displayNameEl = document.getElementById('user-display-name');
-          if (displayNameEl) displayNameEl.textContent = fullname;
-          document.getElementById('profile-password').value = '';
-          showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลส่วนตัวเรียบร้อยแล้ว');
         }
       });
 
-      // Save Template Form Submission
+      // -------------------------------------------------------------
+      // บันทึก Template
+      // -------------------------------------------------------------
       document.getElementById('save-template-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const newName = document.getElementById('save-template-name-input').value.trim();
@@ -2834,6 +3007,7 @@
 
         const tpl = getActiveTemplate();
         tpl.name = newName;
+        if (currentUser && !tpl.member_id) tpl.member_id = currentUser.id;
 
         hideModal('save-template-modal');
         startLoading();
@@ -2842,13 +3016,16 @@
 
         if (res.isOk) {
           updateUI();
+          logActivity(`บันทึก Template: ${tpl.name}`);
           showAlert('success', 'สำเร็จ', `บันทึก Template "${tpl.name}" เรียบร้อยแล้ว`);
         } else {
           showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถบันทึก Template ได้');
         }
       });
 
-      // Create New Template Form Submission
+      // -------------------------------------------------------------
+      // สร้าง Template ใหม่
+      // -------------------------------------------------------------
       document.getElementById('create-template-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('create-template-name-input').value.trim();
@@ -2856,6 +3033,7 @@
 
         const newTpl = {
           id: generateId(),
+          member_id: currentUser ? currentUser.id : '',
           type: 'template',
           name: name,
           width: 3508,
@@ -2874,16 +3052,13 @@
         startLoading();
         try {
           const res = await window.dataSdk.create(newTpl);
-          if (res && res.data) {
-            activeTemplateId = String(res.data.id || res.data.__backendId);
-          } else {
-            activeTemplateId = String(newTpl.id);
-          }
+          activeTemplateId = String(res?.data?.id || res?.data?.__backendId || newTpl.id);
           selectedElementIndex = null;
           updateUI();
           showView('designer');
           renderCanvas();
           updateElementPropertiesPanel();
+          logActivity(`สร้าง Template ใหม่: ${newTpl.name}`);
           showAlert('success', 'สำเร็จ', `สร้าง Template "${newTpl.name}" เรียบร้อยแล้ว`);
         } catch (err) {
           showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้าง Template ได้');
@@ -2893,7 +3068,6 @@
       });
     });
 
-    // Window Init Event
     window.onload = initApp;
   </script>
 </body>
