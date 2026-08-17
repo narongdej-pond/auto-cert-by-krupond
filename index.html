@@ -724,7 +724,7 @@
               <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-sliders text-primary-500 mr-2"></i>ตัวเลือกการ Export เกียรติบัตร</h3>
               
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="border-2 border-primary-500 bg-primary-50/50 rounded-xl p-4 cursor-pointer hover:border-primary-600 transition font-medium text-gray-700 flex items-start justify-between export-source-card active" data-source="all" onclick="selectExportSource('all')">
+                <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card active" data-source="all" onclick="selectExportSource('all')">
                   <div>
                     <span class="text-primary-700 font-bold text-lg block mb-1"><i class="fas fa-users mr-2"></i>ทั้งหมด</span>
                     <span class="text-xs text-gray-600">สร้างเกียรติบัตรให้กับทุกรายชื่อในระบบ</span>
@@ -804,13 +804,11 @@
                   <div class="p-4 border-2 border-gray-100 rounded-xl bg-gray-50/50">
                     <label class="block text-gray-800 font-bold mb-1 text-sm"><i class="fas fa-hashtag text-primary-500 mr-2"></i>คำนำหน้าเลขที่อัตโนมัติ</label>
                     <input type="text" id="setting-page-prefix" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm mt-1" value="CERT-2026/">
-                    <p class="text-xs text-gray-500 mt-1">ตัวอย่าง: CERT-2026/001</p>
                   </div>
 
                   <div class="p-4 border-2 border-gray-100 rounded-xl bg-gray-50/50">
                     <label class="block text-gray-800 font-bold mb-1 text-sm"><i class="fas fa-list-ol text-blue-500 mr-2"></i>ลำดับเลขที่เริ่มต้นอัตโนมัติ</label>
                     <input type="number" id="setting-page-start-num" min="1" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm mt-1" value="1">
-                    <p class="text-xs text-gray-500 mt-1">กำหนดลำดับตัวเลขเริ่มต้นในการเพิ่มรายชื่อใหม่</p>
                   </div>
                 </div>
 
@@ -1215,11 +1213,67 @@
       return 'id_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     }
 
+    function getThaiTodayDate() {
+      const now = new Date();
+      const thaiMonths = [
+        'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+        'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+      ];
+      const day = now.getDate();
+      const month = thaiMonths[now.getMonth()];
+      const year = now.getFullYear() + 543;
+      return `${day} ${month} ${year}`;
+    }
+
+    function getThaiFormattedDateTime() {
+      const now = new Date();
+      const year = now.getFullYear() + 543;
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    function startLiveClock() {
+      const updateClock = () => {
+        const el = document.getElementById('app-datetime');
+        if (!el) return;
+        const now = new Date();
+        const days = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+        const thaiMonths = [
+          'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+          'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+        ];
+        const dayName = days[now.getDay()];
+        const day = now.getDate();
+        const month = thaiMonths[now.getMonth()];
+        const year = now.getFullYear() + 543;
+        const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        el.textContent = `${dayName}ที่ ${day} ${month} ${year} เวลา ${timeStr} น.`;
+      };
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
     function logActivity(message) {
       const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
       activityLogs.unshift({ message, time: timeStr });
       if (activityLogs.length > 10) activityLogs.pop();
       renderActivityLogs();
+
+      // บันทึกลงตาราง Logs ใน Google Sheets อัตโนมัติ
+      window.dataSdk.create({
+        id: generateId(),
+        type: 'log',
+        member_id: currentUser ? currentUser.id : '',
+        username: currentUser ? currentUser.username : 'Guest',
+        action: message,
+        status: 'success',
+        note: message,
+        timestamp: getThaiFormattedDateTime()
+      }).catch(err => console.warn('Database log record notice:', err));
     }
 
     function renderActivityLogs() {
@@ -2184,7 +2238,7 @@
       document.getElementById('record-name').value = '';
       document.getElementById('record-school').value = 'วิทยาลัยเทคนิคดอนเมือง';
       document.getElementById('record-cert-number').value = systemSettings.prefix + nextNum;
-      document.getElementById('record-date').value = '16 สิงหาคม 2569';
+      document.getElementById('record-date').value = getThaiTodayDate();
       document.getElementById('record-modal-title').textContent = 'เพิ่มรายชื่อผู้รับเกียรติบัตร';
       showModal('record-modal');
     }
@@ -2759,6 +2813,7 @@
         setupPasswordHoldToReveal();
         initCanvas();
         await populateGuestTemplates();
+        startLiveClock();
         showPage('guest');
       }
     }
