@@ -150,28 +150,41 @@
       border-color: #2563eb;
       background-color: #eff6ff;
     }
+    .searching-glass {
+            display: inline-block;
+            animation: glass-loop 2s ease-in-out infinite; 
+          }
+          @keyframes glass-loop {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(3px, -2px) rotate(5deg); }
+            50% { transform: translate(1px, 3px) rotate(-5deg); }
+            75% { transform: translate(-3px, 1px) rotate(3deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+          }
   </style>
 </head>
 <body class="h-full bg-gray-50 font-sarabun">
   <div id="app" class="h-full">
 
+    <!-- Initial Launch Overlay Loading Spinner -->
     <div id="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center hidden">
       <div class="text-center">
         <i class="fas fa-circle-notch spin text-5xl text-primary-500 mb-4"></i>
-        <p id="loadingText" class="text-gray-600 text-lg transition-all duration-300">กำลังส่งคำขอไปยังระบบ...</p>
+        <p id="loadingText" class="text-gray-600 text-lg transition-all duration-300">กำลังโหลด...</p>
       </div>
     </div>
 
-    <!-- Page 0: Guest Search -->
+    <!-- Page 0: Guest Search & Download -->
     <div id="page-guest" class="min-h-full flex flex-col justify-between bg-gray-50">
       <div>
+        <!-- HEADER -->
         <header class="guest-header">
           <div class="max-w-4xl mx-auto flex items-center justify-between px-2 mb-2">
             <div class="flex items-center gap-2">
               <i class="fas fa-award text-3xl text-yellow-400"></i>
               <span class="font-bold text-lg">วิทยาลัยเทคนิคดอนเมือง</span>
             </div>
-            <button onclick="showPage('login')" class="bg-white/10 hover:bg-white/10 text-white text-xs md:text-sm font-semibold px-2 py-2 rounded-xl backdrop-blur transition flex items-center gap-2">
+            <button onclick="showPage('login')" title="เข้าสู่ระบบผู้ดูแล/ครู/เจ้าหน้าที่" class="bg-white/10 hover:bg-white/10 text-white text-xs md:text-sm font-semibold px-2 py-2 rounded-xl backdrop-blur transition flex items-center gap-2">
               <i class="fas fa-user-shield"></i>
             </button>
           </div>
@@ -181,6 +194,7 @@
           </div>
         </header>
 
+        <!-- SEARCH CONTAINER -->
         <main class="px-4 pb-12">
           <div class="search-card border border-gray-100">
             <label class="block font-bold text-gray-800 text-sm md:text-base mb-2" for="guest-search-input">
@@ -201,10 +215,12 @@
             </div>
           </div>
 
+          <!-- RESULTS AREA -->
           <div id="guest-results-area" class="max-w-2xl mx-auto space-y-4"></div>
         </main>
       </div>
 
+      <!-- FOOTER -->
       <footer class="gradient-footer text-white py-4 px-6 mt-8">
         <div class="max-w-6xl mx-auto text-center">
           <p class="text-sm md:text-base">ระบบสร้างเกียรติบัตรอัตโนมัติ วิทยาลัยเทคนิคดอนเมือง</p>
@@ -213,7 +229,7 @@
       </footer>
     </div>
 
-    <!-- Page 1: Login -->
+    <!-- Page 1: Login Page -->
     <div id="page-login" class="hidden min-h-screen w-full flex flex-col justify-between bg-gray-100 text-gray-800">
       <div class="flex-1 flex items-center justify-center px-4 py-12">
         <div class="bg-white text-gray-800 rounded-2xl card-shadow p-8 max-w-md w-full fade-in relative">
@@ -241,7 +257,7 @@
                 </button>
               </div>
             </div>
-            <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3.5 px-6 rounded-xl btn-hover text-lg flex items-center justify-center gap-2 mt-2">
+            <button id="btn-login-submit" type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3.5 px-6 rounded-xl btn-hover text-lg flex items-center justify-center gap-2 mt-2">
               <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
             </button>
             <div class="pt-2 border-t border-gray-100 mt-3 text-center">
@@ -261,7 +277,7 @@
       </footer>
     </div>
 
-    <!-- Page 2: Main Dashboard -->
+    <!-- Page 2: Main Dashboard & App Structure -->
     <div id="page-main" class="hidden h-full flex overflow-hidden">
       <!-- Sidebar -->
       <aside id="main-sidebar" class="w-64 gradient-bg text-white flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0">
@@ -277,6 +293,7 @@
           </div>
         </div>
 
+        <!-- Navigation Menu -->
         <nav class="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
           <button onclick="showView('dashboard')" class="sidebar-item active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="dashboard">
             <i class="fas fa-chart-pie w-5"></i> แดชบอร์ด
@@ -309,6 +326,7 @@
           </button>
         </nav>
 
+        <!-- User Footer & Logout -->
         <div class="p-4 border-t border-white/20">
           <div class="flex items-center gap-3 mb-3">
             <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
@@ -325,7 +343,9 @@
         </div>
       </aside>
 
+      <!-- Main Content Container -->
       <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top Bar Header -->
         <header class="bg-white shadow-sm px-4 py-3 flex items-center justify-between border-b border-gray-200">
           <div class="flex items-center gap-4">
             <button id="toggle-sidebar-btn" onclick="toggleSidebar()" class="text-gray-600 text-xl hover:text-primary-500 transition">
@@ -335,14 +355,15 @@
           </div>
           <div class="flex items-center gap-4">
             <p id="app-datetime" class="text-sm font-medium text-gray-600 hidden md:block"></p>
-            <button onclick="refreshData()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-2 rounded-lg transition" title="รีเฟรชข้อมูล">
-              <i class="fas fa-sync-alt"></i>
+            <button id="btn-refresh-data" onclick="refreshData()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-2 rounded-lg transition" title="รีเฟรชข้อมูล">
+              <i id="icon-refresh" class="fas fa-sync-alt"></i>
             </button>
           </div>
         </header>
 
+        <!-- Dynamic Main Views -->
         <main class="flex-1 overflow-auto p-4 md:p-6 bg-gray-50">
-          <!-- View: Members -->
+          <!-- View: Members Management & Approval -->
           <div id="view-members" class="app-view hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <button onclick="openAddMemberModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition self-start md:self-auto">
@@ -350,6 +371,7 @@
               </button>
             </div>
 
+            <!-- Members Data Table -->
             <div class="bg-white rounded-xl card-shadow overflow-hidden">
               <div class="table-container">
                 <table class="w-full">
@@ -374,7 +396,7 @@
             </div>
           </div>
 
-          <!-- View: Dashboard -->
+          <!-- View 1: Dashboard -->
           <div id="view-dashboard" class="app-view">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div onclick="showView('records')" class="bg-white rounded-xl card-shadow p-4 cursor-pointer hover:shadow-lg transition">
@@ -423,6 +445,7 @@
               </div>
             </div>
 
+            <!-- Dashboard Charts & Activity -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div class="bg-white rounded-xl card-shadow p-4">
                 <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-chart-line text-primary-500 mr-2"></i>สถิติการสร้างเกียรติบัตร</h3>
@@ -473,6 +496,7 @@
               </div>
             </div>
 
+            <!-- Recent Activity Table -->
             <div class="bg-white rounded-xl card-shadow p-4">
               <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-history text-primary-500 mr-2"></i>กิจกรรมล่าสุด</h3>
               <div id="recent-activity-list" class="space-y-3">
@@ -481,7 +505,7 @@
             </div>
           </div>
 
-          <!-- View: Records -->
+          <!-- View 2: Records Management -->
           <div id="view-records" class="app-view hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <div class="flex flex-wrap gap-2">
@@ -497,6 +521,7 @@
               </div>
             </div>
 
+            <!-- Import Section Dropzone -->
             <div id="import-section" class="bg-white rounded-xl card-shadow p-6 mb-6 hidden fade-in border-2 border-dashed border-primary-300">
               <div class="flex justify-between items-center mb-4">
                 <h4 class="font-bold text-gray-800"><i class="fas fa-cloud-arrow-up text-primary-500 mr-2"></i>นำเข้าข้อมูลไฟล์ Excel / CSV</h4>
@@ -528,13 +553,14 @@
                     <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="import-mode" value="append" checked class="text-primary-500"> เพิ่มต่อท้าย</label>
                     <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="import-mode" value="replace" class="text-primary-500"> แทนที่ข้อมูลเดิม</label>
                   </div>
-                  <button onclick="confirmImportData()" class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg text-sm transition">
-                    <i class="fas fa-check mr-1"></i> ยืนยันการนำเข้า
+                  <button id="btn-confirm-import" onclick="confirmImportData()" class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg text-sm transition flex items-center gap-2">
+                    <i class="fas fa-check"></i> ยืนยันการนำเข้า
                   </button>
                 </div>
               </div>
             </div>
 
+            <!-- Table Toolbar & Filters -->
             <div class="bg-white rounded-xl card-shadow p-4 mb-4 flex flex-col md:flex-row gap-3 justify-between items-center">
               <div class="w-full md:w-72 relative">
                 <input type="text" id="record-search-input" onkeyup="filterRecordsTable()" placeholder="ค้นหาชื่อ, โรงเรียน, เลขที่..." class="w-full pl-9 pr-4 py-2 border-2 border-gray-200 rounded-lg text-sm focus:border-primary-500 focus:outline-none">
@@ -552,6 +578,7 @@
               </div>
             </div>
 
+            <!-- Bulk Actions Bar -->
             <div id="bulk-actions-bar" class="hidden bg-primary-50 border-2 border-primary-200 rounded-xl p-3 mb-4 flex items-center justify-between">
               <span class="text-sm font-bold text-primary-800"><i class="fas fa-check-square mr-2"></i>เลือกแล้ว <span id="selected-count">0</span> รายการ</span>
               <div class="flex gap-2">
@@ -561,6 +588,7 @@
               </div>
             </div>
 
+            <!-- Records Data Table -->
             <div class="bg-white rounded-xl card-shadow overflow-hidden">
               <div class="table-container">
                 <table class="w-full">
@@ -586,12 +614,15 @@
             </div>
           </div>
 
-          <!-- View: Designer -->
+          <!-- View 3: Canvas Template Designer -->
           <div id="view-designer" class="app-view hidden">
             <div class="flex flex-col lg:flex-row gap-4 h-[calc(100vh-140px)]">
+              <!-- Canvas Workshop Area -->
               <div class="flex-1 bg-gray-200 rounded-xl card-shadow flex flex-col overflow-hidden relative">
+                <!-- Canvas Top Control Toolbar -->
                 <div class="bg-white px-4 py-2 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
                   <div class="flex items-center gap-3 flex-wrap">
+                    <!-- Template Selector -->
                     <div class="flex items-center gap-2 bg-primary-50 p-1.5 rounded-xl border border-primary-200">
                       <label class="text-xs font-bold text-primary-800 flex items-center gap-1 pl-1">
                         <i class="fas fa-layer-group text-primary-600"></i> Template:
@@ -634,12 +665,14 @@
                   </div>
                 </div>
 
+                <!-- Canvas Workspace Wrapper -->
                 <div class="flex-1 overflow-auto p-8 flex items-center justify-center relative bg-gray-300" id="canvas-workspace">
                   <div class="shadow-2xl bg-white relative transition-transform origin-center" id="canvas-container">
                     <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair"></canvas>
                   </div>
                 </div>
 
+                <!-- Preview Switch Bar -->
                 <div class="bg-white px-4 py-2 border-t border-gray-200 flex items-center justify-between text-xs">
                   <div class="flex items-center gap-2">
                     <span class="font-bold text-gray-600"><i class="fas fa-eye text-primary-500 mr-1"></i> ตัวอย่างข้อมูล:</span>
@@ -651,6 +684,7 @@
                 </div>
               </div>
 
+              <!-- Element Properties Sidebar -->
               <div class="w-full lg:w-80 bg-white rounded-xl card-shadow p-4 flex flex-col gap-4 overflow-y-auto">
                 <div>
                   <h4 class="font-bold text-gray-800 mb-3 border-b pb-2 flex items-center justify-between">
@@ -659,6 +693,7 @@
                   <div id="designer-element-list" class="space-y-1.5 max-h-48 overflow-y-auto border rounded-lg p-2 bg-gray-50"></div>
                 </div>
 
+                <!-- Properties Panel -->
                 <div id="element-properties-panel" class="hidden space-y-3 pt-2 border-t">
                   <h4 class="font-bold text-gray-800 text-sm flex items-center justify-between">
                     <span><i class="fas fa-sliders text-primary-500 mr-1"></i>ปรับแต่งองค์ประกอบ</span>
@@ -748,11 +783,12 @@
             </div>
           </div>
 
-          <!-- View: Export -->
+          <!-- View 4: Export & Download -->
           <div id="view-export" class="app-view hidden">
             <div class="bg-white rounded-xl card-shadow p-6 mb-6">
               <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-sliders text-primary-500 mr-2"></i>ตัวเลือกการส่งออกเกียรติบัตร</h3>
 
+              <!-- Selectable Export Source Cards -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card active" data-source="all" onclick="selectExportSource('all')">
                   <div>
@@ -804,11 +840,12 @@
                 </div>
               </div>
 
-              <button onclick="startBatchExport()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl btn-hover text-lg flex items-center justify-center gap-2">
+              <button id="btn-start-export" onclick="startBatchExport()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl btn-hover text-lg flex items-center justify-center gap-2">
                 <i class="fas fa-rocket"></i> เริ่มประมวลผลส่งออก/ดาวน์โหลดเกียรติบัตร
               </button>
             </div>
 
+            <!-- Export Progress Bar Card -->
             <div id="export-progress-card" class="bg-white rounded-xl card-shadow p-6 mb-6 hidden border-2 border-primary-200">
               <div class="flex items-center justify-between mb-2">
                 <span class="font-bold text-gray-800 text-sm" id="export-progress-detail">กำลังเตรียมการ...</span>
@@ -820,7 +857,7 @@
             </div>
           </div>
 
-          <!-- View: Settings -->
+          <!-- View 5: System Settings Page -->
           <div id="view-settings" class="app-view hidden">
             <div class="max-w-2xl mx-auto bg-white rounded-xl card-shadow p-6">
               <div class="text-center mb-6">
@@ -851,14 +888,14 @@
                   </select>
                 </div>
 
-                <button onclick="saveSettingsFromPage()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-base flex items-center justify-center gap-2">
-                  <i class="fas fa-save"></i> บันทึกตั้งค่าระบบ
+                <button id="btn-save-settings-page" onclick="saveSettingsFromPage()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-base flex items-center justify-center gap-2">
+                  <i class="fas fa-save"></i> บันทึก
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- View: Profile -->
+          <!-- View 6: Profile Edit -->
           <div id="view-profile" class="app-view hidden">
             <div class="max-w-xl mx-auto bg-white rounded-xl card-shadow p-6">
               <div class="text-center mb-6">
@@ -885,8 +922,8 @@
                     </button>
                   </div>
                 </div>
-                <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover">
-                  <i class="fas fa-save mr-2"></i> บันทึกข้อมูลส่วนตัว
+                <button id="btn-save-profile" type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover flex items-center justify-center gap-2">
+                  <i class="fas fa-save"></i> บันทึก
                 </button>
               </form>
             </div>
@@ -897,6 +934,7 @@
     </div>
 
     <!-- Modals -->
+    <!-- Modal: Member Registration -->
     <div id="register-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -928,13 +966,14 @@
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
             <i class="fas fa-info-circle mr-1"></i> <strong>หมายเหตุ:</strong> สมาชิกคนแรกที่สมัครจะได้รับอนุมัติสิทธิ์เป็นผู้ดูแลระบบหลักอัตโนมัติ สำหรับสมาชิกถัดไปจะต้องรอผู้ดูแลระบบหลักอนุมัติสิทธิ์การใช้งาน
           </div>
-          <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-sm">
-            <i class="fas fa-paper-plane mr-2"></i> ยืนยันการสมัครสมาชิก
+          <button id="btn-register-submit" type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-paper-plane"></i> สมัครสมาชิก
           </button>
         </form>
       </div>
     </div>
 
+    <!-- Modal: Add / Edit Member (By Admin) -->
     <div id="member-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -980,13 +1019,14 @@
               </select>
             </div>
           </div>
-          <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-sm mt-2">
-            <i class="fas fa-save mr-2"></i> บันทึกข้อมูลสมาชิก
+          <button id="btn-save-member" type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-sm mt-2 flex items-center justify-center gap-2">
+            <i class="fas fa-save"></i> บันทึก
           </button>
         </form>
       </div>
     </div>
 
+    <!-- Modal: Add/Edit Record -->
     <div id="record-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-lg mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1013,8 +1053,8 @@
               <input type="text" id="record-date" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="16 สิงหาคม 2569">
             </div>
           </div>
-          <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover mt-2">
-            <i class="fas fa-save mr-2"></i> บันทึกข้อมูล
+          <button id="btn-save-record" type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover mt-2 flex items-center justify-center gap-2">
+            <i class="fas fa-save"></i> บันทึก
           </button>
         </form>
       </div>
@@ -1040,6 +1080,7 @@
       </div>
     </div>
 
+    <!-- Modal: Settings (Dashboard Shortcut Modal) -->
     <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1062,13 +1103,14 @@
               <option value="portrait">A4 แนวตั้ง (Portrait)</option>
             </select>
           </div>
-          <button onclick="saveSettings()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-6 rounded-xl btn-hover">
-            <i class="fas fa-save"></i> บันทึกตั้งค่าระบบ
+          <button id="btn-save-settings-modal" onclick="saveSettings()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-6 rounded-xl btn-hover flex items-center justify-center gap-2">
+            <i class="fas fa-save"></i> บันทึก
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Modal: Alert -->
     <div id="alert-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-sm mx-4 fade-in text-center">
         <div id="alert-icon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"></div>
@@ -1078,6 +1120,7 @@
       </div>
     </div>
 
+    <!-- Modal: Confirm Delete -->
     <div id="confirm-delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-sm mx-4 fade-in text-center">
         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1087,11 +1130,12 @@
         <p id="delete-message" class="text-gray-600 mb-6 text-sm">คุณต้องการลบรายการนี้ใช่หรือไม่?</p>
         <div class="flex gap-3">
           <button onclick="hideModal('confirm-delete-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition"> ยกเลิก </button>
-          <button id="confirm-delete-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-xl transition"> ลบ </button>
+          <button id="confirm-delete-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-1"> ลบ </button>
         </div>
       </div>
     </div>
 
+    <!-- Modal: Guest Cert Preview -->
     <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-4xl max-h-[90vh] flex flex-col fade-in">
         <div class="flex items-center justify-between pb-3 border-b mb-4">
@@ -1115,6 +1159,7 @@
       </div>
     </div>
 
+    <!-- Modal: Save Template -->
     <div id="save-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1128,7 +1173,7 @@
           </div>
           <div class="flex gap-3 pt-2">
             <button type="button" onclick="hideModal('save-template-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition text-sm"> ยกเลิก </button>
-            <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-4 rounded-xl btn-hover text-sm flex items-center justify-center gap-1">
+            <button id="btn-confirm-save-template" type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-4 rounded-xl btn-hover text-sm flex items-center justify-center gap-1">
               <i class="fas fa-save"></i> บันทึก Template
             </button>
           </div>
@@ -1136,6 +1181,7 @@
       </div>
     </div>
 
+    <!-- Modal: Create New Template -->
     <div id="create-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1152,7 +1198,7 @@
           </div>
           <div class="flex gap-3 pt-2">
             <button type="button" onclick="hideModal('create-template-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition text-sm"> ยกเลิก </button>
-            <button type="submit" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl btn-hover text-sm flex items-center justify-center gap-1">
+            <button id="btn-confirm-create-template" type="submit" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl btn-hover text-sm flex items-center justify-center gap-1">
               <i class="fas fa-check"></i> ยืนยันสร้างใหม่
             </button>
           </div>
@@ -1189,8 +1235,6 @@
     let dragOffsetX = 0, dragOffsetY = 0;
     let selectedElementIndex = null;
     let activeTemplateId = null;
-    let loadingTimer = null;
-    let isAlternateLoadingText = false;
     let parsedImportRows = [];
     let activityLogs = [];
 
@@ -1462,27 +1506,36 @@
       }
     };
 
-    function startLoading() {
+    /* Full Overlay Loading used strictly for Initial App Bootstrapping */
+    function showFullPageLoading(text = "กำลังโหลด...") {
       const loadingEl = document.getElementById('loading');
       const textEl = document.getElementById('loadingText');
-      if (!loadingEl || !textEl) return;
-
-      loadingEl.classList.remove('hidden');
-      textEl.innerText = "กำลังส่งคำขอไปยังระบบ...";
-      isAlternateLoadingText = false;
-
-      if (loadingTimer) clearInterval(loadingTimer);
-
-      loadingTimer = setInterval(() => {
-        isAlternateLoadingText = !isAlternateLoadingText;
-        textEl.innerText = isAlternateLoadingText ? "กำลังประมวลผลข้อมูล..." : "กำลังส่งคำขอไปยังระบบ...";
-      }, 3000);
+      if (textEl) textEl.innerText = text;
+      if (loadingEl) loadingEl.classList.remove('hidden');
     }
 
-    function stopLoading() {
-      if (loadingTimer) clearInterval(loadingTimer);
+    function hideFullPageLoading() {
       const loadingEl = document.getElementById('loading');
       if (loadingEl) loadingEl.classList.add('hidden');
+    }
+
+    /* Inline Spinner Helper */
+    function setButtonLoading(btn, isLoading, loadingText = "กำลังดำเนินการ...", defaultHtml = null) {
+      if (!btn) return;
+      if (isLoading) {
+        if (!btn.dataset.defaultHtml) {
+          btn.dataset.defaultHtml = defaultHtml || btn.innerHTML;
+        }
+        btn.disabled = true;
+        btn.classList.add('opacity-80', 'cursor-not-allowed');
+        btn.innerHTML = `<i class="fas fa-spinner spin mr-1.5"></i> ${loadingText}`;
+      } else {
+        btn.disabled = false;
+        btn.classList.remove('opacity-80', 'cursor-not-allowed');
+        if (btn.dataset.defaultHtml) {
+          btn.innerHTML = btn.dataset.defaultHtml;
+        }
+      }
     }
 
     function setupPasswordHoldToReveal() {
@@ -1571,7 +1624,9 @@
       deleteCallback = callback;
       if (btnEl) {
         btnEl.onclick = async () => {
+          setButtonLoading(btnEl, true, "กำลังลบ...", `<i class="fas fa-trash mr-1"></i> ลบ`);
           if (deleteCallback) await deleteCallback();
+          setButtonLoading(btnEl, false);
           hideModal('confirm-delete-modal');
         };
       }
@@ -1691,14 +1746,13 @@
     }
 
     /**
-     * ค้นหาเกียรติบัตรสำหรับบุคคลทั่วไป
-     * เงื่อนไขสำคัญ: แสดงผลและดาวน์โหลดเฉพาะเกียรติบัตรที่มีสถานะสร้างแล้วเท่านั้น (status === 'generated')
-     * รายการที่มีสถานะรอดำเนินการ (pending) จะไม่พบในการค้นหา
+     * ค้นหาเกียรติบัตรสำหรับบุคคลทั่วไป - ใช้ Spinner ทรงกลมในตัวปุ่มค้นหา และการ์ดแสดงผลเฉพาะจุด
      */
     async function doGuestSearch() {
       const input = (document.getElementById('guest-search-input')?.value || '').trim();
       const templateVal = document.getElementById('guest-template-select')?.value || 'all';
       const resultsArea = document.getElementById('guest-results-area');
+      const btnSearch = document.getElementById('btn-guest-search');
 
       if (!resultsArea) return;
 
@@ -1712,10 +1766,12 @@
         return;
       }
 
+      setButtonLoading(btnSearch, false, "กำลังค้นหา...", `<i class="fas fa-search"></i> ค้นหา`);
+
       resultsArea.innerHTML = `
         <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500">
-          <i class="fas fa-circle-notch spin text-4xl text-primary-500 mb-3 block"></i>
-          <p class="font-medium text-gray-700">กำลังค้นหาเกียรติบัตร...</p>
+          <i class="fa-solid fa-magnifying-glass text-4xl text-primary-500 mb-3 block searching-glass"></i>
+          <p class="font-medium text-gray-700">กำลังค้นหาเกียรติบัตรของคุณ...</p>
         </div>
       `;
 
@@ -1723,7 +1779,6 @@
         let matches = [];
         const apiRes = await callGas('guestSearch', { query: input, templateId: templateVal });
         if (apiRes && apiRes.status && Array.isArray(apiRes.results)) {
-          // กรองซ้ำอย่างเคร่งครัด เฉพาะเกียรติบัตรที่อนุมัติ/สร้างแล้วเท่านั้น (status === 'generated')
           matches = apiRes.results.filter(r => (r.status || 'generated').toLowerCase() === 'generated');
         } else {
           const records = appData.filter(d => d && d.type === 'record');
@@ -1738,10 +1793,10 @@
 
         if (matches.length === 0) {
           resultsArea.innerHTML = `
-            <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500">
+            <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500 fade-in">
               <i class="fas fa-search-minus text-5xl text-gray-300 mb-3 block"></i>
-              <p class="text-lg font-bold text-gray-700">ไม่พบข้อมูลเกียรติบัตรที่สร้างแล้ว</p>
-              <p class="text-xs text-gray-500 mt-1">โปรดตรวจสอบการสะกดชื่อ-นามสกุล หรือเกียรติบัตรของคุณอาจยังอยู่ในระหว่างรอดำเนินการสร้างจากเจ้าหน้าที่</p>
+              <p class="text-lg font-bold text-gray-700">ไม่พบข้อมูลเกียรติบัตร</p>
+              <p class="text-xs text-gray-500 mt-1">โปรดตรวจสอบการสะกดชื่อ-นามสกุล หรือเกียรติบัตรของคุณอาจยังอยู่ในระหว่างรอดำเนินการ</p>
             </div>
           `;
           return;
@@ -1768,13 +1823,13 @@
                   </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
-                  <button onclick="previewGuestCert('${recId}')" class="flex-1 md:flex-initial bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-1.5" title="ดูตัวอย่าง">
+                  <button id="btn-preview-${recId}" onclick="previewGuestCert('${recId}', null, this)" class="flex-1 md:flex-initial bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-1.5" title="ดูตัวอย่าง">
                     <i class="fas fa-eye text-primary-500"></i> ดูตัวอย่าง
                   </button>
-                  <button onclick="downloadGuestCertFormat('${recId}', 'png')" class="flex-1 md:flex-initial bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ PNG">
+                  <button id="btn-dl-png-${recId}" onclick="downloadGuestCertFormat('${recId}', 'png', null, this)" class="flex-1 md:flex-initial bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ PNG">
                     <i class="fas fa-file-image"></i> PNG
                   </button>
-                  <button onclick="downloadGuestCertFormat('${recId}', 'pdf')" class="flex-1 md:flex-initial bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์เอกสาร PDF">
+                  <button id="btn-dl-pdf-${recId}" onclick="downloadGuestCertFormat('${recId}', 'pdf', null, this)" class="flex-1 md:flex-initial bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์เอกสาร PDF">
                     <i class="fas fa-file-pdf"></i> PDF
                   </button>
                 </div>
@@ -1787,9 +1842,11 @@
         console.error("Guest Search Error:", err);
         resultsArea.innerHTML = `
           <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-sm">
-            เกิดข้อผิดพลาดในการเชื่อมต่อ API ค้นหา
+            เกิดข้อผิดพลาดในการค้นหา
           </div>
         `;
+      } finally {
+        setButtonLoading(btnSearch, false);
       }
     }
 
@@ -1857,7 +1914,7 @@
       return tempCanvas;
     }
 
-    async function previewGuestCert(recordId, tplId = null) {
+    async function previewGuestCert(recordId, tplId = null, btnTrigger = null) {
       const record = appData.find(d => String(d.id) === String(recordId) || String(d.__backendId) === String(recordId));
       if (!record) {
         showAlert('error', 'ไม่พบข้อมูล', 'ไม่พบข้อมูลเกียรติบัตรในระบบ');
@@ -1866,7 +1923,8 @@
       const selectedTplId = tplId || document.getElementById('guest-template-select')?.value;
       const tpl = getTemplateForRecord(record, selectedTplId);
 
-      startLoading();
+      if (btnTrigger) setButtonLoading(btnTrigger, true, "โหลด...", `<i class="fas fa-eye text-primary-500"></i> ดูตัวอย่าง`);
+
       try {
         const certCanvas = await generateCertCanvasForRecord(record, tpl);
         const modalCanvas = document.getElementById('guestPreviewCanvas');
@@ -1883,20 +1941,20 @@
         }
 
         const btnPng = document.getElementById('btn-download-preview-png');
-        if (btnPng) btnPng.onclick = () => downloadGuestCertFormat(recordId, 'png', selectedTplId);
+        if (btnPng) btnPng.onclick = () => downloadGuestCertFormat(recordId, 'png', selectedTplId, btnPng);
 
         const btnPdf = document.getElementById('btn-download-preview-pdf');
-        if (btnPdf) btnPdf.onclick = () => downloadGuestCertFormat(recordId, 'pdf', selectedTplId);
+        if (btnPdf) btnPdf.onclick = () => downloadGuestCertFormat(recordId, 'pdf', selectedTplId, btnPdf);
 
         showModal('guest-preview-modal');
       } catch (err) {
         showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างตัวอย่างเกียรติบัตรได้');
       } finally {
-        stopLoading();
+        if (btnTrigger) setButtonLoading(btnTrigger, false);
       }
     }
 
-    async function downloadGuestCertFormat(recordId, format = 'png', tplId = null) {
+    async function downloadGuestCertFormat(recordId, format = 'png', tplId = null, btnTrigger = null) {
       const record = appData.find(d => String(d.id) === String(recordId) || String(d.__backendId) === String(recordId));
       if (!record) {
         showAlert('error', 'ไม่พบข้อมูล', 'ไม่พบข้อมูลเกียรติบัตรในระบบ');
@@ -1905,7 +1963,8 @@
       const selectedTplId = tplId || document.getElementById('guest-template-select')?.value;
       const tpl = getTemplateForRecord(record, selectedTplId);
 
-      startLoading();
+      if (btnTrigger) setButtonLoading(btnTrigger, true, "กำลังโหลด...");
+
       try {
         const certCanvas = await generateCertCanvasForRecord(record, tpl);
         const filename = `${record.certNumber || 'CERT'}_${(record.name || 'guest').replace(/\s+/g, '_')}`;
@@ -1930,7 +1989,7 @@
       } catch (err) {
         showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างไฟล์ดาวน์โหลดได้');
       } finally {
-        stopLoading();
+        if (btnTrigger) setButtonLoading(btnTrigger, false);
       }
     }
 
@@ -2345,9 +2404,7 @@
       }
 
       showConfirmDelete(`คุณต้องการลบ Template "${tpl.name || 'นี้'}" ใช่หรือไม่?`, async () => {
-        startLoading();
         const res = await window.dataSdk.delete(tpl);
-        stopLoading();
 
         if (res.isOk) {
           activeTemplateId = null;
@@ -2384,7 +2441,7 @@
       }
     }
 
-    async function approveMember(id) {
+    async function approveMember(id, btnTrigger = null) {
       if (!isAdmin()) {
         showAlert('warning', 'ไม่มีสิทธิ์', 'เฉพาะผู้ดูแลระบบเท่านั้นที่อนุมัติสมาชิกได้');
         return;
@@ -2392,10 +2449,12 @@
       const member = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
       if (!member) return;
 
+      if (btnTrigger) setButtonLoading(btnTrigger, true, "อนุมัติ...", `<i class="fas fa-check"></i> อนุมัติ`);
+
       const updated = { ...member, status: 'active' };
-      startLoading();
       const res = await window.dataSdk.update(updated);
-      stopLoading();
+
+      if (btnTrigger) setButtonLoading(btnTrigger, false);
 
       if (res.isOk) {
         logActivity(`อนุมัติสมาชิก: ${member.fullname || member.username}`);
@@ -2443,9 +2502,7 @@
       showConfirmDelete('คุณต้องการลบสมาชิกนี้ใช่หรือไม่?', async () => {
         const member = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
         if (member) {
-          startLoading();
           const res = await window.dataSdk.delete(member);
-          stopLoading();
           if (res.isOk) {
             logActivity(`ลบสมาชิก: ${member.fullname || member.username}`);
             showAlert('success', 'สำเร็จ', 'ลบสมาชิกเรียบร้อยแล้ว');
@@ -2511,9 +2568,7 @@
       showConfirmDelete('คุณต้องการลบรายชื่อนี้ใช่หรือไม่?', async () => {
         const record = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
         if (record) {
-          startLoading();
           const res = await window.dataSdk.delete(record);
-          stopLoading();
           if (res.isOk) {
             logActivity(`ลบรายชื่อ: ${record.name}`);
             showAlert('success', 'สำเร็จ', 'ลบข้อมูลรายชื่อแล้ว');
@@ -2564,12 +2619,10 @@
 
     function bulkDeleteRecords() {
       showConfirmDelete(`คุณต้องการลบรายชื่อ ${selectedRecordIds.size} รายการที่เลือกใช่หรือไม่?`, async () => {
-        startLoading();
         for (let id of selectedRecordIds) {
           const record = appData.find(d => String(d.id) === String(id) || String(d.__backendId) === String(id));
           if (record) await window.dataSdk.delete(record);
         }
-        stopLoading();
         logActivity(`ลบรายชื่อจำนวน ${selectedRecordIds.size} รายการ`);
         clearRecordSelection();
         showAlert('success', 'สำเร็จ', 'ลบรายการที่เลือกเรียบร้อยแล้ว');
@@ -2664,7 +2717,8 @@
 
     async function confirmImportData() {
       if (parsedImportRows.length === 0) return;
-      startLoading();
+      const btn = document.getElementById('btn-confirm-import');
+      setButtonLoading(btn, true, "กำลังนำเข้า...", `<i class="fas fa-check"></i> ยืนยันการนำเข้า`);
 
       const mode = document.querySelector('input[name="import-mode"]:checked').value;
       if (mode === 'replace') {
@@ -2676,7 +2730,7 @@
         await window.dataSdk.create(r);
       }
 
-      stopLoading();
+      setButtonLoading(btn, false);
       toggleImportSection();
       logActivity(`นำเข้าข้อมูลรายชื่อ ${parsedImportRows.length} รายการ`);
       parsedImportRows = [];
@@ -2684,6 +2738,9 @@
     }
 
     async function saveSettingsFromPage() {
+      const btn = document.getElementById('btn-save-settings-page');
+      setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก`);
+
       const newPrefix = document.getElementById('setting-page-prefix')?.value.trim();
       const newStartNum = parseInt(document.getElementById('setting-page-start-num')?.value) || 1;
       const newOrient = document.getElementById('setting-page-orientation')?.value || 'landscape';
@@ -2692,7 +2749,6 @@
       systemSettings.startNumber = newStartNum;
       systemSettings.paperOrientation = newOrient;
 
-      startLoading();
       const existingSetting = appData.find(d => d.type === 'setting' || d.type === 'settings');
       const settingItem = {
         id: existingSetting ? (existingSetting.id || existingSetting.__backendId) : generateId(),
@@ -2709,16 +2765,20 @@
       } else {
         await window.dataSdk.create(settingItem);
       }
-      stopLoading();
+
+      setButtonLoading(btn, false);
 
       const modalPrefix = document.getElementById('setting-prefix');
       if (modalPrefix) modalPrefix.value = systemSettings.prefix;
 
       logActivity('บันทึกการตั้งค่าระบบ');
-      showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบลงฐานข้อมูลเรียบร้อยแล้ว');
+      showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว');
     }
 
     async function saveSettings() {
+      const btn = document.getElementById('btn-save-settings-modal');
+      setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก`);
+
       const newPrefix = document.getElementById('setting-prefix')?.value.trim();
       const newStartNum = parseInt(document.getElementById('setting-start-num')?.value) || 1;
       const newOrient = document.getElementById('setting-modal-orientation')?.value || 'landscape';
@@ -2727,7 +2787,6 @@
       systemSettings.startNumber = newStartNum;
       systemSettings.paperOrientation = newOrient;
 
-      startLoading();
       const existingSetting = appData.find(d => d.type === 'setting' || d.type === 'settings');
       const settingItem = {
         id: existingSetting ? (existingSetting.id || existingSetting.__backendId) : generateId(),
@@ -2744,7 +2803,8 @@
       } else {
         await window.dataSdk.create(settingItem);
       }
-      stopLoading();
+
+      setButtonLoading(btn, false);
 
       const pagePrefix = document.getElementById('setting-page-prefix');
       if (pagePrefix) pagePrefix.value = systemSettings.prefix;
@@ -2776,6 +2836,9 @@
         showAlert('warning', 'ไม่มีรายการ', 'ไม่พบรายชื่อที่จะส่งออกเกียรติบัตร');
         return;
       }
+
+      const btnExport = document.getElementById('btn-start-export');
+      setButtonLoading(btnExport, true, "กำลังประมวลผล...", `<i class="fas fa-rocket"></i> เริ่มประมวลผลส่งออก/ดาวน์โหลดเกียรติบัตร`);
 
       const format = document.getElementById('export-format-select').value;
       const resolutionScale = parseFloat(document.getElementById('export-resolution-select').value) || 1.0;
@@ -2876,13 +2939,15 @@
       }
 
       if (card) card.classList.add('hidden');
+      setButtonLoading(btnExport, false);
       logActivity(`Export เกียรติบัตรสำเร็จจำนวน ${targets.length} รายการ (${format.toUpperCase()})`);
       showAlert('success', 'สำเร็จ', 'สร้างและดาวน์โหลดไฟล์เกียรติบัตรเรียบร้อยแล้ว');
       updateUI();
     }
 
     async function refreshData() {
-      startLoading();
+      const icon = document.getElementById('icon-refresh');
+      if (icon) icon.classList.add('spin');
       try {
         const data = await callGas('getData');
         appData = (data && data.length > 0) ? data : appData;
@@ -2901,9 +2966,9 @@
         updateUI();
         showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลเรียบร้อยแล้ว');
       } catch (err) {
-        showAlert('error', 'ผิดพลาด', 'ไม่สามารถอัปเดตข้อมูลสดได้');
+        showAlert('error', 'ผิดพลาด', 'ไม่สามารถอัปเดตข้อมูลได้');
       } finally {
-        stopLoading();
+        if (icon) icon.classList.remove('spin');
       }
     }
 
@@ -3003,7 +3068,7 @@
           </td>
           <td class="px-4 py-3 text-center flex items-center justify-center gap-1">
             ${m.status === 'pending' ? `
-              <button onclick="approveMember('${m.__backendId || m.id}')" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="อนุมัติสมาชิก">
+              <button onclick="approveMember('${m.__backendId || m.id}', this)" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="อนุมัติสมาชิก">
                 <i class="fas fa-check"></i> อนุมัติ
               </button>
             ` : ''}
@@ -3078,7 +3143,7 @@
     }
 
     async function initApp() {
-      startLoading();
+      showFullPageLoading("กำลังโหลด...");
       try {
         const data = await callGas('getData');
         if (Array.isArray(data) && data.length > 0) {
@@ -3100,7 +3165,7 @@
         console.warn("Failed to load backend data, initializing defaults:", err);
         appData = [...defaultTemplates, ...defaultRecords];
       } finally {
-        stopLoading();
+        hideFullPageLoading();
         setupPasswordHoldToReveal();
         initCanvas();
         await populateGuestTemplates();
@@ -3114,10 +3179,12 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('login-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = document.getElementById('btn-login-submit');
+        setButtonLoading(btn, true, "กำลังเข้าสู่ระบบ...", `<i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ`);
+
         const u = document.getElementById('login-username').value.trim();
         const p = document.getElementById('login-password').value;
 
-        startLoading();
         try {
           const freshData = await callGas('getData');
           if (Array.isArray(freshData) && freshData.length > 0) {
@@ -3126,7 +3193,7 @@
         } catch (err) {
           console.warn("Could not sync fresh member data before login:", err);
         } finally {
-          stopLoading();
+          setButtonLoading(btn, false);
         }
 
         const members = getMembers();
@@ -3164,6 +3231,9 @@
 
       document.getElementById('register-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = document.getElementById('btn-register-submit');
+        setButtonLoading(btn, true, "กำลังสมัครสมาชิก...", `<i class="fas fa-paper-plane"></i> สมัครสมาชิก`);
+
         const username = document.getElementById('reg-username').value.trim();
         const password = document.getElementById('reg-password').value;
         const fullname = document.getElementById('reg-fullname').value.trim();
@@ -3171,6 +3241,7 @@
 
         const existingMembers = getMembers();
         if (existingMembers.some(m => m.username.toLowerCase() === username.toLowerCase())) {
+          setButtonLoading(btn, false);
           showAlert('warning', 'คำเตือน', 'ชื่อผู้ใช้นี้มีผู้ใช้งานแล้ว กรุณาใช้ชื่อผู้ใช้อื่น');
           return;
         }
@@ -3188,10 +3259,8 @@
           createdAt: new Date().toISOString()
         };
 
-        startLoading();
         const res = await window.dataSdk.create(newMember);
-        stopLoading();
-
+        setButtonLoading(btn, false);
         hideModal('register-modal');
 
         if (res.isOk) {
@@ -3209,6 +3278,9 @@
       document.getElementById('member-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!isAdmin()) return;
+        const btn = document.getElementById('btn-save-member');
+        setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก`);
+
         const editId = document.getElementById('member-edit-id').value;
         const username = document.getElementById('member-username').value.trim();
         const password = document.getElementById('member-password').value;
@@ -3222,9 +3294,7 @@
           if (member) {
             const updated = { ...member, username, fullname, email, role, status };
             if (password) updated.password = password;
-            startLoading();
             const res = await window.dataSdk.update(updated);
-            stopLoading();
             if (res.isOk) {
               logActivity(`แก้ไขข้อมูลสมาชิก: ${fullname}`);
               showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
@@ -3233,6 +3303,7 @@
         } else {
           const existingMembers = getMembers();
           if (existingMembers.some(m => m.username.toLowerCase() === username.toLowerCase())) {
+            setButtonLoading(btn, false);
             showAlert('warning', 'คำเตือน', 'ชื่อผู้ใช้นี้มีผู้ใช้งานแล้ว');
             return;
           }
@@ -3248,20 +3319,22 @@
             status,
             createdAt: new Date().toISOString()
           };
-          startLoading();
           const res = await window.dataSdk.create(newMember);
-          stopLoading();
           if (res.isOk) {
             logActivity(`เพิ่มสมาชิกใหม่: ${fullname}`);
             showAlert('success', 'สำเร็จ', 'เพิ่มสมาชิกใหม่เรียบร้อยแล้ว');
           }
         }
 
+        setButtonLoading(btn, false);
         hideModal('member-modal');
       });
 
       document.getElementById('record-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = document.getElementById('btn-save-record');
+        setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก`);
+
         const editId = document.getElementById('record-edit-id').value;
         const name = document.getElementById('record-name').value;
         const school = document.getElementById('record-school').value;
@@ -3272,9 +3345,7 @@
           const record = appData.find(d => String(d.id) === String(editId) || String(d.__backendId) === String(editId));
           if (record) {
             const updated = { ...record, name, school, certNumber, date };
-            startLoading();
             const res = await window.dataSdk.update(updated);
-            stopLoading();
             if (res.isOk) {
               logActivity(`แก้ไขข้อมูลรายชื่อ: ${name}`);
               showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลรายชื่อเรียบร้อยแล้ว');
@@ -3288,21 +3359,22 @@
             name, school, certNumber, date,
             status: 'pending'
           };
-          startLoading();
           const res = await window.dataSdk.create(newRecord);
-          stopLoading();
           if (res.isOk) {
             logActivity(`เพิ่มรายชื่อผู้รับเกียรติบัตร: ${name}`);
             showAlert('success', 'สำเร็จ', 'เพิ่มรายชื่อใหม่เรียบร้อยแล้ว');
           }
         }
 
+        setButtonLoading(btn, false);
         hideModal('record-modal');
       });
 
       document.getElementById('user-profile-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!currentUser) return;
+        const btn = document.getElementById('btn-save-profile');
+        setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก`);
 
         const fullname = document.getElementById('profile-fullname').value.trim();
         const email = document.getElementById('profile-email').value.trim();
@@ -3313,9 +3385,8 @@
           const updated = { ...member, fullname, email };
           if (password) updated.password = password;
 
-          startLoading();
           const res = await window.dataSdk.update(updated);
-          stopLoading();
+          setButtonLoading(btn, false);
 
           if (res.isOk) {
             currentUser.fullname = fullname;
@@ -3328,22 +3399,29 @@
           } else {
             showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลส่วนตัวได้');
           }
+        } else {
+          setButtonLoading(btn, false);
         }
       });
 
       document.getElementById('save-template-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = document.getElementById('btn-confirm-save-template');
+        setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก Template`);
+
         const newName = document.getElementById('save-template-name-input').value.trim();
-        if (!newName) return;
+        if (!newName) {
+          setButtonLoading(btn, false);
+          return;
+        }
 
         const tpl = getActiveTemplate();
         tpl.name = newName;
         if (currentUser && !tpl.member_id) tpl.member_id = currentUser.id;
 
         hideModal('save-template-modal');
-        startLoading();
         const res = await window.dataSdk.update(tpl);
-        stopLoading();
+        setButtonLoading(btn, false);
 
         if (res.isOk) {
           updateUI();
@@ -3356,8 +3434,14 @@
 
       document.getElementById('create-template-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = document.getElementById('btn-confirm-create-template');
+        setButtonLoading(btn, true, "กำลังสร้าง...", `<i class="fas fa-check"></i> ยืนยันสร้างใหม่`);
+
         const name = document.getElementById('create-template-name-input').value.trim();
-        if (!name) return;
+        if (!name) {
+          setButtonLoading(btn, false);
+          return;
+        }
 
         const isPortrait = systemSettings.paperOrientation === 'portrait';
         const w = isPortrait ? 2480 : 3508;
@@ -3378,13 +3462,12 @@
             { id: generateId(), field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: centerX, y: Math.round(h * 0.58), fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', textAlign: 'center', bold: true, italic: false },
             { id: generateId(), field: 'certNumber', staticText: 'เลขที่ ' + systemSettings.prefix + '001', x: w - 400, y: Math.round(h * 0.1), fontSize: 40, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'right', bold: false, italic: false },
             { id: generateId(), field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: centerX, y: Math.round(h * 0.74), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false },
-            { id: generateId(), field: 'signer', staticText: '(นายณรงค์เดช ชัยเดชะ)', x: centerX, y: Math.round(h * 0.86), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: true, italic: false },
+            { id: generateId(), field: 'signer', staticText: '(นายธราเชฎฐ์ สุคนธ์)', x: centerX, y: Math.round(h * 0.86), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: true, italic: false },
             { id: generateId(), field: 'position', staticText: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง', x: centerX, y: Math.round(h * 0.9), fontSize: 38, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false }
           ]
         };
 
         hideModal('create-template-modal');
-        startLoading();
         try {
           const res = await window.dataSdk.create(newTpl);
           activeTemplateId = String(res?.data?.id || res?.data?.__backendId || newTpl.id);
@@ -3398,7 +3481,7 @@
         } catch (err) {
           showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้าง Template ได้');
         } finally {
-          stopLoading();
+          setButtonLoading(btn, false);
         }
       });
     });
