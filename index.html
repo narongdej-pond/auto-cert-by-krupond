@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบสร้างเกียรติบัตรอัตโนมัติ - วิทยาลัยเทคนิคดอนเมือง</title>
-  
+
   <!-- PWA & Mobile Meta Tags -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2563eb">
-  
+
   <!-- iOS Apple Meta Tags -->
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,23 +25,23 @@
       });
     }
   </script>
-  
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  
+
   <!-- Thai Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@300;400;500;600;700&family=Mitr:wght@300;400;500;600;700&family=Mali:wght@300;400;500;600;700&family=Charm:wght@400;700&family=Chakra+Petch:wght@300;400;500;600;700&family=Chonburi&family=Kodchasan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
+
   <!-- CDN Libraries for Export & Process -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-  
+
   <!-- Tailwind Configuration -->
   <script>
     tailwind.config = {
@@ -68,7 +68,7 @@
       }
     }
   </script>
-  
+
   <style>
     * { font-family: 'Sarabun', sans-serif; }
     .gradient-bg { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%); }
@@ -154,7 +154,7 @@
 </head>
 <body class="h-full bg-gray-50 font-sarabun">
   <div id="app" class="h-full">
-    
+
     <div id="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center hidden">
       <div class="text-center">
         <i class="fas fa-circle-notch spin text-5xl text-primary-500 mb-4"></i>
@@ -281,7 +281,7 @@
           <button onclick="showView('dashboard')" class="sidebar-item active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="dashboard">
             <i class="fas fa-chart-pie w-5"></i> แดชบอร์ด
           </button>
-          
+
           <button id="sidebar-members-btn" onclick="showView('members')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center justify-between hidden" data-view="members">
             <div class="flex items-center gap-3 text-sm font-medium">
               <i class="fas fa-users-gear w-5"></i> จัดการสมาชิก
@@ -602,7 +602,6 @@
                       <button onclick="createNewTemplate()" class="bg-primary-600 hover:bg-primary-700 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="สร้าง Template ใหม่">
                         <i class="fas fa-plus-circle"></i> ใหม่
                       </button>
-                      <!-- เพิ่มปุ่ม ลบ Template -->
                       <button onclick="deleteCurrentTemplate()" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="ลบ Template นี้">
                         <i class="fas fa-trash-alt"></i> ลบ
                       </button>
@@ -622,12 +621,13 @@
                   </div>
                   <div class="flex items-center gap-2">
                     <button onclick="openAddFieldModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                      <i class="fas fa-font mr-1"></i> เพิ่มข้อความ
+                      <i class="fas fa-plus-circle mr-1"></i> เพิ่มองค์ประกอบ/ข้อความ
                     </button>
                     <button onclick="document.getElementById('designer-bg-input').click()" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
                       <i class="fas fa-image mr-1"></i> ภาพพื้นหลัง
                     </button>
                     <input type="file" id="designer-bg-input" accept="image/*" class="hidden" onchange="handleBgUpload(event)">
+                    <input type="file" id="designer-signature-input" accept="image/*" class="hidden" onchange="handleSignatureUpload(event)">
                     <button onclick="saveCurrentTemplate()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
                       <i class="fas fa-save mr-1"></i> บันทึก Template
                     </button>
@@ -665,49 +665,67 @@
                     <button onclick="deleteSelectedElement()" class="text-red-500 hover:text-red-700 text-xs font-normal"><i class="fas fa-trash mr-1"></i>ลบ</button>
                   </h4>
 
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">ฟอนต์ (Google Fonts)</label>
-                    <select id="prop-font-family" onchange="updateElementProp('fontFamily', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
-                      <option value="Sarabun">Sarabun (ทางการ)</option>
-                      <option value="Kanit">Kanit (สมัยใหม่)</option>
-                      <option value="Prompt">Prompt (โมเดิร์น)</option>
-                      <option value="Noto Sans Thai">Noto Sans Thai</option>
-                      <option value="Noto Serif Thai">Noto Serif Thai</option>
-                      <option value="Mitr">Mitr</option>
-                      <option value="Mali">Mali (น่ารัก)</option>
-                      <option value="Charm">Charm (ลายมือ)</option>
-                      <option value="Chakra Petch">Chakra Petch (เทค)</option>
-                      <option value="Chonburi">Chonburi (หัวหนา)</option>
-                      <option value="Kodchasan">Kodchasan</option>
-                    </select>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-2">
+                  <div id="prop-text-controls" class="space-y-3">
                     <div>
-                      <label class="block text-xs font-medium text-gray-600 mb-1">ขนาดฟอนต์ (px)</label>
-                      <input type="number" id="prop-font-size" min="10" max="300" onchange="updateElementProp('fontSize', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                      <label class="block text-xs font-medium text-gray-600 mb-1">ฟอนต์ (Google Fonts)</label>
+                      <select id="prop-font-family" onchange="updateElementProp('fontFamily', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                        <option value="Sarabun">Sarabun (ทางการ)</option>
+                        <option value="Kanit">Kanit (สมัยใหม่)</option>
+                        <option value="Prompt">Prompt (โมเดิร์น)</option>
+                        <option value="Noto Sans Thai">Noto Sans Thai</option>
+                        <option value="Noto Serif Thai">Noto Serif Thai</option>
+                        <option value="Mitr">Mitr</option>
+                        <option value="Mali">Mali (น่ารัก)</option>
+                        <option value="Charm">Charm (ลายมือ)</option>
+                        <option value="Chakra Petch">Chakra Petch (เทค)</option>
+                        <option value="Chonburi">Chonburi (หัวหนา)</option>
+                        <option value="Kodchasan">Kodchasan</option>
+                      </select>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">ขนาดฟอนต์ (px)</label>
+                        <input type="number" id="prop-font-size" min="10" max="300" onchange="updateElementProp('fontSize', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                      </div>
+                      <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">สีข้อความ</label>
+                        <input type="color" id="prop-color" onchange="updateElementProp('color', this.value)" class="w-full h-8 p-1 border border-gray-200 rounded-lg cursor-pointer">
+                      </div>
+                    </div>
+
                     <div>
-                      <label class="block text-xs font-medium text-gray-600 mb-1">สีข้อความ</label>
-                      <input type="color" id="prop-color" onchange="updateElementProp('color', this.value)" class="w-full h-8 p-1 border border-gray-200 rounded-lg cursor-pointer">
+                      <label class="block text-xs font-medium text-gray-600 mb-1">สไตล์ตัวหนังสือ</label>
+                      <div class="flex gap-1">
+                        <button id="prop-btn-bold" onclick="toggleElementStyle('bold')" class="flex-1 py-1 border border-gray-200 rounded text-xs font-bold hover:bg-gray-100">B</button>
+                        <button id="prop-btn-italic" onclick="toggleElementStyle('italic')" class="flex-1 py-1 border border-gray-200 rounded text-xs italic hover:bg-gray-100">I</button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">การจัดตำแหน่ง</label>
+                      <div class="flex gap-1">
+                        <button id="prop-align-left" onclick="updateElementProp('textAlign', 'left')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-left"></i></button>
+                        <button id="prop-align-center" onclick="updateElementProp('textAlign', 'center')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-center"></i></button>
+                        <button id="prop-align-right" onclick="updateElementProp('textAlign', 'right')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-right"></i></button>
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">สไตล์ตัวหนังสือ</label>
-                    <div class="flex gap-1">
-                      <button id="prop-btn-bold" onclick="toggleElementStyle('bold')" class="flex-1 py-1 border border-gray-200 rounded text-xs font-bold hover:bg-gray-100">B</button>
-                      <button id="prop-btn-italic" onclick="toggleElementStyle('italic')" class="flex-1 py-1 border border-gray-200 rounded text-xs italic hover:bg-gray-100">I</button>
+                  <div id="prop-image-controls" class="hidden space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">ความกว้าง (px)</label>
+                        <input type="number" id="prop-img-width" min="20" max="2000" onchange="updateElementProp('width', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                      </div>
+                      <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">ความสูง (px)</label>
+                        <input type="number" id="prop-img-height" min="20" max="2000" onchange="updateElementProp('height', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                      </div>
                     </div>
-                  </div>
-
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">การจัดตำแหน่ง</label>
-                    <div class="flex gap-1">
-                      <button id="prop-align-left" onclick="updateElementProp('textAlign', 'left')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-left"></i></button>
-                      <button id="prop-align-center" onclick="updateElementProp('textAlign', 'center')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-center"></i></button>
-                      <button id="prop-align-right" onclick="updateElementProp('textAlign', 'right')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-right"></i></button>
-                    </div>
+                    <button onclick="document.getElementById('designer-signature-input').click()" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-1.5 rounded-lg text-xs border border-blue-200 transition">
+                      <i class="fas fa-upload mr-1"></i> เปลี่ยนรูปภาพลายเซ็น
+                    </button>
                   </div>
 
                   <div class="grid grid-cols-2 gap-2">
@@ -734,7 +752,7 @@
           <div id="view-export" class="app-view hidden">
             <div class="bg-white rounded-xl card-shadow p-6 mb-6">
               <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-sliders text-primary-500 mr-2"></i>ตัวเลือกการส่งออกเกียรติบัตร</h3>
-              
+
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card active" data-source="all" onclick="selectExportSource('all')">
                   <div>
@@ -825,7 +843,6 @@
                   </div>
                 </div>
 
-                <!-- เพิ่มการตั้งค่าหน้ากระดาษ A4 -->
                 <div class="p-4 border-2 border-gray-100 rounded-xl bg-gray-50/50">
                   <label class="block text-gray-800 font-bold mb-1 text-sm"><i class="fas fa-file-lines text-purple-500 mr-2"></i>ทิศทางหน้ากระดาษ A4</label>
                   <select id="setting-page-orientation" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm mt-1 bg-white">
@@ -857,7 +874,6 @@
                 </div>
                 <div>
                   <label class="block text-gray-700 font-medium mb-1 text-sm">อีเมล</label>
-                  <!-- ช่องนี้จะแสดงอีเมลปัจจุบัน -->
                   <input type="email" id="profile-email" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none">
                 </div>
                 <div>
@@ -1004,10 +1020,11 @@
       </div>
     </div>
 
+    <!-- Modal: Add Designer Field -->
     <div id="add-field-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
-          <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-plus-circle text-primary-500 mr-2"></i>เลือกประเภทข้อความที่จะเพิ่ม</h3>
+          <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-plus-circle text-primary-500 mr-2"></i>เลือกประเภทข้อความ/องค์ประกอบ</h3>
           <button onclick="hideModal('add-field-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
         </div>
         <div class="grid grid-cols-2 gap-3">
@@ -1015,6 +1032,9 @@
           <button onclick="addCanvasElement('school')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-school mr-2 text-primary-500"></i>โรงเรียน/หน่วยงาน</button>
           <button onclick="addCanvasElement('certNumber')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-hashtag mr-2 text-primary-500"></i>เลขที่เกียรติบัตร</button>
           <button onclick="addCanvasElement('date')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-calendar mr-2 text-primary-500"></i>วันที่ออกเกียรติบัตร</button>
+          <button onclick="addCanvasElement('signer')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-file-signature mr-2 text-primary-500"></i>ชื่อผู้ลงนาม</button>
+          <button onclick="addCanvasElement('position')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-id-badge mr-2 text-primary-500"></i>ตำแหน่งผู้ลงนาม</button>
+          <button onclick="document.getElementById('designer-signature-input').click(); hideModal('add-field-modal');" class="col-span-2 p-3 border-2 border-blue-200 bg-blue-50/50 hover:bg-blue-100 rounded-xl font-bold text-blue-800 text-sm text-left"><i class="fas fa-signature mr-2 text-blue-600"></i>อัปโหลดรูปภาพลายเซ็น (PNG/JPG)</button>
           <button onclick="addCanvasElement('static')" class="col-span-2 p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-font mr-2 text-primary-500"></i>ข้อความคงที่ (ระบุเอง)</button>
         </div>
       </div>
@@ -1128,7 +1148,7 @@
             <input type="text" id="create-template-name-input" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="เช่น เกียรติบัตรอบรมวิชาการ">
           </div>
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
-            <i class="fas fa-info-circle mr-1"></i> ระบบจะสร้างโครงร่าง Template เริ่มต้นตามทิศทางหน้ากระดาษที่ตั้งค่าไว้ คุณสามารถปรับแต่งข้อความและอัปโหลดรูปพื้นหลังได้ทันที
+            <i class="fas fa-info-circle mr-1"></i> ระบบจะสร้างโครงร่าง Template เริ่มต้นตามทิศทางหน้ากระดาษที่ตั้งค่าไว้ คุณสามารถปรับแต่งข้อความ ลายเซ็น และอัปโหลดรูปพื้นหลังได้ทันที
           </div>
           <div class="flex gap-3 pt-2">
             <button type="button" onclick="hideModal('create-template-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition text-sm"> ยกเลิก </button>
@@ -1146,22 +1166,16 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    // -------------------------------------------------------------
-    // URL ของ Web App ที่ได้จาก Google Apps Script
-    // -------------------------------------------------------------
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzV-u9CDmWjn1_6DqEgscTbrEUJFtvLED-ynYbTF4D-bfRKJGjZiMgntQHkx4AXNK3YZw/exec';
-
     let SPREADSHEET_ID = '176RCjWx2VequADvLbCmE9HenKQ1EIqZEfgFezLxASsQ';
 
-    // Global Settings Configuration (รวมตั้งค่าทิศทางกระดาษ)
     let systemSettings = {
       prefix: 'CERT-2026/',
       startNumber: 1,
       defaultFont: 'Sarabun',
-      paperOrientation: 'landscape' // 'landscape' (3508x2480) หรือ 'portrait' (2480x3508)
+      paperOrientation: 'landscape'
     };
 
-    // Application State Variables
     let appData = [];
     let currentUser = null;
     let currentPage = 'guest';
@@ -1180,7 +1194,6 @@
     let parsedImportRows = [];
     let activityLogs = [];
 
-    // Default Fallback Template
     const defaultTemplates = [
       {
         id: 'tpl_default_1',
@@ -1196,27 +1209,22 @@
           { id: 'el_3', field: 'static', staticText: 'ได้ผ่านการเข้าร่วมโครงการพัฒนาทักษะวิชาชีพและคุณธรรมจริยธรรม', x: 1754, y: 1300, fontSize: 55, fontFamily: 'Sarabun', color: '#475569', textAlign: 'center', bold: false, italic: false },
           { id: 'el_4', field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: 1754, y: 1500, fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', textAlign: 'center', bold: true, italic: false },
           { id: 'el_5', field: 'certNumber', staticText: 'เลขที่ CERT-2026/001', x: 3100, y: 250, fontSize: 40, fontFamily: 'Sarabun', color: '#64748b', textAlign: 'right', bold: false, italic: false },
-          { id: 'el_6', field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: 1754, y: 1850, fontSize: 45, fontFamily: 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false }
+          { id: 'el_6', field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: 1754, y: 1850, fontSize: 45, fontFamily: 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false },
+          { id: 'el_7', field: 'signer', staticText: '(นายณรงค์เดช ชัยเดชะ)', x: 1754, y: 2150, fontSize: 45, fontFamily: 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: true, italic: false },
+          { id: 'el_8', field: 'position', staticText: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง', x: 1754, y: 2230, fontSize: 38, fontFamily: 'Sarabun', color: '#475569', textAlign: 'center', bold: false, italic: false }
         ]
       }
     ];
 
-    // Default Sample Records
     const defaultRecords = [
       { id: 'rec_1', member_id: '', type: 'record', name: 'นายสมชาย ใจดี', school: 'วิทยาลัยเทคนิคดอนเมือง', certNumber: 'CERT-2026/001', date: '16 สิงหาคม 2569', status: 'pending' },
       { id: 'rec_2', member_id: '', type: 'record', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
     ];
 
-    /**
-     * ฟังก์ชันแปลงรูปแบบวันที่และเวลาภาษาไทยที่สมบูรณ์
-     * รองรับสตริงเช่น: "Thu Aug 17 2569 00:00:00 GMT+0700 (เวลาอินโดจีน)"
-     * จะถูกแปลงเป็น: "17 สิงหาคม 2569 08:30:05" หรือ "17 สิงหาคม 2569"
-     */
     function formatThaiDateTime(raw) {
       if (!raw) return '-';
       let str = String(raw).trim();
 
-      // หากเป็นรูปแบบภาษาไทยอยู่แล้ว เช่น "16 สิงหาคม 2569" ให้ส่งคืนทันที
       if (/^\d{1,2}\s+[ก-ฮ]+\s+\d{4}/.test(str)) {
         return str;
       }
@@ -1226,10 +1234,8 @@
         'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
       ];
 
-      // พยายามแปลงเป็น Date Object
       let d = new Date(str);
 
-      // กรณีที่แปลงไม่ได้เนื่องจากปี พ.ศ. เช่น "Thu Aug 17 2569 ..." ให้แก้ปีพ.ศ. เป็น ค.ศ. ก่อนสร้าง Date
       if (isNaN(d.getTime())) {
         let fixedStr = str.replace(/\b(25\d{2}|26\d{2})\b/g, (match) => parseInt(match) - 543);
         d = new Date(fixedStr);
@@ -1239,13 +1245,12 @@
         const day = d.getDate();
         const month = thaiMonths[d.getMonth()];
         let year = d.getFullYear();
-        if (year < 2200) year += 543; // แปลง ค.ศ. เป็น พ.ศ.
+        if (year < 2200) year += 543;
 
         const hours = String(d.getHours()).padStart(2, '0');
         const minutes = String(d.getMinutes()).padStart(2, '0');
         const seconds = String(d.getSeconds()).padStart(2, '0');
 
-        // หากเวลาเป็น 00:00:00 ให้แสดงเฉพาะวันที่
         if (hours === '00' && minutes === '00' && seconds === '00') {
           return `${day} ${month} ${year}`;
         }
@@ -1266,7 +1271,7 @@
     function getTemplates() {
       const tpls = appData.filter(d => d && d.type === 'template');
       const pool = tpls.length > 0 ? tpls : defaultTemplates;
-      
+
       if (!currentUser || isAdmin()) return pool;
 
       const userTpls = pool.filter(t => !t.member_id || String(t.member_id) === String(currentUser.id));
@@ -1344,7 +1349,6 @@
       if (activityLogs.length > 10) activityLogs.pop();
       renderActivityLogs();
 
-      // บันทึกลงตาราง Logs ใน Google Sheets อัตโนมัติ
       window.dataSdk.create({
         id: generateId(),
         type: 'log',
@@ -1372,9 +1376,6 @@
       `).join('');
     }
 
-    // -------------------------------------------------------------
-    // ฟังก์ชันเชื่อมต่อกับ Google Apps Script (Code.gs)
-    // -------------------------------------------------------------
     async function callGas(functionName, payloadArg) {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         return new Promise((resolve, reject) => {
@@ -1417,7 +1418,6 @@
       return null;
     }
 
-    // Data SDK Fetch Wrapper
     window.dataSdk = {
       create: async function(item) {
         try {
@@ -1466,7 +1466,7 @@
       const loadingEl = document.getElementById('loading');
       const textEl = document.getElementById('loadingText');
       if (!loadingEl || !textEl) return;
-      
+
       loadingEl.classList.remove('hidden');
       textEl.innerText = "กำลังส่งคำขอไปยังระบบ...";
       isAlternateLoadingText = false;
@@ -1542,7 +1542,7 @@
       const iconEl = document.getElementById('alert-icon');
       const titleEl = document.getElementById('alert-title');
       const messageEl = document.getElementById('alert-message');
-      
+
       if (iconEl) {
         if (type === 'success') {
           iconEl.className = 'w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4';
@@ -1558,7 +1558,7 @@
           iconEl.innerHTML = '<i class="fas fa-info text-3xl text-blue-500"></i>';
         }
       }
-      
+
       if (titleEl) titleEl.textContent = title;
       if (messageEl) messageEl.textContent = message;
       showModal('alert-modal');
@@ -1627,8 +1627,7 @@
         const badge = document.getElementById('export-selected-count-badge');
         if (badge) badge.textContent = selectedRecordIds.size;
       }
-      
-      // ข้อที่ 1: แสดงอีเมลปัจจุบันในช่องแก้ไขข้อมูลส่วนตัว
+
       if (viewName === 'profile' && currentUser) {
         const nameInput = document.getElementById('profile-fullname');
         const emailInput = document.getElementById('profile-email');
@@ -1658,9 +1657,6 @@
       if (sidebar) sidebar.classList.toggle('-ml-64');
     }
 
-    // -------------------------------------------------------------
-    // ค้นหาและดึง Template สาธารณะสำหรับ Guest
-    // -------------------------------------------------------------
     async function populateGuestTemplates() {
       const select = document.getElementById('guest-template-select');
       if (!select) return;
@@ -1694,6 +1690,11 @@
       return getActiveTemplate();
     }
 
+    /**
+     * ค้นหาเกียรติบัตรสำหรับบุคคลทั่วไป
+     * เงื่อนไขสำคัญ: แสดงผลและดาวน์โหลดเฉพาะเกียรติบัตรที่มีสถานะสร้างแล้วเท่านั้น (status === 'generated')
+     * รายการที่มีสถานะรอดำเนินการ (pending) จะไม่พบในการค้นหา
+     */
     async function doGuestSearch() {
       const input = (document.getElementById('guest-search-input')?.value || '').trim();
       const templateVal = document.getElementById('guest-template-select')?.value || 'all';
@@ -1722,14 +1723,16 @@
         let matches = [];
         const apiRes = await callGas('guestSearch', { query: input, templateId: templateVal });
         if (apiRes && apiRes.status && Array.isArray(apiRes.results)) {
-          matches = apiRes.results;
+          // กรองซ้ำอย่างเคร่งครัด เฉพาะเกียรติบัตรที่อนุมัติ/สร้างแล้วเท่านั้น (status === 'generated')
+          matches = apiRes.results.filter(r => (r.status || 'generated').toLowerCase() === 'generated');
         } else {
           const records = appData.filter(d => d && d.type === 'record');
           matches = records.filter(r => {
+            const isGenerated = (r.status === 'generated');
             const nameMatch = (r.name || '').toLowerCase().includes(input.toLowerCase());
             const certMatch = (r.certNumber || '').toLowerCase().includes(input.toLowerCase());
             const schoolMatch = (r.school || '').toLowerCase().includes(input.toLowerCase());
-            return (nameMatch || certMatch || schoolMatch);
+            return isGenerated && (nameMatch || certMatch || schoolMatch);
           });
         }
 
@@ -1737,14 +1740,13 @@
           resultsArea.innerHTML = `
             <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500">
               <i class="fas fa-search-minus text-5xl text-gray-300 mb-3 block"></i>
-              <p class="text-lg font-bold text-gray-700">ไม่พบข้อมูลเกียรติบัตร</p>
-              <p class="text-xs mt-1">โปรดตรวจสอบการสะกดชื่อ-นามสกุล หรือลองค้นหาด้วยคำค้นหาอื่น</p>
+              <p class="text-lg font-bold text-gray-700">ไม่พบข้อมูลเกียรติบัตรที่สร้างแล้ว</p>
+              <p class="text-xs text-gray-500 mt-1">โปรดตรวจสอบการสะกดชื่อ-นามสกุล หรือเกียรติบัตรของคุณอาจยังอยู่ในระหว่างรอดำเนินการสร้างจากเจ้าหน้าที่</p>
             </div>
           `;
           return;
         }
 
-        // ข้อที่ 4: แสดงผลวันที่และเวลาจากรูปแบบภาษาอังกฤษ/วันที่ยาว ให้เป็นภาษาไทยอ่านง่าย เช่น 17 สิงหาคม 2569 08:30:05
         resultsArea.innerHTML = `
           <div class="flex items-center justify-between mb-2 px-1">
             <h3 class="font-bold text-gray-800 text-sm md:text-base"><i class="fas fa-list-check text-primary-500 mr-2"></i>พบเกียรติบัตร ${matches.length} รายการ</h3>
@@ -1819,21 +1821,38 @@
         tctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
       }
 
-      (tpl.elements || []).forEach(el => {
-        tctx.save();
-        tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize || 50}px "${el.fontFamily || 'Sarabun'}", sans-serif`;
-        tctx.fillStyle = el.color || '#000000';
-        tctx.textAlign = el.textAlign || 'center';
+      for (let el of (tpl.elements || [])) {
+        if (el.type === 'image' || el.field === 'signatureImg') {
+          if (el.imgSrc) {
+            const sigImg = new Image();
+            sigImg.crossOrigin = 'Anonymous';
+            sigImg.src = el.imgSrc;
+            await new Promise(res => {
+              sigImg.onload = res;
+              sigImg.onerror = res;
+            });
+            const w = el.width || 300;
+            const h = el.height || 120;
+            tctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
+          }
+        } else {
+          tctx.save();
+          tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize || 50}px "${el.fontFamily || 'Sarabun'}", sans-serif`;
+          tctx.fillStyle = el.color || '#000000';
+          tctx.textAlign = el.textAlign || 'center';
 
-        let text = el.staticText || '';
-        if (el.field === 'name') text = record.name || '';
-        if (el.field === 'school') text = record.school || '';
-        if (el.field === 'certNumber') text = record.certNumber || '';
-        if (el.field === 'date') text = formatThaiDateTime(record.date || '');
+          let text = el.staticText || '';
+          if (el.field === 'name') text = record.name || '';
+          if (el.field === 'school') text = record.school || '';
+          if (el.field === 'certNumber') text = record.certNumber || '';
+          if (el.field === 'date') text = formatThaiDateTime(record.date || '');
+          if (el.field === 'signer') text = record.signer || el.staticText || '(นายณรงค์เดช ชัยเดชะ)';
+          if (el.field === 'position') text = record.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
 
-        tctx.fillText(text, el.x, el.y);
-        tctx.restore();
-      });
+          tctx.fillText(text, el.x, el.y);
+          tctx.restore();
+        }
+      }
 
       return tempCanvas;
     }
@@ -1977,36 +1996,59 @@
         name: '[ชื่อ-นามสกุล]',
         school: '[โรงเรียน/หน่วยงาน]',
         certNumber: 'CERT-2026/XXX',
-        date: '16 สิงหาคม 2569'
+        date: '16 สิงหาคม 2569',
+        signer: '(นายณรงค์เดช ชัยเดชะ)',
+        position: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง'
       };
 
       (tpl.elements || []).forEach((el, index) => {
-        ctx.save();
-        ctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
-        ctx.fillStyle = el.color || '#000000';
-        ctx.textAlign = el.textAlign || 'center';
+        if (el.type === 'image' || el.field === 'signatureImg') {
+          if (el.imgSrc) {
+            const sigImg = new Image();
+            sigImg.src = el.imgSrc;
+            const w = el.width || 300;
+            const h = el.height || 120;
+            const drawSig = () => {
+              ctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
+              if (index === selectedElementIndex) {
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(el.x - w / 2 - 5, el.y - h / 2 - 5, w + 10, h + 10);
+              }
+            };
+            if (sigImg.complete) drawSig();
+            else sigImg.onload = drawSig;
+          }
+        } else {
+          ctx.save();
+          ctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
+          ctx.fillStyle = el.color || '#000000';
+          ctx.textAlign = el.textAlign || 'center';
 
-        let text = el.staticText || '';
-        if (el.field === 'name') text = sample.name;
-        if (el.field === 'school') text = sample.school;
-        if (el.field === 'certNumber') text = sample.certNumber;
-        if (el.field === 'date') text = formatThaiDateTime(sample.date);
+          let text = el.staticText || '';
+          if (el.field === 'name') text = sample.name;
+          if (el.field === 'school') text = sample.school;
+          if (el.field === 'certNumber') text = sample.certNumber;
+          if (el.field === 'date') text = formatThaiDateTime(sample.date);
+          if (el.field === 'signer') text = sample.signer || el.staticText || '(นายณรงค์เดช ชัยเดชะ)';
+          if (el.field === 'position') text = sample.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
 
-        ctx.fillText(text, el.x, el.y);
+          ctx.fillText(text, el.x, el.y);
 
-        if (index === selectedElementIndex) {
-          ctx.strokeStyle = '#2563eb';
-          ctx.lineWidth = 4;
-          const metrics = ctx.measureText(text);
-          const w = metrics.width + 40;
-          const h = el.fontSize + 20;
-          let bx = el.x - w / 2;
-          if (el.textAlign === 'left') bx = el.x;
-          if (el.textAlign === 'right') bx = el.x - w;
-          ctx.strokeRect(bx, el.y - el.fontSize, w, h);
+          if (index === selectedElementIndex) {
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 4;
+            const metrics = ctx.measureText(text);
+            const w = metrics.width + 40;
+            const h = el.fontSize + 20;
+            let bx = el.x - w / 2;
+            if (el.textAlign === 'left') bx = el.x;
+            if (el.textAlign === 'right') bx = el.x - w;
+            ctx.strokeRect(bx, el.y - el.fontSize, w, h);
+          }
+
+          ctx.restore();
         }
-
-        ctx.restore();
       });
 
       updateDesignerElementList();
@@ -2023,18 +2065,31 @@
       selectedElementIndex = null;
 
       (tpl.elements || []).forEach((el, idx) => {
-        ctx.font = `${el.fontSize}px "${el.fontFamily}"`;
-        const metrics = ctx.measureText(el.staticText || 'Text');
-        const w = metrics.width + 40;
-        let bx = el.x - w / 2;
-        if (el.textAlign === 'left') bx = el.x;
-        if (el.textAlign === 'right') bx = el.x - w;
+        if (el.type === 'image' || el.field === 'signatureImg') {
+          const w = el.width || 300;
+          const h = el.height || 120;
+          const bx = el.x - w / 2;
+          const by = el.y - h / 2;
+          if (mx >= bx && mx <= bx + w && my >= by && my <= by + h) {
+            selectedElementIndex = idx;
+            isDraggingElement = true;
+            dragOffsetX = mx - el.x;
+            dragOffsetY = my - el.y;
+          }
+        } else {
+          ctx.font = `${el.fontSize}px "${el.fontFamily}"`;
+          const metrics = ctx.measureText(el.staticText || 'Text');
+          const w = metrics.width + 40;
+          let bx = el.x - w / 2;
+          if (el.textAlign === 'left') bx = el.x;
+          if (el.textAlign === 'right') bx = el.x - w;
 
-        if (mx >= bx && mx <= bx + w && my >= el.y - el.fontSize && my <= el.y + 20) {
-          selectedElementIndex = idx;
-          isDraggingElement = true;
-          dragOffsetX = mx - el.x;
-          dragOffsetY = my - el.y;
+          if (mx >= bx && mx <= bx + w && my >= el.y - el.fontSize && my <= el.y + 20) {
+            selectedElementIndex = idx;
+            isDraggingElement = true;
+            dragOffsetX = mx - el.x;
+            dragOffsetY = my - el.y;
+          }
         }
       });
 
@@ -2094,6 +2149,37 @@
       reader.readAsDataURL(file);
     }
 
+    function handleSignatureUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const tpl = getActiveTemplate();
+        if (!tpl.elements) tpl.elements = [];
+        const centerX = Math.round((tpl.width || 3508) / 2);
+        const centerY = Math.round((tpl.height || 2480) * 0.82);
+
+        tpl.elements.push({
+          id: generateId(),
+          type: 'image',
+          field: 'signatureImg',
+          staticText: 'รูปภาพลายเซ็น',
+          imgSrc: evt.target.result,
+          x: centerX,
+          y: centerY,
+          width: 350,
+          height: 140
+        });
+
+        selectedElementIndex = tpl.elements.length - 1;
+        renderCanvas();
+        updateElementPropertiesPanel();
+        showAlert('success', 'สำเร็จ', 'เพิ่มรูปภาพลายเซ็นลงใน Template เรียบร้อย');
+      };
+      reader.readAsDataURL(file);
+    }
+
     function updateDesignerPreviewSelect() {
       const select = document.getElementById('designer-preview-select');
       if (!select) return;
@@ -2112,10 +2198,21 @@
       const container = document.getElementById('designer-element-list');
       if (!container) return;
       const tpl = getActiveTemplate();
+      const fieldNames = {
+        'name': 'ชื่อ-นามสกุล',
+        'school': 'โรงเรียน/หน่วยงาน',
+        'certNumber': 'เลขที่เกียรติบัตร',
+        'date': 'วันที่',
+        'signer': 'ชื่อผู้ลงนาม',
+        'position': 'ตำแหน่งผู้ลงนาม',
+        'signatureImg': 'รูปภาพลายเซ็น',
+        'static': 'ข้อความคงที่'
+      };
+
       container.innerHTML = (tpl.elements || []).map((el, i) => `
         <div onclick="selectElement(${i})" class="p-2 rounded text-xs flex justify-between items-center cursor-pointer transition ${i === selectedElementIndex ? 'bg-primary-100 text-primary-800 font-bold' : 'hover:bg-gray-100 text-gray-700'}">
-          <span><i class="fas fa-font text-primary-500 mr-1.5"></i>${el.field === 'static' ? el.staticText : el.field}</span>
-          <span class="text-[10px] text-gray-400">${el.fontSize}px</span>
+          <span><i class="${el.type === 'image' || el.field === 'signatureImg' ? 'fas fa-signature text-blue-500' : 'fas fa-font text-primary-500'} mr-1.5"></i>${el.field === 'static' ? el.staticText : (fieldNames[el.field] || el.field)}</span>
+          <span class="text-[10px] text-gray-400">${el.type === 'image' || el.field === 'signatureImg' ? (el.width + 'x' + el.height + 'px') : (el.fontSize + 'px')}</span>
         </div>
       `).join('');
     }
@@ -2138,14 +2235,29 @@
       const tpl = getActiveTemplate();
       const el = tpl.elements[selectedElementIndex];
 
-      document.getElementById('prop-font-family').value = el.fontFamily || 'Sarabun';
-      document.getElementById('prop-font-size').value = el.fontSize;
-      document.getElementById('prop-color').value = el.color || '#000000';
+      const textControls = document.getElementById('prop-text-controls');
+      const imgControls = document.getElementById('prop-image-controls');
+
+      if (el.type === 'image' || el.field === 'signatureImg') {
+        if (textControls) textControls.classList.add('hidden');
+        if (imgControls) imgControls.classList.remove('hidden');
+        document.getElementById('prop-img-width').value = el.width || 300;
+        document.getElementById('prop-img-height').value = el.height || 120;
+      } else {
+        if (textControls) textControls.classList.remove('hidden');
+        if (imgControls) imgControls.classList.add('hidden');
+        document.getElementById('prop-font-family').value = el.fontFamily || 'Sarabun';
+        document.getElementById('prop-font-size').value = el.fontSize;
+        document.getElementById('prop-color').value = el.color || '#000000';
+      }
+
       document.getElementById('prop-pos-x').value = el.x;
       document.getElementById('prop-pos-y').value = el.y;
 
-      document.getElementById('prop-static-text-box').classList.toggle('hidden', el.field !== 'static');
-      if (el.field === 'static') document.getElementById('prop-static-text').value = el.staticText || '';
+      document.getElementById('prop-static-text-box').classList.toggle('hidden', el.field !== 'static' && el.field !== 'signer' && el.field !== 'position');
+      if (el.field === 'static' || el.field === 'signer' || el.field === 'position') {
+        document.getElementById('prop-static-text').value = el.staticText || '';
+      }
     }
 
     function updateElementProp(key, value) {
@@ -2172,18 +2284,23 @@
       if (!tpl.elements) tpl.elements = [];
       const centerX = Math.round((tpl.width || 3508) / 2);
       const centerY = Math.round((tpl.height || 2480) / 2);
-      
+
+      let defaultText = '';
+      if (fieldType === 'static') defaultText = 'ข้อความระบุเอง';
+      if (fieldType === 'signer') defaultText = '(นายณรงค์เดช ชัยเดชะ)';
+      if (fieldType === 'position') defaultText = 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
+
       tpl.elements.push({
         id: generateId(),
         field: fieldType,
-        staticText: fieldType === 'static' ? 'ข้อความระบุเอง' : '',
+        staticText: defaultText,
         x: centerX,
         y: centerY,
-        fontSize: 60,
+        fontSize: fieldType === 'position' ? 38 : 50,
         fontFamily: 'Sarabun',
         color: '#000000',
         textAlign: 'center',
-        bold: false,
+        bold: fieldType === 'signer',
         italic: false
       });
       hideModal('add-field-modal');
@@ -2214,9 +2331,6 @@
       showModal('create-template-modal');
     }
 
-    /**
-     * ข้อที่ 2: เพิ่มปุ่มลบ Template ในหน้าออกแบบ
-     */
     function deleteCurrentTemplate() {
       const tpl = getActiveTemplate();
       if (!tpl) {
@@ -2349,7 +2463,6 @@
         let maxFoundNum = 0;
         records.forEach(r => {
           if (r.certNumber) {
-            // ดึงกลุ่มตัวเลขท้ายสุดของเลขที่เกียรติบัตร เช่น CERT-2026/015 -> 015
             const matches = r.certNumber.match(/\d+/g);
             if (matches && matches.length > 0) {
               const lastNumStr = matches[matches.length - 1];
@@ -2570,9 +2683,6 @@
       showAlert('success', 'สำเร็จ', 'นำเข้าข้อมูลรายชื่อเรียบร้อยแล้ว');
     }
 
-    /**
-     * ข้อที่ 3: เพิ่มการตั้งค่าหน้ากระดาษ A4 (แนวตั้ง และ แนวนอน)
-     */
     async function saveSettingsFromPage() {
       const newPrefix = document.getElementById('setting-page-prefix')?.value.trim();
       const newStartNum = parseInt(document.getElementById('setting-page-start-num')?.value) || 1;
@@ -2604,7 +2714,7 @@
       const modalPrefix = document.getElementById('setting-prefix');
       if (modalPrefix) modalPrefix.value = systemSettings.prefix;
 
-      logActivity('บันทึกการตั้งค่าระบบ (รวมทิศทางหน้ากระดาษ)');
+      logActivity('บันทึกการตั้งค่าระบบ');
       showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบลงฐานข้อมูลเรียบร้อยแล้ว');
     }
 
@@ -2706,21 +2816,34 @@
           tctx.fillRect(0, 0, tpl.width, tpl.height);
         }
 
-        (tpl.elements || []).forEach(el => {
-          tctx.save();
-          tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
-          tctx.fillStyle = el.color || '#000000';
-          tctx.textAlign = el.textAlign || 'center';
+        for (let el of (tpl.elements || [])) {
+          if (el.type === 'image' || el.field === 'signatureImg') {
+            if (el.imgSrc) {
+              const sigImg = new Image();
+              sigImg.src = el.imgSrc;
+              await new Promise(res => { sigImg.onload = res; sigImg.onerror = res; });
+              const w = el.width || 300;
+              const h = el.height || 120;
+              tctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
+            }
+          } else {
+            tctx.save();
+            tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
+            tctx.fillStyle = el.color || '#000000';
+            tctx.textAlign = el.textAlign || 'center';
 
-          let text = el.staticText || '';
-          if (el.field === 'name') text = r.name;
-          if (el.field === 'school') text = r.school;
-          if (el.field === 'certNumber') text = r.certNumber;
-          if (el.field === 'date') text = formatThaiDateTime(r.date);
+            let text = el.staticText || '';
+            if (el.field === 'name') text = r.name;
+            if (el.field === 'school') text = r.school;
+            if (el.field === 'certNumber') text = r.certNumber;
+            if (el.field === 'date') text = formatThaiDateTime(r.date);
+            if (el.field === 'signer') text = r.signer || el.staticText || '(นายณรงค์เดช ชัยเดชะ)';
+            if (el.field === 'position') text = r.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
 
-          tctx.fillText(text, el.x, el.y);
-          tctx.restore();
-        });
+            tctx.fillText(text, el.x, el.y);
+            tctx.restore();
+          }
+        }
 
         const imgData = tempCanvas.toDataURL('image/png');
 
@@ -2805,7 +2928,7 @@
     function updateDashboardStats() {
       const records = getRecords();
       const templates = getTemplates();
-      
+
       const total = records.length;
       const generated = records.filter(r => r.status === 'generated').length;
       const pending = records.filter(r => r.status === 'pending').length;
@@ -2825,7 +2948,7 @@
       if (canvasChart && window.Chart) {
         const existingChart = Chart.getChart(canvasChart);
         if (existingChart) existingChart.destroy();
-        
+
         new Chart(canvasChart, {
           type: 'doughnut',
           data: {
@@ -2904,7 +3027,7 @@
       if (schoolSelect) {
         const schools = [...new Set(records.map(r => r.school).filter(Boolean))].sort();
         const currentVal = schoolSelect.value;
-        schoolSelect.innerHTML = '<option value="">หน่วยงานทั้งหมด</option>' + 
+        schoolSelect.innerHTML = '<option value="">หน่วยงานทั้งหมด</option>' +
           schools.map(s => `<option value="${s}" ${s === currentVal ? 'selected' : ''}>${s}</option>`).join('');
       }
 
@@ -2912,7 +3035,7 @@
       if (recordCountEl) recordCountEl.textContent = records.length;
 
       let filtered = records.filter(r => {
-        const matchSearch = !searchInput || 
+        const matchSearch = !searchInput ||
           (r.name || '').toLowerCase().includes(searchInput) ||
           (r.school || '').toLowerCase().includes(searchInput) ||
           (r.certNumber || '').toLowerCase().includes(searchInput);
@@ -3254,7 +3377,9 @@
             { id: generateId(), field: 'name', staticText: '[ชื่อ-นามสกุล]', x: centerX, y: Math.round(h * 0.44), fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', textAlign: 'center', bold: true, italic: false },
             { id: generateId(), field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: centerX, y: Math.round(h * 0.58), fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', textAlign: 'center', bold: true, italic: false },
             { id: generateId(), field: 'certNumber', staticText: 'เลขที่ ' + systemSettings.prefix + '001', x: w - 400, y: Math.round(h * 0.1), fontSize: 40, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'right', bold: false, italic: false },
-            { id: generateId(), field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: centerX, y: Math.round(h * 0.74), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false }
+            { id: generateId(), field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: centerX, y: Math.round(h * 0.74), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false },
+            { id: generateId(), field: 'signer', staticText: '(นายณรงค์เดช ชัยเดชะ)', x: centerX, y: Math.round(h * 0.86), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: true, italic: false },
+            { id: generateId(), field: 'position', staticText: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง', x: centerX, y: Math.round(h * 0.9), fontSize: 38, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false }
           ]
         };
 
