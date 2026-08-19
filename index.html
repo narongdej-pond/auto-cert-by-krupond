@@ -2133,14 +2133,20 @@
           if (el.field === 'signer') text = record.signer || el.staticText || '(นายธราเชฎฐ์ สุคนธ์)';
           if (el.field === 'position') text = record.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
 
-          tctx.fillText(text, el.x, el.y);
+          /* STRICT HORIZONTAL CENTER LOCK FOR GENERATING CANVAS */
+          let drawX = el.x;
+          if (el.textAlign === 'center' || !el.textAlign) {
+            drawX = Math.round((tempCanvas.width || 3508) / 2);
+          }
+
+          tctx.fillText(text, drawX, el.y);
 
           if (el.underline) {
             const metrics = tctx.measureText(text);
             const w = metrics.width;
-            let startX = el.x - w / 2;
-            if (el.textAlign === 'left') startX = el.x;
-            if (el.textAlign === 'right') startX = el.x - w;
+            let startX = drawX - w / 2;
+            if (el.textAlign === 'left') startX = drawX;
+            if (el.textAlign === 'right') startX = drawX - w;
             const lineY = el.y + (el.fontSize / 2) + 8;
             tctx.strokeStyle = el.color || '#000000';
             tctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
@@ -2432,14 +2438,20 @@
           if (el.field === 'signer') text = sample.signer || el.staticText || '(นายธราเชฎฐ์ สุคนธ์)';
           if (el.field === 'position') text = sample.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
 
-          ctx.fillText(text, el.x, el.y);
+          /* STRICT HORIZONTAL CENTER LOCK FOR DESIGNER CANVAS */
+          let drawX = el.x;
+          if (el.textAlign === 'center' || !el.textAlign) {
+            drawX = Math.round((canvas.width || 3508) / 2);
+          }
+
+          ctx.fillText(text, drawX, el.y);
 
           if (el.underline) {
             const metrics = ctx.measureText(text);
             const w = metrics.width;
-            let startX = el.x - w / 2;
-            if (el.textAlign === 'left') startX = el.x;
-            if (el.textAlign === 'right') startX = el.x - w;
+            let startX = drawX - w / 2;
+            if (el.textAlign === 'left') startX = drawX;
+            if (el.textAlign === 'right') startX = drawX - w;
             const lineY = el.y + (el.fontSize / 2) + 8;
             ctx.strokeStyle = el.color || '#000000';
             ctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
@@ -2455,9 +2467,9 @@
             const metrics = ctx.measureText(text);
             const w = metrics.width + 40;
             const h = el.fontSize + 20;
-            let bx = el.x - w / 2;
-            if (el.textAlign === 'left') bx = el.x;
-            if (el.textAlign === 'right') bx = el.x - w;
+            let bx = drawX - w / 2;
+            if (el.textAlign === 'left') bx = drawX;
+            if (el.textAlign === 'right') bx = drawX - w;
             ctx.strokeRect(bx, el.y - (h / 2), w, h);
           }
         }
@@ -2497,14 +2509,18 @@
           const metrics = ctx.measureText(el.staticText || 'Text');
           const w = metrics.width + 40;
           const h = el.fontSize + 20;
-          let bx = el.x - w / 2;
-          if (el.textAlign === 'left') bx = el.x;
-          if (el.textAlign === 'right') bx = el.x - w;
+          let drawX = el.x;
+          if (el.textAlign === 'center' || !el.textAlign) {
+            drawX = Math.round((tpl.width || 3508) / 2);
+          }
+          let bx = drawX - w / 2;
+          if (el.textAlign === 'left') bx = drawX;
+          if (el.textAlign === 'right') bx = drawX - w;
 
           if (mx >= bx && mx <= bx + w && my >= el.y - (h / 2) && my <= el.y + (h / 2)) {
             selectedElementIndex = idx;
             isDraggingElement = true;
-            dragOffsetX = mx - el.x;
+            dragOffsetX = mx - drawX;
             dragOffsetY = my - el.y;
           }
         }
@@ -2532,9 +2548,13 @@
       let targetX = Math.round(mx - dragOffsetX);
       let targetY = Math.round(my - dragOffsetY);
 
-      // Smart Snap to Center Horizontally
       const canvasCenterX = Math.round((tpl.width || 3508) / 2);
-      if (Math.abs(targetX - canvasCenterX) < 45) {
+
+      /* ABSOLUTE CENTER LOCK DURING DRAGGING FOR CENTERED TEXT */
+      if (el.textAlign === 'center' || !el.textAlign) {
+        targetX = canvasCenterX;
+        showCenterGuide = true;
+      } else if (Math.abs(targetX - canvasCenterX) < 60) {
         targetX = canvasCenterX;
         showCenterGuide = true;
       } else {
@@ -2714,7 +2734,12 @@
         });
       }
 
-      document.getElementById('propX').value = el.x;
+      let displayX = el.x;
+      if (el.textAlign === 'center' || !el.textAlign) {
+        displayX = Math.round((tpl.width || 3508) / 2);
+      }
+
+      document.getElementById('propX').value = displayX;
       document.getElementById('propY').value = el.y;
 
       const staticRow = document.getElementById('propStaticTextRow');
@@ -2732,6 +2757,11 @@
       saveCanvasState();
       const tpl = getActiveTemplate();
       tpl.elements[selectedElementIndex][key] = value;
+
+      if (key === 'textAlign' && value === 'center') {
+        tpl.elements[selectedElementIndex].x = Math.round((tpl.width || 3508) / 2);
+      }
+
       renderCanvas();
       updateElementPropertiesPanel();
     }
@@ -3337,14 +3367,20 @@
             if (el.field === 'signer') text = r.signer || el.staticText || '(นายธราเชฎฐ์ สุคนธ์)';
             if (el.field === 'position') text = r.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
 
-            tctx.fillText(text, el.x, el.y);
+            /* STRICT HORIZONTAL CENTER LOCK FOR BATCH EXPORT */
+            let drawX = el.x;
+            if (el.textAlign === 'center' || !el.textAlign) {
+              drawX = Math.round((tpl.width || 3508) / 2);
+            }
+
+            tctx.fillText(text, drawX, el.y);
 
             if (el.underline) {
               const metrics = tctx.measureText(text);
               const w = metrics.width;
-              let startX = el.x - w / 2;
-              if (el.textAlign === 'left') startX = el.x;
-              if (el.textAlign === 'right') startX = el.x - w;
+              let startX = drawX - w / 2;
+              if (el.textAlign === 'left') startX = drawX;
+              if (el.textAlign === 'right') startX = drawX - w;
               const lineY = el.y + (el.fontSize / 2) + 8;
               tctx.strokeStyle = el.color || '#000000';
               tctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
