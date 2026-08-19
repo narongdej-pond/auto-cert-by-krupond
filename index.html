@@ -644,9 +644,9 @@
                 <div class="bg-white px-3 py-2 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
                   <div class="flex items-center gap-2 flex-wrap">
                     <!-- Template Selector -->
-                    <div class="flex items-center gap-1.5 bg-gray-300 p-1 rounded-xl border border-primary-200">
+                    <div class="flex items-center gap-1.5 bg-gray-100 p-1 rounded-xl">
                       <label class="text-xs font-bold text-primary-800 flex items-center gap-1 pl-1">
-                        <i class="fas fa-layer-group text-primary-600"></i> <span class="hidden sm:inline">Template:</span>
+                        <i class="fas fa-layer-group text-primary-600"></i>
                       </label>
                       <select id="designer-template-select" onchange="switchActiveTemplate(this.value)" class="px-2 py-1 bg-white text-gray-800 text-xs font-bold rounded-lg border border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 max-w-[130px] sm:max-w-xs truncate">
                         <option value="">-- เลือก Template --</option>
@@ -655,7 +655,7 @@
                         <i class="fas fa-plus-circle"></i> <span class="hidden sm:inline">ใหม่</span>
                       </button>
                       <button onclick="deleteCurrentTemplate()" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="ลบ Template นี้">
-                        <i class="fas fa-trash-alt"></i>
+                        <i class="fas fa-trash-alt"></i> <span class="hidden sm:inline">ลบ</span>
                       </button>
                     </div>
 
@@ -729,7 +729,7 @@
                 <!-- Properties Panel -->
                 <div id="element-properties-panel" class="hidden space-y-3 pt-2 border-t">
                   <h4 class="font-bold text-gray-800 text-sm flex items-center justify-between">
-                    <span>⚙️ คุณสมบัติ</span>
+                    <span>คุณสมบัติ</span>
                     <button onclick="deleteSelectedElement()" class="text-red-500 hover:text-red-700 text-xs font-normal"><i class="fas fa-trash mr-1"></i>ลบ</button>
                   </h4>
 
@@ -1232,6 +1232,9 @@
           <button onclick="hideModal('guest-preview-modal')" class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-sm transition">ปิด</button>
           <button id="btn-download-preview-png" class="px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
             <i class="fas fa-file-image"></i> ดาวน์โหลด PNG
+          </button>
+          <button id="btn-download-preview-jpeg" class="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
+            <i class="fas fa-image"></i> ดาวน์โหลด JPEG
           </button>
           <button id="btn-download-preview-pdf" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
             <i class="fas fa-file-pdf"></i> ดาวน์โหลด PDF
@@ -1978,7 +1981,7 @@
                   </h4>
                   <div class="flex flex-wrap gap-2 mt-2">
                     <span class="badge badge-info"><i class="fas fa-hashtag mr-1"></i>${r.certNumber || '-'}</span>
-                    <span class="badge bg-blue-50 text-blue-700"><i class="fas fa-school mr-1"></i>${r.school || '-'}</span>
+                    <span class="badge bg-pink-50 text-pink-700"><i class="fas fa-school mr-1"></i>${r.school || '-'}</span>
                     <span class="badge bg-purple-50 text-purple-700"><i class="fas fa-calendar mr-1"></i>${displayDate}</span>
                   </div>
                 </div>
@@ -1988,6 +1991,9 @@
                   </button>
                   <button id="btn-dl-png-${recId}" onclick="downloadGuestCertFormat('${recId}', 'png', null, this)" class="flex-1 md:flex-initial bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ PNG">
                     <i class="fas fa-file-image"></i> PNG
+                  </button>
+                  <button id="btn-dl-jpeg-${recId}" onclick="downloadGuestCertFormat('${recId}', 'jpeg', null, this)" class="flex-1 md:flex-initial bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ JPEG">
+                    <i class="fas fa-image"></i> JPEG
                   </button>
                   <button id="btn-dl-pdf-${recId}" onclick="downloadGuestCertFormat('${recId}', 'pdf', null, this)" class="flex-1 md:flex-initial bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์เอกสาร PDF">
                     <i class="fas fa-file-pdf"></i> PDF
@@ -2123,6 +2129,9 @@
         const btnPng = document.getElementById('btn-download-preview-png');
         if (btnPng) btnPng.onclick = () => downloadGuestCertFormat(recordId, 'png', selectedTplId, btnPng);
 
+        const btnJpeg = document.getElementById('btn-download-preview-jpeg');
+        if (btnJpeg) btnJpeg.onclick = () => downloadGuestCertFormat(recordId, 'jpeg', selectedTplId, btnJpeg);
+
         const btnPdf = document.getElementById('btn-download-preview-pdf');
         if (btnPdf) btnPdf.onclick = () => downloadGuestCertFormat(recordId, 'pdf', selectedTplId, btnPdf);
 
@@ -2159,6 +2168,11 @@
           const imgData = certCanvas.toDataURL('image/png');
           pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
           pdf.save(`${filename}.pdf`);
+        } else if (format === 'jpeg' || format === 'jpg') {
+          const link = document.createElement('a');
+          link.download = `${filename}.jpg`;
+          link.href = certCanvas.toDataURL('image/jpeg', 0.92);
+          link.click();
         } else {
           const link = document.createElement('a');
           link.download = `${filename}.png`;
