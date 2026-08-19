@@ -2,7 +2,7 @@
 <html lang="th" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ระบบสร้างเกียรติบัตรอัตโนมัติ - วิทยาลัยเทคนิคดอนเมือง</title>
 
   <!-- PWA & Mobile Meta Tags -->
@@ -98,6 +98,13 @@
     .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
     body { box-sizing: border-box; }
 
+    /* Touch Canvas Controls Rule */
+    #certCanvas {
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
     /* GUEST SEARCH PAGE STYLES */
     .guest-header {
       width: 100%;
@@ -150,16 +157,31 @@
       background-color: #eff6ff;
     }
     .searching-glass {
-            display: inline-block;
-            animation: glass-loop 2s ease-in-out infinite; 
-          }
-          @keyframes glass-loop {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(3px, -2px) rotate(5deg); }
-            50% { transform: translate(1px, 3px) rotate(-5deg); }
-            75% { transform: translate(-3px, 1px) rotate(3deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-          }
+      display: inline-block;
+      animation: glass-loop 2s ease-in-out infinite; 
+    }
+    @keyframes glass-loop {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(3px, -2px) rotate(5deg); }
+      50% { transform: translate(1px, 3px) rotate(-5deg); }
+      75% { transform: translate(-3px, 1px) rotate(3deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    /* Style Toggles */
+    .style-btn {
+      transition: all 0.15s ease;
+    }
+    .style-btn.active {
+      background-color: #3b82f6;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+    .align-btn.active {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+      border-color: #3b82f6;
+    }
   </style>
 </head>
 <body class="h-full bg-gray-50 font-sarabun">
@@ -613,73 +635,85 @@
             </div>
           </div>
 
-          <!-- View 3: Canvas Template Designer -->
+          <!-- View 3: Canvas Template Designer (Responsive Touch & Undo/Redo Ready) -->
           <div id="view-designer" class="app-view hidden">
-            <div class="flex flex-col lg:flex-row gap-4 h-[calc(100vh-140px)]">
+            <div class="flex flex-col lg:flex-row gap-4 min-h-[calc(100vh-140px)]">
               <!-- Canvas Workshop Area -->
-              <div class="flex-1 bg-gray-200 rounded-xl card-shadow flex flex-col overflow-hidden relative">
+              <div class="flex-1 bg-gray-200 rounded-xl card-shadow flex flex-col overflow-hidden relative min-h-[450px]">
                 <!-- Canvas Top Control Toolbar -->
-                <div class="bg-white px-4 py-2 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
-                  <div class="flex items-center gap-3 flex-wrap">
+                <div class="bg-white px-3 py-2 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-2 flex-wrap">
                     <!-- Template Selector -->
-                    <div class="flex items-center gap-2 bg-primary-50 p-1.5 rounded-xl border border-primary-200">
+                    <div class="flex items-center gap-1.5 bg-gray-300 p-1 rounded-xl border border-primary-200">
                       <label class="text-xs font-bold text-primary-800 flex items-center gap-1 pl-1">
-                        <i class="fas fa-layer-group text-primary-600"></i> Template:
+                        <i class="fas fa-layer-group text-primary-600"></i> <span class="hidden sm:inline">Template:</span>
                       </label>
-                      <select id="designer-template-select" onchange="switchActiveTemplate(this.value)" class="px-2.5 py-1 bg-white text-gray-800 text-xs font-bold rounded-lg border border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                      <select id="designer-template-select" onchange="switchActiveTemplate(this.value)" class="px-2 py-1 bg-white text-gray-800 text-xs font-bold rounded-lg border border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 max-w-[130px] sm:max-w-xs truncate">
                         <option value="">-- เลือก Template --</option>
                       </select>
-                      <button onclick="createNewTemplate()" class="bg-primary-600 hover:bg-primary-700 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="สร้าง Template ใหม่">
-                        <i class="fas fa-plus-circle"></i> ใหม่
+                      <button onclick="createNewTemplate()" class="bg-primary-600 hover:bg-primary-700 text-white px-2 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="สร้าง Template ใหม่">
+                        <i class="fas fa-plus-circle"></i> <span class="hidden sm:inline">ใหม่</span>
                       </button>
-                      <button onclick="deleteCurrentTemplate()" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="ลบ Template นี้">
-                        <i class="fas fa-trash-alt"></i> ลบ
+                      <button onclick="deleteCurrentTemplate()" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="ลบ Template นี้">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+
+                    <span class="h-5 w-px bg-gray-300 hidden md:block"></span>
+
+                    <!-- Undo & Redo Controls -->
+                    <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
+                      <button onclick="canvasUndo()" class="bg-white hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-bold transition shadow-sm" title="Undo (Ctrl+Z)">
+                        ↩️ <span class="hidden sm:inline">เลิกทำ</span>
+                      </button>
+                      <button onclick="canvasRedo()" class="bg-white hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-bold transition shadow-sm" title="Redo (Ctrl+Y)">
+                        ↪️ <span class="hidden sm:inline">ทำซ้ำ</span>
                       </button>
                     </div>
 
                     <span class="h-5 w-px bg-gray-300 hidden md:block"></span>
 
                     <div class="flex items-center gap-1">
-                      <button onclick="zoomCanvas(-0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg text-xs" title="ย่อ"><i class="fas fa-minus"></i></button>
-                      <span id="canvas-zoom-text" class="text-xs font-bold text-gray-600 w-12 text-center">30%</span>
-                      <button onclick="zoomCanvas(0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg text-xs" title="ขยาย"><i class="fas fa-plus"></i></button>
-                      <button onclick="resetCanvasZoom()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium" title="พอดีหน้าจอ">100%</button>
-                      <button id="btn-toggle-grid" onclick="toggleCanvasGrid()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-xs font-medium ml-1">
-                        <i class="fas fa-border-all mr-1"></i> เส้นตาราง
+                      <button onclick="zoomCanvas(-0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded-lg text-xs" title="ย่อ"><i class="fas fa-minus"></i></button>
+                      <span id="canvas-zoom-text" class="text-xs font-bold text-gray-600 w-10 text-center">30%</span>
+                      <button onclick="zoomCanvas(0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded-lg text-xs" title="ขยาย"><i class="fas fa-plus"></i></button>
+                      <button onclick="autoFitCanvasZoom()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium" title="ปรับพอดีจอภาพ">พอดี</button>
+                      <button id="btn-toggle-grid" onclick="toggleCanvasGrid()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium">
+                        <i class="fas fa-border-all"></i>
                       </button>
                     </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <button onclick="openAddFieldModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                      <i class="fas fa-plus-circle mr-1"></i> เพิ่มองค์ประกอบ/ข้อความ
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <button onclick="openAddFieldModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
+                      <i class="fas fa-plus-circle mr-1"></i> เพิ่มข้อความ
                     </button>
-                    <button onclick="document.getElementById('designer-bg-input').click()" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                      <i class="fas fa-image mr-1"></i> ภาพพื้นหลัง
+                    <button id="btn-designer-bg" onclick="document.getElementById('designer-bg-input').click()" class="bg-purple-500 hover:bg-purple-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                      <i class="fas fa-image"></i> พื้นหลัง
                     </button>
                     <input type="file" id="designer-bg-input" accept="image/*" class="hidden" onchange="handleBgUpload(event)">
                     <input type="file" id="designer-signature-input" accept="image/*" class="hidden" onchange="handleSignatureUpload(event)">
-                    <button onclick="saveCurrentTemplate()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                      <i class="fas fa-save mr-1"></i> บันทึก Template
+                    <button onclick="saveCurrentTemplate()" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
+                      <i class="fas fa-save mr-1"></i> บันทึก
                     </button>
                   </div>
                 </div>
 
                 <!-- Canvas Workspace Wrapper -->
-                <div class="flex-1 overflow-auto p-8 flex items-center justify-center relative bg-gray-300" id="canvas-workspace">
-                  <div class="shadow-2xl bg-white relative transition-transform origin-center" id="canvas-container">
+                <div class="flex-1 overflow-auto p-2 sm:p-6 flex items-center justify-center relative bg-gray-300 min-h-[350px]" id="canvas-workspace">
+                  <div class="shadow-2xl bg-white relative transition-transform origin-center flex-shrink-0" id="canvas-container">
                     <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair"></canvas>
                   </div>
                 </div>
 
                 <!-- Preview Switch Bar -->
-                <div class="bg-white px-4 py-2 border-t border-gray-200 flex items-center justify-between text-xs">
+                <div class="bg-white px-4 py-2 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div class="flex items-center gap-2">
-                    <span class="font-bold text-gray-600"><i class="fas fa-eye text-primary-500 mr-1"></i> ตัวอย่างข้อมูล:</span>
-                    <select id="designer-preview-select" onchange="changePreviewRecord()" class="px-2 py-1 border rounded text-xs focus:outline-none">
+                    <span class="font-bold text-gray-600"><i class="fas fa-eye text-primary-500 mr-1"></i> ตัวอย่าง:</span>
+                    <select id="designer-preview-select" onchange="changePreviewRecord()" class="px-2 py-1 border rounded text-xs focus:outline-none max-w-[150px] sm:max-w-xs truncate">
                       <option value="">-- รายชื่อตัวอย่าง --</option>
                     </select>
                   </div>
-                  <span class="text-gray-500" id="canvas-resolution-info">A4 Landscape (3508 x 2480 px)</span>
+                  <span class="text-gray-500 text-[11px]" id="canvas-resolution-info">A4 Landscape (3508 x 2480 px)</span>
                 </div>
               </div>
 
@@ -689,93 +723,126 @@
                   <h4 class="font-bold text-gray-800 mb-3 border-b pb-2 flex items-center justify-between">
                     <span><i class="fas fa-layer-group text-primary-500 mr-2"></i>รายการองค์ประกอบ</span>
                   </h4>
-                  <div id="designer-element-list" class="space-y-1.5 max-h-48 overflow-y-auto border rounded-lg p-2 bg-gray-50"></div>
+                  <div id="designer-element-list" class="space-y-1.5 max-h-40 overflow-y-auto border rounded-lg p-2 bg-gray-50"></div>
                 </div>
 
                 <!-- Properties Panel -->
                 <div id="element-properties-panel" class="hidden space-y-3 pt-2 border-t">
                   <h4 class="font-bold text-gray-800 text-sm flex items-center justify-between">
-                    <span><i class="fas fa-sliders text-primary-500 mr-1"></i>ปรับแต่งองค์ประกอบ</span>
+                    <span>⚙️ คุณสมบัติ</span>
                     <button onclick="deleteSelectedElement()" class="text-red-500 hover:text-red-700 text-xs font-normal"><i class="fas fa-trash mr-1"></i>ลบ</button>
                   </h4>
 
                   <div id="prop-text-controls" class="space-y-3">
-                    <div>
-                      <label class="block text-xs font-medium text-gray-600 mb-1">ฟอนต์ (Google Fonts)</label>
-                      <select id="prop-font-family" onchange="updateElementProp('fontFamily', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
-                        <option value="Sarabun">Sarabun (ทางการ)</option>
-                        <option value="Kanit">Kanit (สมัยใหม่)</option>
-                        <option value="Prompt">Prompt (โมเดิร์น)</option>
-                        <option value="Noto Sans Thai">Noto Sans Thai</option>
-                        <option value="Noto Serif Thai">Noto Serif Thai</option>
-                        <option value="Mitr">Mitr</option>
-                        <option value="Mali">Mali (น่ารัก)</option>
-                        <option value="Charm">Charm (ลายมือ)</option>
-                        <option value="Chakra Petch">Chakra Petch (เทค)</option>
-                        <option value="Chonburi">Chonburi (หัวหนา)</option>
-                        <option value="Kodchasan">Kodchasan</option>
+                    <!-- Font Family -->
+                    <div id="propFontFamily">
+                      <label class="block text-xs font-medium text-gray-600 mb-1">ฟอนต์</label>
+                      <select id="propFont" onchange="updateElementProp('fontFamily', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                        <option value="Sarabun" style="font-family: 'Sarabun'">Sarabun</option>
+                        <option value="Kanit" style="font-family: 'Kanit'">Kanit</option>
+                        <option value="Prompt" style="font-family: 'Prompt'">Prompt</option>
+                        <option value="Noto Sans Thai" style="font-family: 'Noto Sans Thai'">Noto Sans Thai</option>
+                        <option value="Noto Serif Thai" style="font-family: 'Noto Serif Thai'">Noto Serif Thai</option>
+                        <option value="Mitr" style="font-family: 'Mitr'">Mitr</option>
+                        <option value="Mali" style="font-family: 'Mali'">Mali</option>
+                        <option value="Charm" style="font-family: 'Charm'">Charm</option>
+                        <option value="Chakra Petch" style="font-family: 'Chakra Petch'">Chakra Petch</option>
+                        <option value="Chonburi" style="font-family: 'Chonburi'">Chonburi</option>
+                        <option value="Kodchasan" style="font-family: 'Kodchasan'">Kodchasan</option>
                       </select>
                     </div>
 
+                    <!-- Font Size with Range Slider & Number Input Sync -->
+                    <div id="propFontSizeRow">
+                      <label class="block text-xs font-medium text-gray-600 mb-1">ขนาด</label>
+                      <div class="grid grid-cols-3 gap-2 items-center">
+                        <div class="col-span-2">
+                          <input type="range" id="propFontSizeSlider" min="8" max="200" value="48" oninput="document.getElementById('propFontSize').value=this.value; updateElementProp('fontSize', parseInt(this.value))" class="w-full accent-primary-600">
+                        </div>
+                        <div>
+                          <input type="number" id="propFontSize" min="8" max="200" value="48" onchange="document.getElementById('propFontSizeSlider').value=this.value; updateElementProp('fontSize', parseInt(this.value))" class="w-full px-2 py-1 border border-gray-200 rounded-lg text-xs text-center focus:outline-none">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Style Toggles: Bold, Italic, Underline -->
+                    <div id="propStyleRow">
+                      <label class="block text-xs font-medium text-gray-600 mb-1">สไตล์</label>
+                      <div class="flex gap-1">
+                        <button id="propBold" onclick="toggleElementStyle('bold')" title="ตัวหนา" class="style-btn flex-1 py-1 border border-gray-200 rounded text-xs font-bold hover:bg-gray-100"><b>B</b></button>
+                        <button id="propItalic" onclick="toggleElementStyle('italic')" title="ตัวเอียง" class="style-btn flex-1 py-1 border border-gray-200 rounded text-xs italic hover:bg-gray-100"><i>I</i></button>
+                        <button id="propUnderline" onclick="toggleElementStyle('underline')" title="ขีดเส้นใต้" class="style-btn flex-1 py-1 border border-gray-200 rounded text-xs underline hover:bg-gray-100"><u>U</u></button>
+                      </div>
+                    </div>
+
+                    <!-- Text Alignment -->
+                    <div id="propAlignRow">
+                      <label class="block text-xs font-medium text-gray-600 mb-1">จัดตำแหน่งข้อความ</label>
+                      <div class="flex gap-1">
+                        <button id="prop-align-left" onclick="updateElementProp('textAlign', 'left')" data-align="left" class="align-btn flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">◀</button>
+                        <button id="prop-align-center" onclick="updateElementProp('textAlign', 'center')" data-align="center" class="align-btn active flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">☰</button>
+                        <button id="prop-align-right" onclick="updateElementProp('textAlign', 'right')" data-align="right" class="align-btn flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">▶</button>
+                      </div>
+                    </div>
+
+                    <!-- Color + Opacity -->
                     <div class="grid grid-cols-2 gap-2">
                       <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">ขนาดฟอนต์ (px)</label>
-                        <input type="number" id="prop-font-size" min="10" max="300" onchange="updateElementProp('fontSize', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                        <label class="block text-xs font-medium text-gray-600 mb-1">สี</label>
+                        <input type="color" id="propColor" value="#000000" onchange="updateElementProp('color', this.value)" class="w-full h-8 p-0.5 border border-gray-200 rounded-lg cursor-pointer">
                       </div>
                       <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">สีข้อความ</label>
-                        <input type="color" id="prop-color" onchange="updateElementProp('color', this.value)" class="w-full h-8 p-1 border border-gray-200 rounded-lg cursor-pointer">
+                        <label class="block text-xs font-medium text-gray-600 mb-1">ความโปร่งใส</label>
+                        <input type="range" id="propOpacity" min="0" max="100" value="100" oninput="updateElementProp('opacity', parseFloat(this.value) / 100)" class="w-full h-8 accent-primary-600">
                       </div>
                     </div>
 
-                    <div>
-                      <label class="block text-xs font-medium text-gray-600 mb-1">สไตล์ตัวหนังสือ</label>
-                      <div class="flex gap-1">
-                        <button id="prop-btn-bold" onclick="toggleElementStyle('bold')" class="flex-1 py-1 border border-gray-200 rounded text-xs font-bold hover:bg-gray-100">B</button>
-                        <button id="prop-btn-italic" onclick="toggleElementStyle('italic')" class="flex-1 py-1 border border-gray-200 rounded text-xs italic hover:bg-gray-100">I</button>
+                    <!-- Text Extras: Width + Line Height -->
+                    <div class="grid grid-cols-2 gap-2" id="propTextExtras">
+                      <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">ความกว้าง</label>
+                        <input type="number" id="propWidth" value="800" onchange="updateElementProp('width', parseInt(this.value))" class="w-full px-2 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none">
                       </div>
-                    </div>
-
-                    <div>
-                      <label class="block text-xs font-medium text-gray-600 mb-1">การจัดตำแหน่ง</label>
-                      <div class="flex gap-1">
-                        <button id="prop-align-left" onclick="updateElementProp('textAlign', 'left')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-left"></i></button>
-                        <button id="prop-align-center" onclick="updateElementProp('textAlign', 'center')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-center"></i></button>
-                        <button id="prop-align-right" onclick="updateElementProp('textAlign', 'right')" class="flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100"><i class="fas fa-align-right"></i></button>
+                      <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">ระยะห่างบรรทัด</label>
+                        <input type="number" id="propLineHeight" value="1.4" step="0.1" min="0.5" max="3" onchange="updateElementProp('lineHeight', parseFloat(this.value))" class="w-full px-2 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none">
                       </div>
                     </div>
                   </div>
 
-                  <div id="prop-image-controls" class="hidden space-y-3">
+                  <!-- Image Extras: Size Controls -->
+                  <div id="propImageExtras" class="hidden space-y-3">
                     <div class="grid grid-cols-2 gap-2">
                       <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">ความกว้าง (px)</label>
-                        <input type="number" id="prop-img-width" min="20" max="2000" onchange="updateElementProp('width', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                        <label class="block text-xs font-medium text-gray-600 mb-1">กว้าง</label>
+                        <input type="number" id="propImgWidth" value="200" onchange="updateElementProp('width', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
                       </div>
                       <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">ความสูง (px)</label>
-                        <input type="number" id="prop-img-height" min="20" max="2000" onchange="updateElementProp('height', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                        <label class="block text-xs font-medium text-gray-600 mb-1">สูง</label>
+                        <input type="number" id="propImgHeight" value="200" onchange="updateElementProp('height', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
                       </div>
                     </div>
-                    <button onclick="document.getElementById('designer-signature-input').click()" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-1.5 rounded-lg text-xs border border-blue-200 transition">
-                      <i class="fas fa-upload mr-1"></i> เปลี่ยนรูปภาพลายเซ็น
+                    <button id="btn-designer-signature" onclick="document.getElementById('designer-signature-input').click()" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-1.5 rounded-lg text-xs border border-blue-200 transition flex items-center justify-center gap-1">
+                      <i class="fas fa-upload"></i> เปลี่ยนรูปภาพลายเซ็น (Google Drive)
                     </button>
                   </div>
 
+                  <!-- Position X and Y -->
                   <div class="grid grid-cols-2 gap-2">
                     <div>
                       <label class="block text-xs font-medium text-gray-600 mb-1">ตำแหน่ง X</label>
-                      <input type="number" id="prop-pos-x" onchange="updateElementProp('x', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                      <input type="number" id="propX" value="0" onchange="updateElementProp('x', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
                     </div>
                     <div>
                       <label class="block text-xs font-medium text-gray-600 mb-1">ตำแหน่ง Y</label>
-                      <input type="number" id="prop-pos-y" onchange="updateElementProp('y', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
+                      <input type="number" id="propY" value="0" onchange="updateElementProp('y', parseInt(this.value))" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
                     </div>
                   </div>
 
-                  <div id="prop-static-text-box" class="hidden">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">ข้อความระบุเอง</label>
-                    <textarea id="prop-static-text" rows="2" onkeyup="updateElementProp('staticText', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none"></textarea>
+                  <!-- Static Text Content -->
+                  <div id="propStaticTextRow" class="hidden">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">ข้อความ</label>
+                    <textarea id="propStaticText" rows="2" oninput="updateElementProp('staticText', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none resize-y"></textarea>
                   </div>
                 </div>
               </div>
@@ -814,33 +881,48 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <!-- Export Image & File Format Settings -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div>
-                  <label class="block text-gray-700 font-medium text-sm mb-2">รูปแบบไฟล์ส่งออก</label>
-                  <select id="export-format-select" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
-                    <option value="zip">ไฟล์ ZIP (หลายรูปรวมกัน)</option>
-                    <option value="pdf">Single PDF (หลายหน้ารวมกัน)</option>
+                  <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportResolution">ความละเอียด</label>
+                  <select id="exportResolution" class="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
+                    <option value="1">Standard (100%)</option>
+                    <option value="1.5">High (150%)</option>
+                    <option value="2">Ultra (200%)</option>
                   </select>
                 </div>
+
                 <div>
-                  <label class="block text-gray-700 font-medium text-sm mb-2">ความละเอียดภาพ</label>
-                  <select id="export-resolution-select" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
-                    <option value="1">Standard High Quality (100%)</option>
-                    <option value="1.5">Ultra Quality (150%)</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-gray-700 font-medium text-sm mb-2">รูปแบบชื่อไฟล์</label>
-                  <select id="export-filename-pattern" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm">
+                  <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportFilename">ชื่อไฟล์ pattern</label>
+                  <select id="exportFilename" class="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
                     <option value="{certNumber}_{name}">เลขที่_ชื่อ</option>
                     <option value="{name}_{certNumber}">ชื่อ_เลขที่</option>
-                    <option value="{name}">ชื่ออย่างเดียว</option>
+                    <option value="{certNumber}">เลขที่เท่านั้น</option>
+                    <option value="{name}">ชื่อเท่านั้น</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportImageFormat">รูปแบบภาพ</label>
+                  <select id="exportImageFormat" onchange="toggleJpegQuality()" class="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
+                    <option value="jpeg">JPEG (เร็ว, ขนาดเล็ก)</option>
+                    <option value="png">PNG (คุณภาพสูงสุด)</option>
+                    <option value="pdf">PDF (เอกสาร, พิมพ์ง่าย)</option>
+                  </select>
+                </div>
+
+                <div id="jpeg-quality-group">
+                  <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportJpegQuality">คุณภาพ JPEG</label>
+                  <select id="exportJpegQuality" class="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
+                    <option value="0.95">สูงมาก (95%)</option>
+                    <option value="0.92" selected>สูง (92%)</option>
+                    <option value="0.85">ปานกลาง (85%)</option>
                   </select>
                 </div>
               </div>
 
               <button id="btn-start-export" onclick="startBatchExport()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl btn-hover text-lg flex items-center justify-center gap-2">
-                <i class="fas fa-rocket"></i> เริ่มประมวลผลส่งออก/ดาวน์โหลดเกียรติบัตร
+                <i class="fas fa-rocket"></i> เริ่มสร้างเกียรติบัตร
               </button>
             </div>
 
@@ -1073,7 +1155,7 @@
           <button onclick="addCanvasElement('date')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-calendar mr-2 text-primary-500"></i>วันที่ออกเกียรติบัตร</button>
           <button onclick="addCanvasElement('signer')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-file-signature mr-2 text-primary-500"></i>ชื่อผู้ลงนาม</button>
           <button onclick="addCanvasElement('position')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-id-badge mr-2 text-primary-500"></i>ตำแหน่งผู้ลงนาม</button>
-          <button onclick="document.getElementById('designer-signature-input').click(); hideModal('add-field-modal');" class="col-span-2 p-3 border-2 border-blue-200 bg-blue-50/50 hover:bg-blue-100 rounded-xl font-bold text-blue-800 text-sm text-left"><i class="fas fa-signature mr-2 text-blue-600"></i>อัปโหลดรูปภาพลายเซ็น (PNG/JPG)</button>
+          <button onclick="document.getElementById('designer-signature-input').click(); hideModal('add-field-modal');" class="col-span-2 p-3 border-2 border-blue-200 bg-blue-50/50 hover:bg-blue-100 rounded-xl font-bold text-blue-800 text-sm text-left"><i class="fas fa-signature mr-2 text-blue-600"></i>อัปโหลดรูปภาพลายเซ็นไป Google Drive</button>
           <button onclick="addCanvasElement('static')" class="col-span-2 p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-font mr-2 text-primary-500"></i>ข้อความคงที่ (ระบุเอง)</button>
         </div>
       </div>
@@ -1237,6 +1319,11 @@
     let parsedImportRows = [];
     let activityLogs = [];
 
+    // Undo / Redo Stacks
+    let undoStack = [];
+    let redoStack = [];
+    const MAX_UNDO_STACK = 30;
+
     const defaultTemplates = [
       {
         id: 'tpl_default_1',
@@ -1247,14 +1334,14 @@
         height: 2480,
         bgImg: null,
         elements: [
-          { id: 'el_1', field: 'static', staticText: 'วิทยาลัยเทคนิคดอนเมือง ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า', x: 1754, y: 750, fontSize: 60, fontFamily: 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: false, italic: false },
-          { id: 'el_2', field: 'name', staticText: '[ชื่อ-นามสกุล]', x: 1754, y: 1050, fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', textAlign: 'center', bold: true, italic: false },
-          { id: 'el_3', field: 'static', staticText: 'ได้ผ่านการเข้าร่วมโครงการพัฒนาทักษะวิชาชีพและคุณธรรมจริยธรรม', x: 1754, y: 1300, fontSize: 55, fontFamily: 'Sarabun', color: '#475569', textAlign: 'center', bold: false, italic: false },
-          { id: 'el_4', field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: 1754, y: 1500, fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', textAlign: 'center', bold: true, italic: false },
-          { id: 'el_5', field: 'certNumber', staticText: 'เลขที่ CERT-2026/001', x: 3100, y: 250, fontSize: 40, fontFamily: 'Sarabun', color: '#64748b', textAlign: 'right', bold: false, italic: false },
-          { id: 'el_6', field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: 1754, y: 1850, fontSize: 45, fontFamily: 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false },
-          { id: 'el_7', field: 'signer', staticText: '(นายธราเชฎฐ์ สุคนธ์)', x: 1754, y: 2150, fontSize: 45, fontFamily: 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: true, italic: false },
-          { id: 'el_8', field: 'position', staticText: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง', x: 1754, y: 2230, fontSize: 38, fontFamily: 'Sarabun', color: '#475569', textAlign: 'center', bold: false, italic: false }
+          { id: 'el_1', field: 'static', staticText: 'วิทยาลัยเทคนิคดอนเมือง ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า', x: 1754, y: 750, fontSize: 60, fontFamily: 'Sarabun', color: '#1e3a8a', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 2000 },
+          { id: 'el_2', field: 'name', staticText: '[ชื่อ-นามสกุล]', x: 1754, y: 1050, fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
+          { id: 'el_3', field: 'static', staticText: 'ได้ผ่านการเข้าร่วมโครงการพัฒนาทักษะวิชาชีพและคุณธรรมจริยธรรม', x: 1754, y: 1300, fontSize: 55, fontFamily: 'Sarabun', color: '#475569', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
+          { id: 'el_4', field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: 1754, y: 1500, fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
+          { id: 'el_5', field: 'certNumber', staticText: 'เลขที่ CERT-2026/001', x: 3100, y: 250, fontSize: 40, fontFamily: 'Sarabun', color: '#64748b', opacity: 1.0, textAlign: 'right', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 800 },
+          { id: 'el_6', field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: 1754, y: 1850, fontSize: 45, fontFamily: 'Sarabun', color: '#64748b', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 1600 },
+          { id: 'el_7', field: 'signer', staticText: '(นายธราเชฎฐ์ สุคนธ์)', x: 1754, y: 2150, fontSize: 45, fontFamily: 'Sarabun', color: '#1e3a8a', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 1200 },
+          { id: 'el_8', field: 'position', staticText: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง', x: 1754, y: 2230, fontSize: 38, fontFamily: 'Sarabun', color: '#475569', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 1200 }
         ]
       }
     ];
@@ -1263,6 +1350,66 @@
       { id: 'rec_1', member_id: '', type: 'record', name: 'นายสมชาย ใจดี', school: 'วิทยาลัยเทคนิคดอนเมือง', certNumber: 'CERT-2026/001', date: '16 สิงหาคม 2569', status: 'pending' },
       { id: 'rec_2', member_id: '', type: 'record', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
     ];
+
+    function saveCanvasState() {
+      const tpl = getActiveTemplate();
+      if (!tpl || !tpl.elements) return;
+      undoStack.push(JSON.stringify(tpl.elements));
+      if (undoStack.length > MAX_UNDO_STACK) undoStack.shift();
+      redoStack = []; // Clear redo stack on new action
+    }
+
+    function canvasUndo() {
+      const tpl = getActiveTemplate();
+      if (!tpl || undoStack.length === 0) return;
+      redoStack.push(JSON.stringify(tpl.elements));
+      const prevState = undoStack.pop();
+      tpl.elements = JSON.parse(prevState);
+      renderCanvas();
+      updateElementPropertiesPanel();
+    }
+
+    function canvasRedo() {
+      const tpl = getActiveTemplate();
+      if (!tpl || redoStack.length === 0) return;
+      undoStack.push(JSON.stringify(tpl.elements));
+      const nextState = redoStack.pop();
+      tpl.elements = JSON.parse(nextState);
+      renderCanvas();
+      updateElementPropertiesPanel();
+    }
+
+    function setupKeyboardShortcuts() {
+      window.addEventListener('keydown', (e) => {
+        // Only handle undo/redo shortcuts if active in main page and designer view
+        if (currentPage !== 'main') return;
+        const activeView = document.querySelector('.app-view:not(.hidden)')?.id;
+        if (activeView !== 'view-designer') return;
+
+        const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+        if (isInput) return;
+
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+          e.preventDefault();
+          canvasUndo();
+        } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+          e.preventDefault();
+          canvasRedo();
+        }
+      });
+    }
+
+    function toggleJpegQuality() {
+      const format = document.getElementById('exportImageFormat')?.value;
+      const group = document.getElementById('jpeg-quality-group');
+      if (group) {
+        if (format === 'jpeg') {
+          group.style.display = 'block';
+        } else {
+          group.style.display = 'none';
+        }
+      }
+    }
 
     function formatThaiDateTime(raw) {
       if (!raw) return '-';
@@ -1461,6 +1608,21 @@
       return null;
     }
 
+    async function uploadAssetToDrive(base64Data, fileName) {
+      try {
+        const result = await callGas('uploadImageToDrive', {
+          base64Data: base64Data,
+          fileName: fileName
+        });
+        if (result && result.directUrl) {
+          return result.directUrl;
+        }
+      } catch (err) {
+        console.warn('Google Drive Image Upload fallback to base64:', err);
+      }
+      return base64Data;
+    }
+
     window.dataSdk = {
       create: async function(item) {
         try {
@@ -1505,7 +1667,6 @@
       }
     };
 
-    /* Full Overlay Loading used strictly for Initial App Bootstrapping */
     function showFullPageLoading(text = "กำลังโหลด...") {
       const loadingEl = document.getElementById('loading');
       const textEl = document.getElementById('loadingText');
@@ -1518,7 +1679,6 @@
       if (loadingEl) loadingEl.classList.add('hidden');
     }
 
-    /* Inline Spinner Helper */
     function setButtonLoading(btn, isLoading, loadingText = "กำลังดำเนินการ...", defaultHtml = null) {
       if (!btn) return;
       if (isLoading) {
@@ -1675,11 +1835,15 @@
 
       if (viewName === 'designer') {
         updateTemplateSelectors();
-        setTimeout(renderCanvas, 100);
+        setTimeout(() => {
+          autoFitCanvasZoom();
+          renderCanvas();
+        }, 100);
       }
       if (viewName === 'export') {
         const badge = document.getElementById('export-selected-count-badge');
         if (badge) badge.textContent = selectedRecordIds.size;
+        toggleJpegQuality();
       }
 
       if (viewName === 'profile' && currentUser) {
@@ -1744,9 +1908,6 @@
       return getActiveTemplate();
     }
 
-    /**
-     * ค้นหาเกียรติบัตรสำหรับบุคคลทั่วไป - ใช้ Spinner ทรงกลมในตัวปุ่มค้นหา และการ์ดแสดงผลเฉพาะจุด
-     */
     async function doGuestSearch() {
       const input = (document.getElementById('guest-search-input')?.value || '').trim();
       const templateVal = document.getElementById('guest-template-select')?.value || 'all';
@@ -1889,10 +2050,14 @@
             });
             const w = el.width || 300;
             const h = el.height || 120;
+            tctx.save();
+            tctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
             tctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
+            tctx.restore();
           }
         } else {
           tctx.save();
+          tctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
           tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize || 50}px "${el.fontFamily || 'Sarabun'}", sans-serif`;
           tctx.fillStyle = el.color || '#000000';
           tctx.textAlign = el.textAlign || 'center';
@@ -1906,6 +2071,22 @@
           if (el.field === 'position') text = record.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
 
           tctx.fillText(text, el.x, el.y);
+
+          if (el.underline) {
+            const metrics = tctx.measureText(text);
+            const w = metrics.width;
+            let startX = el.x - w / 2;
+            if (el.textAlign === 'left') startX = el.x;
+            if (el.textAlign === 'right') startX = el.x - w;
+            const lineY = el.y + 8;
+            tctx.strokeStyle = el.color || '#000000';
+            tctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
+            tctx.beginPath();
+            tctx.moveTo(startX, lineY);
+            tctx.lineTo(startX + w, lineY);
+            tctx.stroke();
+          }
+
           tctx.restore();
         }
       }
@@ -1996,9 +2177,56 @@
       canvas = document.getElementById('certCanvas');
       if (canvas) {
         ctx = canvas.getContext('2d');
-        canvas.addEventListener('mousedown', handleCanvasMouseDown);
-        canvas.addEventListener('mousemove', handleCanvasMouseMove);
-        canvas.addEventListener('mouseup', handleCanvasMouseUp);
+        
+        // Mouse Events
+        canvas.addEventListener('mousedown', handleCanvasPointerStart);
+        canvas.addEventListener('mousemove', handleCanvasPointerMove);
+        canvas.addEventListener('mouseup', handleCanvasPointerEnd);
+
+        // Touch Events
+        canvas.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          if (e.touches && e.touches.length > 0) {
+            handleCanvasPointerStart(e.touches[0]);
+          }
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+          if (e.touches && e.touches.length > 0) {
+            handleCanvasPointerMove(e.touches[0]);
+          }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+          handleCanvasPointerEnd();
+        });
+      }
+      
+      window.addEventListener('resize', () => {
+        if (currentPage === 'main') {
+          autoFitCanvasZoom();
+        }
+      });
+    }
+
+    function autoFitCanvasZoom() {
+      const workspace = document.getElementById('canvas-workspace');
+      const tpl = getActiveTemplate();
+      if (!workspace || !tpl) return;
+
+      const wsWidth = workspace.clientWidth - 32;
+      const targetWidth = tpl.width || 3508;
+
+      if (wsWidth > 0 && targetWidth > 0) {
+        let calculatedZoom = wsWidth / targetWidth;
+        calculatedZoom = Math.max(0.08, Math.min(1.0, calculatedZoom));
+        canvasZoom = Math.round(calculatedZoom * 100) / 100;
+        
+        const zoomText = document.getElementById('canvas-zoom-text');
+        const container = document.getElementById('canvas-container');
+        if (zoomText) zoomText.textContent = Math.round(canvasZoom * 100) + '%';
+        if (container) container.style.transform = `scale(${canvasZoom})`;
       }
     }
 
@@ -2060,6 +2288,9 @@
       };
 
       (tpl.elements || []).forEach((el, index) => {
+        ctx.save();
+        ctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
+
         if (el.type === 'image' || el.field === 'signatureImg') {
           if (el.imgSrc) {
             const sigImg = new Image();
@@ -2067,18 +2298,20 @@
             const w = el.width || 300;
             const h = el.height || 120;
             const drawSig = () => {
+              ctx.save();
+              ctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
               ctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
               if (index === selectedElementIndex) {
                 ctx.strokeStyle = '#2563eb';
                 ctx.lineWidth = 4;
                 ctx.strokeRect(el.x - w / 2 - 5, el.y - h / 2 - 5, w + 10, h + 10);
               }
+              ctx.restore();
             };
             if (sigImg.complete) drawSig();
             else sigImg.onload = drawSig;
           }
         } else {
-          ctx.save();
           ctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
           ctx.fillStyle = el.color || '#000000';
           ctx.textAlign = el.textAlign || 'center';
@@ -2093,6 +2326,22 @@
 
           ctx.fillText(text, el.x, el.y);
 
+          // Render Underline
+          if (el.underline) {
+            const metrics = ctx.measureText(text);
+            const w = metrics.width;
+            let startX = el.x - w / 2;
+            if (el.textAlign === 'left') startX = el.x;
+            if (el.textAlign === 'right') startX = el.x - w;
+            const lineY = el.y + 8;
+            ctx.strokeStyle = el.color || '#000000';
+            ctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
+            ctx.beginPath();
+            ctx.moveTo(startX, lineY);
+            ctx.lineTo(startX + w, lineY);
+            ctx.stroke();
+          }
+
           if (index === selectedElementIndex) {
             ctx.strokeStyle = '#2563eb';
             ctx.lineWidth = 4;
@@ -2104,20 +2353,19 @@
             if (el.textAlign === 'right') bx = el.x - w;
             ctx.strokeRect(bx, el.y - el.fontSize, w, h);
           }
-
-          ctx.restore();
         }
+        ctx.restore();
       });
 
       updateDesignerElementList();
     }
 
-    function handleCanvasMouseDown(e) {
+    function handleCanvasPointerStart(pointerEvent) {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
-      const mx = (e.clientX - rect.left) * scaleX;
-      const my = (e.clientY - rect.top) * scaleY;
+      const mx = (pointerEvent.clientX - rect.left) * scaleX;
+      const my = (pointerEvent.clientY - rect.top) * scaleY;
 
       const tpl = getActiveTemplate();
       selectedElementIndex = null;
@@ -2155,13 +2403,13 @@
       updateElementPropertiesPanel();
     }
 
-    function handleCanvasMouseMove(e) {
+    function handleCanvasPointerMove(pointerEvent) {
       if (!isDraggingElement || selectedElementIndex === null) return;
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
-      const mx = (e.clientX - rect.left) * scaleX;
-      const my = (e.clientY - rect.top) * scaleY;
+      const mx = (pointerEvent.clientX - rect.left) * scaleX;
+      const my = (pointerEvent.clientY - rect.top) * scaleY;
 
       const tpl = getActiveTemplate();
       const el = tpl.elements[selectedElementIndex];
@@ -2172,20 +2420,21 @@
       updateElementPropertiesPanel();
     }
 
-    function handleCanvasMouseUp() {
+    function handleCanvasPointerEnd() {
+      if (isDraggingElement) {
+        saveCanvasState(); // Save undo state when finished dragging
+      }
       isDraggingElement = false;
     }
 
     function zoomCanvas(delta) {
-      canvasZoom = Math.max(0.1, Math.min(1.0, canvasZoom + delta));
+      canvasZoom = Math.max(0.08, Math.min(1.0, canvasZoom + delta));
       document.getElementById('canvas-zoom-text').textContent = Math.round(canvasZoom * 100) + '%';
       document.getElementById('canvas-container').style.transform = `scale(${canvasZoom})`;
     }
 
     function resetCanvasZoom() {
-      canvasZoom = 0.3;
-      document.getElementById('canvas-zoom-text').textContent = '30%';
-      document.getElementById('canvas-container').style.transform = `scale(0.3)`;
+      autoFitCanvasZoom();
     }
 
     function toggleCanvasGrid() {
@@ -2193,26 +2442,42 @@
       renderCanvas();
     }
 
-    function handleBgUpload(e) {
+    async function handleBgUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
 
+      const btn = document.getElementById('btn-designer-bg');
+      if (btn) setButtonLoading(btn, true, "อัปโหลด...");
+
       const reader = new FileReader();
-      reader.onload = function(evt) {
+      reader.onload = async function(evt) {
+        saveCanvasState();
+        const base64Data = evt.target.result;
+        const driveUrl = await uploadAssetToDrive(base64Data, 'bg_' + Date.now() + '_' + file.name);
+
         const tpl = getActiveTemplate();
-        tpl.bgImg = evt.target.result;
+        tpl.bgImg = driveUrl;
         renderCanvas();
-        showAlert('success', 'สำเร็จ', 'อัปเดตภาพพื้นหลัง Template เรียบร้อย');
+
+        if (btn) setButtonLoading(btn, false);
+        showAlert('success', 'สำเร็จ', 'อัปเดตภาพพื้นหลัง Template ไปที่ Google Drive เรียบร้อย');
       };
       reader.readAsDataURL(file);
     }
 
-    function handleSignatureUpload(e) {
+    async function handleSignatureUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
 
+      const btn = document.getElementById('btn-designer-signature');
+      if (btn) setButtonLoading(btn, true, "อัปโหลด...");
+
       const reader = new FileReader();
-      reader.onload = function(evt) {
+      reader.onload = async function(evt) {
+        saveCanvasState();
+        const base64Data = evt.target.result;
+        const driveUrl = await uploadAssetToDrive(base64Data, 'sig_' + Date.now() + '_' + file.name);
+
         const tpl = getActiveTemplate();
         if (!tpl.elements) tpl.elements = [];
         const centerX = Math.round((tpl.width || 3508) / 2);
@@ -2223,17 +2488,20 @@
           type: 'image',
           field: 'signatureImg',
           staticText: 'รูปภาพลายเซ็น',
-          imgSrc: evt.target.result,
+          imgSrc: driveUrl,
           x: centerX,
           y: centerY,
           width: 350,
-          height: 140
+          height: 140,
+          opacity: 1.0
         });
 
         selectedElementIndex = tpl.elements.length - 1;
         renderCanvas();
         updateElementPropertiesPanel();
-        showAlert('success', 'สำเร็จ', 'เพิ่มรูปภาพลายเซ็นลงใน Template เรียบร้อย');
+
+        if (btn) setButtonLoading(btn, false);
+        showAlert('success', 'สำเร็จ', 'เพิ่มรูปภาพลายเซ็นขึ้น Google Drive เรียบร้อยแล้ว');
       };
       reader.readAsDataURL(file);
     }
@@ -2294,43 +2562,65 @@
       const el = tpl.elements[selectedElementIndex];
 
       const textControls = document.getElementById('prop-text-controls');
-      const imgControls = document.getElementById('prop-image-controls');
+      const imgControls = document.getElementById('propImageExtras');
 
       if (el.type === 'image' || el.field === 'signatureImg') {
         if (textControls) textControls.classList.add('hidden');
         if (imgControls) imgControls.classList.remove('hidden');
-        document.getElementById('prop-img-width').value = el.width || 300;
-        document.getElementById('prop-img-height').value = el.height || 120;
+        document.getElementById('propImgWidth').value = el.width || 300;
+        document.getElementById('propImgHeight').value = el.height || 120;
       } else {
         if (textControls) textControls.classList.remove('hidden');
         if (imgControls) imgControls.classList.add('hidden');
-        document.getElementById('prop-font-family').value = el.fontFamily || 'Sarabun';
-        document.getElementById('prop-font-size').value = el.fontSize;
-        document.getElementById('prop-color').value = el.color || '#000000';
+        document.getElementById('propFont').value = el.fontFamily || 'Sarabun';
+        document.getElementById('propFontSize').value = el.fontSize || 48;
+        document.getElementById('propFontSizeSlider').value = el.fontSize || 48;
+        document.getElementById('propColor').value = el.color || '#000000';
+        document.getElementById('propOpacity').value = (el.opacity !== undefined ? el.opacity : 1) * 100;
+        document.getElementById('propWidth').value = el.width || 800;
+        document.getElementById('propLineHeight').value = el.lineHeight || 1.4;
+
+        // Toggle style buttons active state
+        document.getElementById('propBold')?.classList.toggle('active', !!el.bold);
+        document.getElementById('propItalic')?.classList.toggle('active', !!el.italic);
+        document.getElementById('propUnderline')?.classList.toggle('active', !!el.underline);
+
+        // Align buttons active state
+        document.querySelectorAll('.align-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.align === (el.textAlign || 'center'));
+        });
       }
 
-      document.getElementById('prop-pos-x').value = el.x;
-      document.getElementById('prop-pos-y').value = el.y;
+      document.getElementById('propX').value = el.x;
+      document.getElementById('propY').value = el.y;
 
-      document.getElementById('prop-static-text-box').classList.toggle('hidden', el.field !== 'static' && el.field !== 'signer' && el.field !== 'position');
-      if (el.field === 'static' || el.field === 'signer' || el.field === 'position') {
-        document.getElementById('prop-static-text').value = el.staticText || '';
+      const staticRow = document.getElementById('propStaticTextRow');
+      if (staticRow) {
+        const isStatic = (el.field === 'static' || el.field === 'signer' || el.field === 'position');
+        staticRow.classList.toggle('hidden', !isStatic);
+        if (isStatic) {
+          document.getElementById('propStaticText').value = el.staticText || '';
+        }
       }
     }
 
     function updateElementProp(key, value) {
       if (selectedElementIndex === null) return;
+      saveCanvasState();
       const tpl = getActiveTemplate();
       tpl.elements[selectedElementIndex][key] = value;
       renderCanvas();
+      updateElementPropertiesPanel();
     }
 
     function toggleElementStyle(styleKey) {
       if (selectedElementIndex === null) return;
+      saveCanvasState();
       const tpl = getActiveTemplate();
       const el = tpl.elements[selectedElementIndex];
       el[styleKey] = !el[styleKey];
       renderCanvas();
+      updateElementPropertiesPanel();
     }
 
     function openAddFieldModal() {
@@ -2338,6 +2628,7 @@
     }
 
     function addCanvasElement(fieldType) {
+      saveCanvasState();
       const tpl = getActiveTemplate();
       if (!tpl.elements) tpl.elements = [];
       const centerX = Math.round((tpl.width || 3508) / 2);
@@ -2357,9 +2648,13 @@
         fontSize: fieldType === 'position' ? 38 : 50,
         fontFamily: 'Sarabun',
         color: '#000000',
+        opacity: 1.0,
         textAlign: 'center',
         bold: fieldType === 'signer',
-        italic: false
+        italic: false,
+        underline: false,
+        lineHeight: 1.4,
+        width: 800
       });
       hideModal('add-field-modal');
       selectedElementIndex = tpl.elements.length - 1;
@@ -2369,6 +2664,7 @@
 
     function deleteSelectedElement() {
       if (selectedElementIndex === null) return;
+      saveCanvasState();
       const tpl = getActiveTemplate();
       tpl.elements.splice(selectedElementIndex, 1);
       selectedElementIndex = null;
@@ -2408,9 +2704,12 @@
         if (res.isOk) {
           activeTemplateId = null;
           selectedElementIndex = null;
+          undoStack = [];
+          redoStack = [];
           logActivity(`ลบ Template: ${tpl.name}`);
           showAlert('success', 'สำเร็จ', 'ลบ Template เรียบร้อยแล้ว');
           updateUI();
+          autoFitCanvasZoom();
           renderCanvas();
         } else {
           showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถลบ Template ได้');
@@ -2422,7 +2721,10 @@
       if (!id) return;
       activeTemplateId = String(id);
       selectedElementIndex = null;
+      undoStack = [];
+      redoStack = [];
       updateTemplateSelectors();
+      autoFitCanvasZoom();
       renderCanvas();
       updateElementPropertiesPanel();
     }
@@ -2837,11 +3139,13 @@
       }
 
       const btnExport = document.getElementById('btn-start-export');
-      setButtonLoading(btnExport, true, "กำลังประมวลผล...", `<i class="fas fa-rocket"></i> เริ่มประมวลผลส่งออก/ดาวน์โหลดเกียรติบัตร`);
+      setButtonLoading(btnExport, true, "กำลังประมวลผล...", `<i class="fas fa-rocket"></i> เริ่มสร้างเกียรติบัตร`);
 
-      const format = document.getElementById('export-format-select').value;
-      const resolutionScale = parseFloat(document.getElementById('export-resolution-select').value) || 1.0;
-      const filenamePattern = document.getElementById('export-filename-pattern').value;
+      const resolutionScale = parseFloat(document.getElementById('exportResolution')?.value) || 1.0;
+      const filenamePattern = document.getElementById('exportFilename')?.value || '{certNumber}_{name}';
+      const outputFormat = document.getElementById('exportImageFormat')?.value || 'png';
+      const jpegQuality = parseFloat(document.getElementById('exportJpegQuality')?.value) || 0.92;
+
       const tpl = getActiveTemplate();
 
       const card = document.getElementById('export-progress-card');
@@ -2853,7 +3157,7 @@
 
       const zip = new JSZip();
       const isPortrait = (tpl.height || 2480) > (tpl.width || 3508);
-      const pdf = (format === 'pdf') ? new window.jspdf.jsPDF(isPortrait ? 'portrait' : 'landscape', 'px', [tpl.width, tpl.height]) : null;
+      const pdf = (outputFormat === 'pdf') ? new window.jspdf.jsPDF(isPortrait ? 'portrait' : 'landscape', 'px', [tpl.width, tpl.height]) : null;
 
       for (let i = 0; i < targets.length; i++) {
         const r = targets[i];
@@ -2870,6 +3174,7 @@
 
         if (tpl.bgImg) {
           const img = new Image();
+          img.crossOrigin = 'Anonymous';
           img.src = tpl.bgImg;
           await new Promise(res => { img.onload = res; img.onerror = res; });
           tctx.drawImage(img, 0, 0, tpl.width, tpl.height);
@@ -2879,9 +3184,13 @@
         }
 
         for (let el of (tpl.elements || [])) {
+          tctx.save();
+          tctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
+
           if (el.type === 'image' || el.field === 'signatureImg') {
             if (el.imgSrc) {
               const sigImg = new Image();
+              sigImg.crossOrigin = 'Anonymous';
               sigImg.src = el.imgSrc;
               await new Promise(res => { sigImg.onload = res; sigImg.onerror = res; });
               const w = el.width || 300;
@@ -2889,7 +3198,6 @@
               tctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
             }
           } else {
-            tctx.save();
             tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
             tctx.fillStyle = el.color || '#000000';
             tctx.textAlign = el.textAlign || 'center';
@@ -2903,20 +3211,42 @@
             if (el.field === 'position') text = r.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
 
             tctx.fillText(text, el.x, el.y);
-            tctx.restore();
+
+            if (el.underline) {
+              const metrics = tctx.measureText(text);
+              const w = metrics.width;
+              let startX = el.x - w / 2;
+              if (el.textAlign === 'left') startX = el.x;
+              if (el.textAlign === 'right') startX = el.x - w;
+              const lineY = el.y + 8;
+              tctx.strokeStyle = el.color || '#000000';
+              tctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
+              tctx.beginPath();
+              tctx.moveTo(startX, lineY);
+              tctx.lineTo(startX + w, lineY);
+              tctx.stroke();
+            }
           }
+          tctx.restore();
         }
 
-        const imgData = tempCanvas.toDataURL('image/png');
+        let mimeType = 'image/png';
+        let ext = 'png';
+        if (outputFormat === 'jpeg') {
+          mimeType = 'image/jpeg';
+          ext = 'jpg';
+        }
+
+        const imgData = tempCanvas.toDataURL(mimeType, jpegQuality);
 
         let cleanFileName = filenamePattern
           .replace('{certNumber}', r.certNumber || 'CERT')
           .replace('{name}', r.name || 'guest')
           .replace(/[\/\\?%*:|"<>]/g, '_');
 
-        if (format === 'zip') {
-          zip.file(`${cleanFileName}.png`, imgData.split(',')[1], { base64: true });
-        } else if (format === 'pdf') {
+        if (outputFormat === 'jpeg' || outputFormat === 'png') {
+          zip.file(`${cleanFileName}.${ext}`, imgData.split(',')[1], { base64: true });
+        } else if (outputFormat === 'pdf') {
           if (i > 0) pdf.addPage([tpl.width, tpl.height], isPortrait ? 'portrait' : 'landscape');
           pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
         }
@@ -2927,19 +3257,19 @@
 
       if (detailEl) detailEl.textContent = 'กำลังรวบรวมไฟล์ดาวน์โหลด...';
 
-      if (format === 'zip') {
+      if (outputFormat === 'jpeg' || outputFormat === 'png') {
         const blob = await zip.generateAsync({ type: 'blob' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = `Certificates_${Date.now()}.zip`;
         link.click();
-      } else if (format === 'pdf') {
+      } else if (outputFormat === 'pdf') {
         pdf.save(`Certificates_${Date.now()}.pdf`);
       }
 
       if (card) card.classList.add('hidden');
       setButtonLoading(btnExport, false);
-      logActivity(`Export เกียรติบัตรสำเร็จจำนวน ${targets.length} รายการ (${format.toUpperCase()})`);
+      logActivity(`Export เกียรติบัตรสำเร็จจำนวน ${targets.length} รายการ (${outputFormat.toUpperCase()})`);
       showAlert('success', 'สำเร็จ', 'สร้างและดาวน์โหลดไฟล์เกียรติบัตรเรียบร้อยแล้ว');
       updateUI();
     }
@@ -3104,7 +3434,7 @@
           (r.school || '').toLowerCase().includes(searchInput) ||
           (r.certNumber || '').toLowerCase().includes(searchInput);
         const matchStatus = !statusFilter || r.status === statusFilter;
-        const matchSchool = !schoolFilter || r.school === schoolFilter;
+        const matchSchool = !schoolFilter || r.school === schoolSchool;
         return matchSearch && matchStatus && matchSchool;
       });
 
@@ -3166,9 +3496,11 @@
       } finally {
         hideFullPageLoading();
         setupPasswordHoldToReveal();
+        setupKeyboardShortcuts();
         initCanvas();
         await populateGuestTemplates();
         startLiveClock();
+        toggleJpegQuality();
         if (currentPage === 'guest') {
           showPage('guest');
         }
@@ -3456,13 +3788,13 @@
           height: h,
           bgImg: null,
           elements: [
-            { id: generateId(), field: 'static', staticText: 'วิทยาลัยเทคนิคดอนเมือง ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า', x: centerX, y: Math.round(h * 0.32), fontSize: 60, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: false, italic: false },
-            { id: generateId(), field: 'name', staticText: '[ชื่อ-นามสกุล]', x: centerX, y: Math.round(h * 0.44), fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', textAlign: 'center', bold: true, italic: false },
-            { id: generateId(), field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: centerX, y: Math.round(h * 0.58), fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', textAlign: 'center', bold: true, italic: false },
-            { id: generateId(), field: 'certNumber', staticText: 'เลขที่ ' + systemSettings.prefix + '001', x: w - 400, y: Math.round(h * 0.1), fontSize: 40, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'right', bold: false, italic: false },
-            { id: generateId(), field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: centerX, y: Math.round(h * 0.74), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false },
-            { id: generateId(), field: 'signer', staticText: '(นายธราเชฎฐ์ สุคนธ์)', x: centerX, y: Math.round(h * 0.86), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', textAlign: 'center', bold: true, italic: false },
-            { id: generateId(), field: 'position', staticText: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง', x: centerX, y: Math.round(h * 0.9), fontSize: 38, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', textAlign: 'center', bold: false, italic: false }
+            { id: generateId(), field: 'static', staticText: 'วิทยาลัยเทคนิคดอนเมือง ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า', x: centerX, y: Math.round(h * 0.32), fontSize: 60, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 2000 },
+            { id: generateId(), field: 'name', staticText: '[ชื่อ-นามสกุล]', x: centerX, y: Math.round(h * 0.44), fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
+            { id: generateId(), field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: centerX, y: Math.round(h * 0.58), fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
+            { id: generateId(), field: 'certNumber', staticText: 'เลขที่ ' + systemSettings.prefix + '001', x: w - 400, y: Math.round(h * 0.1), fontSize: 40, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', opacity: 1.0, textAlign: 'right', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 800 },
+            { id: generateId(), field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: centerX, y: Math.round(h * 0.74), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 1600 },
+            { id: generateId(), field: 'signer', staticText: '(นายธราเชฎฐ์ สุคนธ์)', x: centerX, y: Math.round(h * 0.86), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 1200 },
+            { id: generateId(), field: 'position', staticText: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง', x: centerX, y: Math.round(h * 0.9), fontSize: 38, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 1200 }
           ]
         };
 
@@ -3471,6 +3803,8 @@
           const res = await window.dataSdk.create(newTpl);
           activeTemplateId = String(res?.data?.id || res?.data?.__backendId || newTpl.id);
           selectedElementIndex = null;
+          undoStack = [];
+          redoStack = [];
           updateUI();
           showView('designer');
           renderCanvas();
