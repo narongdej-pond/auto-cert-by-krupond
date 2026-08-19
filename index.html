@@ -15,17 +15,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ระบบเกียรติบัตร">
 
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then((reg) => console.log('Service worker registered.', reg))
-          .catch((err) => console.log('Service worker not registered.', err));
-      });
-    }
-  </script>
-
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
@@ -83,12 +72,8 @@
     .sidebar-item { transition: all 0.2s ease; }
     .sidebar-item:hover { background: rgba(255,255,255,0.1); }
     .sidebar-item.active { background: rgba(255,255,255,0.2); border-left: 4px solid white; }
-    .no-select { user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
     .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
     .table-container { overflow-x: auto; }
-    .table-container::-webkit-scrollbar { height: 8px; }
-    .table-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-    .table-container::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
     .badge { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
     .badge-success { background: #dcfce7; color: #166534; }
     .badge-warning { background: #fef3c7; color: #92400e; }
@@ -96,7 +81,6 @@
     .badge-info { background: #dbeafe; color: #1e40af; }
     .progress-bar { height: 8px; border-radius: 4px; background: #e2e8f0; overflow: hidden; }
     .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
-    body { box-sizing: border-box; }
 
     /* Touch Canvas Controls Rule */
     #certCanvas {
@@ -115,24 +99,10 @@
       position: relative;
       overflow: hidden;
     }
-    .guest-header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
-      animation: headerPulse 6s ease-in-out infinite;
-    }
-    @keyframes headerPulse {
-      0%, 100% { transform: scale(1); opacity: 0.5; }
-      50% { transform: scale(1.1); opacity: 1; }
-    }
     .search-card {
       background: #FFFFFF;
       border-radius: 20px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
       padding: 28px;
       width: 100%;
       max-width: 680px;
@@ -148,29 +118,21 @@
       margin-bottom: 16px;
       transition: all 0.2s ease;
     }
-    .cert-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    }
-    .export-source-card.active {
-      border-color: #2563eb;
-      background-color: #eff6ff;
-    }
-    .searching-glass {
-      display: inline-block;
-      animation: glass-loop 2s ease-in-out infinite; 
-    }
-    @keyframes glass-loop {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(3px, -2px) rotate(5deg); }
-      50% { transform: translate(1px, 3px) rotate(-5deg); }
-      75% { transform: translate(-3px, 1px) rotate(3deg); }
-      100% { transform: translate(0, 0) rotate(0deg); }
-    }
 
-    /* Style Toggles */
-    .style-btn {
-      transition: all 0.15s ease;
+    /* Responsive Canvas Styling Fixes */
+    #canvas-wrapper {
+      position: relative;
+      margin: auto;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+      border-radius: 8px;
+      background-color: #ffffff;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
     }
     .style-btn.active {
       background-color: #3b82f6;
@@ -384,7 +346,7 @@
 
         <!-- Dynamic Main Views -->
         <main class="flex-1 overflow-auto p-4 md:p-6 bg-gray-50">
-          <!-- View: Members Management & Approval -->
+          <!-- View: Members Management -->
           <div id="view-members" class="app-view hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <button onclick="openAddMemberModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition self-start md:self-auto">
@@ -392,7 +354,6 @@
               </button>
             </div>
 
-            <!-- Members Data Table -->
             <div class="bg-white rounded-xl card-shadow overflow-hidden">
               <div class="table-container">
                 <table class="w-full">
@@ -466,7 +427,7 @@
               </div>
             </div>
 
-            <!-- Dashboard Charts & Activity -->
+            <!-- Dashboard Shortcuts -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div class="bg-white rounded-xl card-shadow p-4">
                 <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-chart-line text-primary-500 mr-2"></i>สถิติการสร้างเกียรติบัตร</h3>
@@ -517,7 +478,7 @@
               </div>
             </div>
 
-            <!-- Recent Activity Table -->
+            <!-- Recent Activity List -->
             <div class="bg-white rounded-xl card-shadow p-4">
               <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-history text-primary-500 mr-2"></i>กิจกรรมล่าสุด</h3>
               <div id="recent-activity-list" class="space-y-3">
@@ -635,7 +596,7 @@
             </div>
           </div>
 
-          <!-- View 3: Canvas Template Designer (Responsive Touch & Undo/Redo Ready) -->
+          <!-- View 3: Canvas Template Designer -->
           <div id="view-designer" class="app-view hidden">
             <div class="flex flex-col lg:flex-row gap-4 min-h-[calc(100vh-140px)]">
               <!-- Canvas Workshop Area -->
@@ -648,7 +609,7 @@
                       <label class="text-xs font-bold text-primary-800 flex items-center gap-1 pl-1">
                         <i class="fas fa-layer-group text-primary-600"></i>
                       </label>
-                      <select id="designer-template-select" onchange="switchActiveTemplate(this.value)" class="px-2 py-1 bg-white text-gray-800 text-xs font-bold rounded-lg border border-black-300 focus:outline-none focus:ring-1 focus:ring-primary-500 max-w-[130px] sm:max-w-xs truncate">
+                      <select id="designer-template-select" onchange="switchActiveTemplate(this.value)" class="px-2 py-1 bg-white text-gray-800 text-xs font-bold rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-500 max-w-[130px] sm:max-w-xs truncate">
                         <option value="">-- เลือก Template --</option>
                       </select>
                       <button onclick="createNewTemplate()" class="bg-primary-600 hover:bg-primary-700 text-white px-2 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm" title="สร้าง Template ใหม่">
@@ -698,10 +659,12 @@
                   </div>
                 </div>
 
-                <!-- Canvas Workspace Wrapper -->
+                <!-- Canvas Workspace Wrapper with Perfect Sizing Fix for Mobile -->
                 <div class="flex-1 overflow-auto p-2 sm:p-6 flex items-center justify-center relative bg-gray-300 min-h-[350px]" id="canvas-workspace">
-                  <div class="shadow-2xl bg-white relative transition-transform origin-center flex-shrink-0" id="canvas-container">
-                    <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair"></canvas>
+                  <div id="canvas-wrapper">
+                    <div id="canvas-container">
+                      <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair"></canvas>
+                    </div>
                   </div>
                 </div>
 
@@ -752,7 +715,7 @@
                       </select>
                     </div>
 
-                    <!-- Font Size with Range Slider & Number Input Sync -->
+                    <!-- Font Size with Range Slider & Number Sync -->
                     <div id="propFontSizeRow">
                       <label class="block text-xs font-medium text-gray-600 mb-1">ขนาด</label>
                       <div class="grid grid-cols-3 gap-2 items-center">
@@ -765,7 +728,7 @@
                       </div>
                     </div>
 
-                    <!-- Style Toggles: Bold, Italic, Underline -->
+                    <!-- Style Toggles -->
                     <div id="propStyleRow">
                       <label class="block text-xs font-medium text-gray-600 mb-1">สไตล์</label>
                       <div class="flex gap-1">
@@ -797,7 +760,7 @@
                       </div>
                     </div>
 
-                    <!-- Text Extras: Width + Line Height -->
+                    <!-- Text Extras -->
                     <div class="grid grid-cols-2 gap-2" id="propTextExtras">
                       <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">ความกว้าง</label>
@@ -810,7 +773,7 @@
                     </div>
                   </div>
 
-                  <!-- Image Extras: Size Controls -->
+                  <!-- Image Extras -->
                   <div id="propImageExtras" class="hidden space-y-3">
                     <div class="grid grid-cols-2 gap-2">
                       <div>
@@ -854,7 +817,6 @@
             <div class="bg-white rounded-xl card-shadow p-6 mb-6">
               <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-sliders text-primary-500 mr-2"></i>ตัวเลือกการส่งออกเกียรติบัตร</h3>
 
-              <!-- Selectable Export Source Cards -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card active" data-source="all" onclick="selectExportSource('all')">
                   <div>
@@ -881,7 +843,7 @@
                 </div>
               </div>
 
-              <!-- Export Image & File Format Settings -->
+              <!-- Export Settings -->
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div>
                   <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportResolution">ความละเอียด</label>
@@ -1015,7 +977,36 @@
     </div>
 
     <!-- Modals -->
-    <!-- Modal: Member Registration -->
+    <!-- Modal: Guest Cert Preview -->
+    <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div class="bg-white rounded-2xl card-shadow p-4 sm:p-6 w-full max-w-4xl max-h-[90vh] flex flex-col fade-in">
+        <div class="flex items-center justify-between pb-3 border-b mb-4">
+          <h3 id="guest-preview-title" class="font-bold text-gray-800 text-base sm:text-lg flex items-center gap-2 truncate">
+            <i class="fas fa-award text-yellow-500"></i> ตัวอย่างเกียรติบัตร
+          </h3>
+          <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="flex-1 overflow-auto bg-gray-200 rounded-xl p-2 sm:p-4 flex items-center justify-center min-h-[250px]">
+          <div class="max-w-full flex justify-center items-center">
+            <canvas id="guestPreviewCanvas" class="max-w-full h-auto shadow-lg bg-white rounded object-contain max-h-[55vh]"></canvas>
+          </div>
+        </div>
+        <div class="mt-4 flex flex-wrap justify-end gap-2 pt-2 border-t">
+          <button onclick="hideModal('guest-preview-modal')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition">ปิด</button>
+          <button id="btn-download-preview-png" class="px-3.5 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
+            <i class="fas fa-file-image"></i> PNG
+          </button>
+          <button id="btn-download-preview-jpeg" class="px-3.5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
+            <i class="fas fa-image"></i> JPEG
+          </button>
+          <button id="btn-download-preview-pdf" class="px-3.5 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
+            <i class="fas fa-file-pdf"></i> PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Register, Members, Add Record, Add Field, Settings, Alert, Confirm Delete, Save Template, Create Template -->
     <div id="register-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1044,9 +1035,6 @@
               </button>
             </div>
           </div>
-          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
-            <i class="fas fa-info-circle mr-1"></i> <strong>หมายเหตุ:</strong> สมาชิกคนแรกที่สมัครจะได้รับอนุมัติสิทธิ์เป็นผู้ดูแลระบบหลักอัตโนมัติ สำหรับสมาชิกถัดไปจะต้องรอผู้ดูแลระบบหลักอนุมัติสิทธิ์การใช้งาน
-          </div>
           <button id="btn-register-submit" type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-sm flex items-center justify-center gap-2">
             <i class="fas fa-paper-plane"></i> สมัครสมาชิก
           </button>
@@ -1054,7 +1042,7 @@
       </div>
     </div>
 
-    <!-- Modal: Add / Edit Member (By Admin) -->
+    <!-- Modal: Member CRUD -->
     <div id="member-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1216,33 +1204,6 @@
       </div>
     </div>
 
-    <!-- Modal: Guest Cert Preview -->
-    <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-      <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-4xl max-h-[90vh] flex flex-col fade-in">
-        <div class="flex items-center justify-between pb-3 border-b mb-4">
-          <h3 id="guest-preview-title" class="font-bold text-gray-800 text-lg flex items-center gap-2">
-            <i class="fas fa-award text-yellow-500"></i> ตัวอย่างเกียรติบัตร
-          </h3>
-          <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="flex-1 overflow-auto bg-gray-200 rounded-xl p-4 flex items-center justify-center min-h-[300px]">
-          <canvas id="guestPreviewCanvas" class="max-w-full max-h-[60vh] h-auto shadow-lg bg-white rounded"></canvas>
-        </div>
-        <div class="mt-4 flex flex-wrap justify-end gap-2 pt-2 border-t">
-          <button onclick="hideModal('guest-preview-modal')" class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-sm transition">ปิด</button>
-          <button id="btn-download-preview-png" class="px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
-            <i class="fas fa-file-image"></i> ดาวน์โหลด PNG
-          </button>
-          <button id="btn-download-preview-jpeg" class="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
-            <i class="fas fa-image"></i> ดาวน์โหลด JPEG
-          </button>
-          <button id="btn-download-preview-pdf" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
-            <i class="fas fa-file-pdf"></i> ดาวน์โหลด PDF
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Modal: Save Template -->
     <div id="save-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
@@ -1278,7 +1239,7 @@
             <input type="text" id="create-template-name-input" required class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm" placeholder="เช่น เกียรติบัตรอบรมวิชาการ">
           </div>
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
-            <i class="fas fa-info-circle mr-1"></i> ระบบจะสร้างโครงร่าง Template เริ่มต้นตามทิศทางหน้ากระดาษที่ตั้งค่าไว้ คุณสามารถปรับแต่งข้อความ ลายเซ็น และอัปโหลดรูปพื้นหลังได้ทันที
+            <i class="fas fa-info-circle mr-1"></i> ระบบจะสร้างโครงร่าง Template เริ่มต้นตามทิศทางหน้ากระดาษที่ตั้งค่าไว้
           </div>
           <div class="flex gap-3 pt-2">
             <button type="button" onclick="hideModal('create-template-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition text-sm"> ยกเลิก </button>
@@ -1359,7 +1320,7 @@
       if (!tpl || !tpl.elements) return;
       undoStack.push(JSON.stringify(tpl.elements));
       if (undoStack.length > MAX_UNDO_STACK) undoStack.shift();
-      redoStack = []; // Clear redo stack on new action
+      redoStack = [];
     }
 
     function canvasUndo() {
@@ -1405,11 +1366,7 @@
       const format = document.getElementById('exportImageFormat')?.value;
       const group = document.getElementById('jpeg-quality-group');
       if (group) {
-        if (format === 'jpeg') {
-          group.style.display = 'block';
-        } else {
-          group.style.display = 'none';
-        }
+        group.style.display = (format === 'jpeg') ? 'block' : 'none';
       }
     }
 
@@ -1900,20 +1857,17 @@
     function getTemplateForRecord(record, selectedTemplateId) {
       const templates = getTemplates();
       
-      // 1st Priority: Template linked to the record when generated
       if (record && (record.templateId || record.template_id)) {
         const recTplId = String(record.templateId || record.template_id);
         const found = templates.find(t => String(t.id) === recTplId || String(t.__backendId) === recTplId);
         if (found) return found;
       }
       
-      // 2nd Priority: Selected template from search filter
       if (selectedTemplateId && selectedTemplateId !== 'all') {
         const found = templates.find(t => String(t.id) === String(selectedTemplateId) || String(t.__backendId) === String(selectedTemplateId));
         if (found) return found;
       }
       
-      // Fallback: Active template
       return getActiveTemplate();
     }
 
@@ -1939,7 +1893,7 @@
 
       resultsArea.innerHTML = `
         <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500">
-          <i class="fa-solid fa-magnifying-glass text-4xl text-primary-500 mb-3 block searching-glass"></i>
+          <i class="fa-solid fa-magnifying-glass text-4xl text-primary-500 mb-3 block spin"></i>
           <p class="font-medium text-gray-700">กำลังค้นหาเกียรติบัตรของคุณ...</p>
         </div>
       `;
@@ -2204,12 +2158,10 @@
       if (canvas) {
         ctx = canvas.getContext('2d');
         
-        // Mouse Events
         canvas.addEventListener('mousedown', handleCanvasPointerStart);
         canvas.addEventListener('mousemove', handleCanvasPointerMove);
         canvas.addEventListener('mouseup', handleCanvasPointerEnd);
 
-        // Touch Events
         canvas.addEventListener('touchstart', (e) => {
           e.preventDefault();
           if (e.touches && e.touches.length > 0) {
@@ -2224,7 +2176,7 @@
           }
         }, { passive: false });
 
-        canvas.addEventListener('touchend', (e) => {
+        canvas.addEventListener('touchend', () => {
           handleCanvasPointerEnd();
         });
       }
@@ -2234,32 +2186,52 @@
           autoFitCanvasZoom();
         }
       });
+      window.addEventListener('orientationchange', () => {
+        setTimeout(autoFitCanvasZoom, 200);
+      });
     }
 
     function autoFitCanvasZoom() {
       const workspace = document.getElementById('canvas-workspace');
+      const container = document.getElementById('canvas-container');
+      const wrapper = document.getElementById('canvas-wrapper');
       const tpl = getActiveTemplate();
-      if (!workspace || !tpl) return;
+      if (!workspace || !container || !wrapper || !tpl) return;
 
-      const wsWidth = workspace.clientWidth - 32;
       const targetWidth = tpl.width || 3508;
+      const targetHeight = tpl.height || 2480;
+
+      const padding = window.innerWidth < 640 ? 12 : 32;
+      const wsWidth = Math.max(280, workspace.clientWidth - padding);
+      const wsHeight = Math.max(300, workspace.clientHeight - padding);
 
       if (wsWidth > 0 && targetWidth > 0) {
-        let calculatedZoom = wsWidth / targetWidth;
-        calculatedZoom = Math.max(0.08, Math.min(1.0, calculatedZoom));
-        canvasZoom = Math.round(calculatedZoom * 100) / 100;
+        let calculatedZoom = Math.min(wsWidth / targetWidth, wsHeight / targetHeight);
+        calculatedZoom = Math.max(0.05, Math.min(1.0, calculatedZoom));
+        canvasZoom = Math.round(calculatedZoom * 1000) / 1000;
         
         const zoomText = document.getElementById('canvas-zoom-text');
-        const container = document.getElementById('canvas-container');
         if (zoomText) zoomText.textContent = Math.round(canvasZoom * 100) + '%';
-        if (container) container.style.transform = `scale(${canvasZoom})`;
+
+        // Precise wrapper dimensions to prevent layout box overflow on mobile
+        wrapper.style.width = Math.round(targetWidth * canvasZoom) + 'px';
+        wrapper.style.height = Math.round(targetHeight * canvasZoom) + 'px';
+
+        container.style.width = targetWidth + 'px';
+        container.style.height = targetHeight + 'px';
+        container.style.transform = `scale(${canvasZoom})`;
+        container.style.transformOrigin = 'top left';
       }
     }
 
-    function renderCanvas() {
+    async function renderCanvas() {
       if (!canvas || !ctx) return;
       const tpl = getActiveTemplate();
       if (!tpl) return;
+
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch (e) {}
+      }
 
       canvas.width = tpl.width || 3508;
       canvas.height = tpl.height || 2480;
@@ -2273,6 +2245,7 @@
 
       if (tpl.bgImg) {
         const img = new Image();
+        img.crossOrigin = 'Anonymous';
         img.src = tpl.bgImg;
         if (img.complete) {
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -2320,6 +2293,7 @@
         if (el.type === 'image' || el.field === 'signatureImg') {
           if (el.imgSrc) {
             const sigImg = new Image();
+            sigImg.crossOrigin = 'Anonymous';
             sigImg.src = el.imgSrc;
             const w = el.width || 300;
             const h = el.height || 120;
@@ -2338,7 +2312,7 @@
             else sigImg.onload = drawSig;
           }
         } else {
-          ctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}"`;
+          ctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}", sans-serif`;
           ctx.fillStyle = el.color || '#000000';
           ctx.textAlign = el.textAlign || 'center';
 
@@ -2352,7 +2326,6 @@
 
           ctx.fillText(text, el.x, el.y);
 
-          // Render Underline
           if (el.underline) {
             const metrics = ctx.measureText(text);
             const w = metrics.width;
@@ -2454,12 +2427,7 @@
     }
 
     function zoomCanvas(delta) {
-      canvasZoom = Math.max(0.08, Math.min(1.0, canvasZoom + delta));
-      document.getElementById('canvas-zoom-text').textContent = Math.round(canvasZoom * 100) + '%';
-      document.getElementById('canvas-container').style.transform = `scale(${canvasZoom})`;
-    }
-
-    function resetCanvasZoom() {
+      canvasZoom = Math.max(0.05, Math.min(1.0, canvasZoom + delta));
       autoFitCanvasZoom();
     }
 
@@ -3276,7 +3244,6 @@
           pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
         }
 
-        // Automatic template & status binding during generation
         r.status = 'generated';
         r.templateId = currentTplId;
         r.template_id = currentTplId;
@@ -3625,7 +3592,7 @@
         if (res.isOk) {
           logActivity(`สมาชิกใหม่ลงทะเบียน: ${fullname} (${username})`);
           if (isFirstMember) {
-            showAlert('success', 'สมัครสมาชิกสำเร็จ', 'คุณเป็นสมาชิกคนแรกของระบบ ได้รับอนุมัติสิทธิ์ผู้ดูแลระบบหลักอัตโนมัติ! สามารถเข้าสู่ระบบได้ทันที');
+            showAlert('success', 'สมัครสมาชิกสำเร็จ', 'คุณเป็นสมาชิกคนแรกของระบบ ได้รับอนุมัติสิทธิ์ผู้ดูแลระบบหลักอัตโนมัติ!');
           } else {
             showAlert('info', 'ส่งคำขอสมัครสมาชิกแล้ว', 'การสมัครสมาชิกสำเร็จ! บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากผู้ดูแลระบบหลักก่อนเข้าใช้งาน');
           }
