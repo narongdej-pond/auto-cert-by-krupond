@@ -139,7 +139,7 @@
       }
     }
 
-    /* Responsive Canvas & Aspect Ratio Fixes */
+    /* Responsive Canvas & Virtual Fixed Viewport Scaling */
     #canvas-wrapper {
       position: relative;
       margin: auto;
@@ -148,6 +148,7 @@
       border-radius: 8px;
       background-color: #ffffff;
       aspect-ratio: 3508 / 2480;
+      transition: width 0.2s ease, height 0.2s ease;
     }
     #canvas-container {
       position: absolute;
@@ -190,6 +191,13 @@
       height: 0;
       width: 0;
       overflow: hidden;
+    }
+
+    /* Fixed Viewport Device Frame Styles */
+    .device-viewport-btn.active {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #1d4ed8;
     }
   </style>
 </head>
@@ -662,6 +670,21 @@
 
                     <span class="h-4 w-px bg-gray-300 hidden sm:block"></span>
 
+                    <!-- Device Viewport Presets Toggle -->
+                    <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
+                      <button onclick="setDeviceViewportMode('pc')" id="btn-device-pc" class="device-viewport-btn active px-2 py-1 rounded-lg text-xs font-bold transition border border-gray-200" title="มุมมองคอมพิวเตอร์ (PC Standard)">
+                        <i class="fas fa-desktop mr-1"></i><span class="hidden sm:inline">PC</span>
+                      </button>
+                      <button onclick="setDeviceViewportMode('tablet')" id="btn-device-tablet" class="device-viewport-btn px-2 py-1 bg-white hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition border border-gray-200" title="มุมมองแท็บเล็ต (Tablet View)">
+                        <i class="fas fa-tablet-alt mr-1"></i><span class="hidden sm:inline">แท็บเล็ต</span>
+                      </button>
+                      <button onclick="setDeviceViewportMode('mobile')" id="btn-device-mobile" class="device-viewport-btn px-2 py-1 bg-white hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition border border-gray-200" title="มุมมองมือถือ (Mobile View)">
+                        <i class="fas fa-mobile-alt mr-1"></i><span class="hidden sm:inline">มือถือ</span>
+                      </button>
+                    </div>
+
+                    <span class="h-4 w-px bg-gray-300 hidden sm:block"></span>
+
                     <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
                       <button onclick="canvasUndo()" class="bg-white hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-bold transition shadow-sm" title="Undo (Ctrl+Z)">
                         ↩️ <span class="hidden sm:inline">เลิกทำ</span>
@@ -1009,7 +1032,7 @@
           <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl p-1"><i class="fas fa-times"></i></button>
         </div>
         <div class="flex-1 overflow-auto bg-gray-200 rounded-xl p-2 sm:p-4 flex items-center justify-center min-h-[220px]">
-          <div class="max-w-full flex justify-center items-center">
+          <div class="max-w-full flex justify-center items-center" style="aspect-ratio: 3508 / 2480; width: 100%;">
             <canvas id="guestPreviewCanvas" class="max-w-full h-auto shadow-lg bg-white rounded object-contain max-h-[50vh] sm:max-h-[58vh]"></canvas>
           </div>
         </div>
@@ -1304,6 +1327,7 @@
     let activeTemplateId = null;
     let parsedImportRows = [];
     let activityLogs = [];
+    let deviceViewportMode = 'pc'; // 'pc', 'tablet', 'mobile'
 
     // Undo / Redo Stacks
     let undoStack = [];
@@ -1342,7 +1366,7 @@
       if (document.fonts && document.fonts.ready) {
         try {
           await document.fonts.ready;
-          const fontList = ['Sarabun', 'Chonburi', 'Prompt', 'Kanit', 'Noto Sans Thai', 'Mitr'];
+          const fontList = ['Sarabun', 'Chonburi', 'Prompt', 'Kanit', 'Noto Sans Thai', 'Mitr', 'Mali', 'Charm', 'Chakra Petch', 'Kodchasan'];
           for (let fontName of fontList) {
             try {
               await document.fonts.load(`400 48px "${fontName}"`);
@@ -1398,6 +1422,15 @@
           canvasRedo();
         }
       });
+    }
+
+    function setDeviceViewportMode(mode) {
+      deviceViewportMode = mode;
+      document.querySelectorAll('.device-viewport-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn-device-${mode}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      autoFitCanvasZoom();
+      renderCanvas();
     }
 
     function toggleJpegQuality() {
@@ -2228,6 +2261,7 @@
       });
     }
 
+    /* Fixed Viewport Zoom Auto-Fit Logic for Devices */
     function autoFitCanvasZoom() {
       const workspace = document.getElementById('canvas-workspace');
       const container = document.getElementById('canvas-container');
@@ -2238,9 +2272,16 @@
       const targetWidth = tpl.width || 3508;
       const targetHeight = tpl.height || 2480;
 
-      const padding = window.innerWidth < 640 ? 12 : 32;
-      const wsWidth = Math.max(260, workspace.clientWidth - padding);
-      const wsHeight = Math.max(280, workspace.clientHeight - padding);
+      let padding = window.innerWidth < 640 ? 12 : 32;
+      let wsWidth = Math.max(260, workspace.clientWidth - padding);
+      let wsHeight = Math.max(280, workspace.clientHeight - padding);
+
+      // Force Fixed Preset Viewports if selected
+      if (deviceViewportMode === 'mobile') {
+        wsWidth = Math.min(wsWidth, 380);
+      } else if (deviceViewportMode === 'tablet') {
+        wsWidth = Math.min(wsWidth, 768);
+      }
 
       if (wsWidth > 0 && targetWidth > 0) {
         let calculatedZoom = Math.min(wsWidth / targetWidth, wsHeight / targetHeight);
