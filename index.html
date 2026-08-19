@@ -1155,7 +1155,7 @@
           <button onclick="addCanvasElement('date')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-calendar mr-2 text-primary-500"></i>วันที่ออกเกียรติบัตร</button>
           <button onclick="addCanvasElement('signer')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-file-signature mr-2 text-primary-500"></i>ชื่อผู้ลงนาม</button>
           <button onclick="addCanvasElement('position')" class="p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-id-badge mr-2 text-primary-500"></i>ตำแหน่งผู้ลงนาม</button>
-          <button onclick="document.getElementById('designer-signature-input').click(); hideModal('add-field-modal');" class="col-span-2 p-3 border-2 border-blue-200 bg-blue-50/50 hover:bg-blue-100 rounded-xl font-bold text-blue-800 text-sm text-left"><i class="fas fa-signature mr-2 text-blue-600"></i>อัปโหลดรูปภาพลายเซ็นไป Google Drive</button>
+          <button onclick="document.getElementById('designer-signature-input').click(); hideModal('add-field-modal');" class="col-span-2 p-3 border-2 border-blue-200 bg-blue-50/50 hover:bg-blue-100 rounded-xl font-bold text-blue-800 text-sm text-left"><i class="fas fa-signature mr-2 text-blue-600"></i>อัปโหลดรูปภาพลายเซ็น (PNG/JPG)</button>
           <button onclick="addCanvasElement('static')" class="col-span-2 p-3 border-2 border-gray-100 hover:border-primary-500 rounded-xl font-bold text-gray-700 text-sm hover:bg-primary-50 text-left"><i class="fas fa-font mr-2 text-primary-500"></i>ข้อความคงที่ (ระบุเอง)</button>
         </div>
       </div>
@@ -1332,7 +1332,7 @@
         id: 'tpl_default_1',
         member_id: '',
         type: 'template',
-        name: 'เกียรติบัตรเข้าร่วมกิจกรรมมาตรฐาน',
+        name: 'เกียรติบัตรเข้าร่วมกิจกรรมพัฒนาทักษะวิชาชีพและคุณธรรมจริยธรรม',
         width: 3508,
         height: 2480,
         bgImg: null,
@@ -1350,8 +1350,8 @@
     ];
 
     const defaultRecords = [
-      { id: 'rec_1', member_id: '', type: 'record', name: 'นายสมชาย ใจดี', school: 'วิทยาลัยเทคนิคดอนเมือง', certNumber: 'CERT-2026/001', date: '16 สิงหาคม 2569', status: 'pending' },
-      { id: 'rec_2', member_id: '', type: 'record', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
+      { id: 'rec_1', member_id: '', type: 'record', templateId: 'tpl_default_1', name: 'นายสมชาย ใจดี', school: 'วิทยาลัยเทคนิคดอนเมือง', certNumber: 'CERT-2026/001', date: '16 สิงหาคม 2569', status: 'pending' },
+      { id: 'rec_2', member_id: '', type: 'record', templateId: 'tpl_default_1', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
     ];
 
     function saveCanvasState() {
@@ -1384,7 +1384,6 @@
 
     function setupKeyboardShortcuts() {
       window.addEventListener('keydown', (e) => {
-        // Only handle undo/redo shortcuts if active in main page and designer view
         if (currentPage !== 'main') return;
         const activeView = document.querySelector('.app-view:not(.hidden)')?.id;
         if (activeView !== 'view-designer') return;
@@ -1900,14 +1899,21 @@
 
     function getTemplateForRecord(record, selectedTemplateId) {
       const templates = getTemplates();
+      
+      // 1st Priority: Template linked to the record when generated
+      if (record && (record.templateId || record.template_id)) {
+        const recTplId = String(record.templateId || record.template_id);
+        const found = templates.find(t => String(t.id) === recTplId || String(t.__backendId) === recTplId);
+        if (found) return found;
+      }
+      
+      // 2nd Priority: Selected template from search filter
       if (selectedTemplateId && selectedTemplateId !== 'all') {
         const found = templates.find(t => String(t.id) === String(selectedTemplateId) || String(t.__backendId) === String(selectedTemplateId));
         if (found) return found;
       }
-      if (record && record.templateId) {
-        const found = templates.find(t => String(t.id) === String(record.templateId) || String(t.__backendId) === String(record.templateId));
-        if (found) return found;
-      }
+      
+      // Fallback: Active template
       return getActiveTemplate();
     }
 
@@ -1950,7 +1956,11 @@
             const nameMatch = (r.name || '').toLowerCase().includes(input.toLowerCase());
             const certMatch = (r.certNumber || '').toLowerCase().includes(input.toLowerCase());
             const schoolMatch = (r.school || '').toLowerCase().includes(input.toLowerCase());
-            return isGenerated && (nameMatch || certMatch || schoolMatch);
+            
+            const recTplId = String(r.templateId || r.template_id || '');
+            const tplMatch = (templateVal === 'all') || (recTplId === String(templateVal));
+
+            return isGenerated && (nameMatch || certMatch || schoolMatch) && tplMatch;
           });
         }
 
@@ -1972,6 +1982,8 @@
         ` + matches.map(r => {
           const recId = r.id || r.__backendId;
           const displayDate = formatThaiDateTime(r.date || r.created_at || '');
+          const boundTplId = r.templateId || r.template_id || templateVal;
+
           return `
             <div class="cert-card fade-in">
               <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1986,16 +1998,16 @@
                   </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
-                  <button id="btn-preview-${recId}" onclick="previewGuestCert('${recId}', null, this)" class="flex-1 md:flex-initial bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-1.5" title="ดูตัวอย่าง">
+                  <button id="btn-preview-${recId}" onclick="previewGuestCert('${recId}', '${boundTplId}', this)" class="flex-1 md:flex-initial bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-1.5" title="ดูตัวอย่าง">
                     <i class="fas fa-eye text-primary-500"></i> ดูตัวอย่าง
                   </button>
-                  <button id="btn-dl-png-${recId}" onclick="downloadGuestCertFormat('${recId}', 'png', null, this)" class="flex-1 md:flex-initial bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ PNG">
+                  <button id="btn-dl-png-${recId}" onclick="downloadGuestCertFormat('${recId}', 'png', '${boundTplId}', this)" class="flex-1 md:flex-initial bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ PNG">
                     <i class="fas fa-file-image"></i> PNG
                   </button>
-                  <button id="btn-dl-jpeg-${recId}" onclick="downloadGuestCertFormat('${recId}', 'jpeg', null, this)" class="flex-1 md:flex-initial bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ JPEG">
+                  <button id="btn-dl-jpeg-${recId}" onclick="downloadGuestCertFormat('${recId}', 'jpeg', '${boundTplId}', this)" class="flex-1 md:flex-initial bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ JPEG">
                     <i class="fas fa-image"></i> JPEG
                   </button>
-                  <button id="btn-dl-pdf-${recId}" onclick="downloadGuestCertFormat('${recId}', 'pdf', null, this)" class="flex-1 md:flex-initial bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์เอกสาร PDF">
+                  <button id="btn-dl-pdf-${recId}" onclick="downloadGuestCertFormat('${recId}', 'pdf', '${boundTplId}', this)" class="flex-1 md:flex-initial bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-2 rounded-xl text-xs md:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์เอกสาร PDF">
                     <i class="fas fa-file-pdf"></i> PDF
                   </button>
                 </div>
@@ -2436,7 +2448,7 @@
 
     function handleCanvasPointerEnd() {
       if (isDraggingElement) {
-        saveCanvasState(); // Save undo state when finished dragging
+        saveCanvasState();
       }
       isDraggingElement = false;
     }
@@ -2474,7 +2486,7 @@
         renderCanvas();
 
         if (btn) setButtonLoading(btn, false);
-        showAlert('success', 'สำเร็จ', 'อัปเดตภาพพื้นหลัง Template ไปที่ Google Drive เรียบร้อย');
+        showAlert('success', 'สำเร็จ', 'อัปเดตภาพพื้นหลังเรียบร้อยแล้ว');
       };
       reader.readAsDataURL(file);
     }
@@ -2594,12 +2606,10 @@
         document.getElementById('propWidth').value = el.width || 800;
         document.getElementById('propLineHeight').value = el.lineHeight || 1.4;
 
-        // Toggle style buttons active state
         document.getElementById('propBold')?.classList.toggle('active', !!el.bold);
         document.getElementById('propItalic')?.classList.toggle('active', !!el.italic);
         document.getElementById('propUnderline')?.classList.toggle('active', !!el.underline);
 
-        // Align buttons active state
         document.querySelectorAll('.align-btn').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.align === (el.textAlign || 'center'));
         });
@@ -3161,6 +3171,7 @@
       const jpegQuality = parseFloat(document.getElementById('exportJpegQuality')?.value) || 0.92;
 
       const tpl = getActiveTemplate();
+      const currentTplId = String(tpl.id || tpl.__backendId || '');
 
       const card = document.getElementById('export-progress-card');
       const bar = document.getElementById('export-progress-bar-fill');
@@ -3265,7 +3276,10 @@
           pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
         }
 
+        // Automatic template & status binding during generation
         r.status = 'generated';
+        r.templateId = currentTplId;
+        r.template_id = currentTplId;
         await window.dataSdk.update(r);
       }
 
@@ -3448,7 +3462,7 @@
           (r.school || '').toLowerCase().includes(searchInput) ||
           (r.certNumber || '').toLowerCase().includes(searchInput);
         const matchStatus = !statusFilter || r.status === statusFilter;
-        const matchSchool = !schoolFilter || r.school === schoolSchool;
+        const matchSchool = !schoolFilter || r.school === schoolFilter;
         return matchSearch && matchStatus && matchSchool;
       });
 
