@@ -183,13 +183,15 @@
       100% { transform: translate(0, 0) rotate(0deg); }
     }
 
-    /* Invisible DOM Font Preloader to force mobile browsers to hydrate Thai fonts into memory */
+    /* Off-screen WebFont Hydration Preloader for Mobile GPU Memory */
     .font-preloader {
-      position: absolute;
-      opacity: 0;
+      position: fixed;
+      left: -9999px;
+      top: -9999px;
+      opacity: 0.01;
       pointer-events: none;
-      height: 0;
-      width: 0;
+      height: 1px;
+      width: 1px;
       overflow: hidden;
     }
 
@@ -203,18 +205,19 @@
 </head>
 <body class="h-full bg-gray-50 font-sarabun antialiased">
 
+  <!-- Off-screen WebFont Hydration Container -->
   <div class="font-preloader" aria-hidden="true">
-    <span style="font-family: 'Sarabun'">กขค</span>
-    <span style="font-family: 'Kanit'">กขค</span>
-    <span style="font-family: 'Prompt'">กขค</span>
-    <span style="font-family: 'Noto Sans Thai'">กขค</span>
-    <span style="font-family: 'Noto Serif Thai'">กขค</span>
-    <span style="font-family: 'Mitr'">กขค</span>
-    <span style="font-family: 'Mali'">กขค</span>
-    <span style="font-family: 'Charm'">กขค</span>
-    <span style="font-family: 'Chakra Petch'">กขค</span>
-    <span style="font-family: 'Chonburi'">กขค</span>
-    <span style="font-family: 'Kodchasan'">กขค</span>
+    <span style="font-family: 'Sarabun'">กขค Sarabun</span>
+    <span style="font-family: 'Kanit'">กขค Kanit</span>
+    <span style="font-family: 'Prompt'">กขค Prompt</span>
+    <span style="font-family: 'Noto Sans Thai'">กขค Noto Sans Thai</span>
+    <span style="font-family: 'Noto Serif Thai'">กขค Noto Serif Thai</span>
+    <span style="font-family: 'Mitr'">กขค Mitr</span>
+    <span style="font-family: 'Mali'">กขค Mali</span>
+    <span style="font-family: 'Charm'">กขค Charm</span>
+    <span style="font-family: 'Chakra Petch'">กขค Chakra Petch</span>
+    <span style="font-family: 'Chonburi'">กขค Chonburi</span>
+    <span style="font-family: 'Kodchasan'">กขค Kodchasan</span>
   </div>
 
   <div id="app" class="min-h-[100dvh] flex flex-col justify-between">
@@ -751,6 +754,10 @@
                     <span>คุณสมบัติ</span>
                     <button onclick="deleteSelectedElement()" class="text-red-500 hover:text-red-700 text-xs font-normal"><i class="fas fa-trash mr-1"></i>ลบ</button>
                   </h4>
+
+                  <button type="button" onclick="centerElementHorizontally()" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-2 px-3 rounded-lg text-xs border border-blue-200 transition flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fas fa-align-center text-blue-600"></i> 📍 จัดกึ่งกลางหน้ากระดาษ (Snap Center)
+                  </button>
 
                   <div id="prop-text-controls" class="space-y-3">
                     <div id="propFontFamily">
@@ -1323,6 +1330,8 @@
     let showCanvasGrid = false;
     let isDraggingElement = false;
     let dragOffsetX = 0, dragOffsetY = 0;
+    let touchStartX = 0, touchStartY = 0;
+    let showCenterGuide = false;
     let selectedElementIndex = null;
     let activeTemplateId = null;
     let parsedImportRows = [];
@@ -1361,12 +1370,12 @@
       { id: 'rec_2', member_id: '', type: 'record', templateId: 'tpl_default_1', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
     ];
 
-    /* Ensures fonts are preloaded into browser memory before canvas operations execute */
+    /* Ensures WebFonts are fully loaded and hydrated into browser GPU memory */
     async function ensureFontsLoaded() {
       if (document.fonts && document.fonts.ready) {
         try {
           await document.fonts.ready;
-          const fontList = ['Sarabun', 'Chonburi', 'Prompt', 'Kanit', 'Noto Sans Thai', 'Mitr', 'Mali', 'Charm', 'Chakra Petch', 'Kodchasan'];
+          const fontList = ['Sarabun', 'Chonburi', 'Prompt', 'Kanit', 'Noto Sans Thai', 'Noto Serif Thai', 'Mitr', 'Mali', 'Charm', 'Chakra Petch', 'Kodchasan'];
           for (let fontName of fontList) {
             try {
               await document.fonts.load(`400 48px "${fontName}"`);
@@ -1403,6 +1412,18 @@
       tpl.elements = JSON.parse(nextState);
       renderCanvas();
       updateElementPropertiesPanel();
+    }
+
+    function centerElementHorizontally() {
+      if (selectedElementIndex === null) return;
+      saveCanvasState();
+      const tpl = getActiveTemplate();
+      const el = tpl.elements[selectedElementIndex];
+      el.x = Math.round((tpl.width || 3508) / 2);
+      el.textAlign = 'center';
+      renderCanvas();
+      updateElementPropertiesPanel();
+      showAlert('success', 'จัดกึ่งกลางสำเร็จ', `จัดพิกัดข้อความให้อยู่กึ่งกลางหน้ากระดาษ (${el.x} px) เรียบร้อยแล้ว`);
     }
 
     function setupKeyboardShortcuts() {
@@ -2233,18 +2254,16 @@
         canvas.addEventListener('mouseup', handleCanvasPointerEnd);
 
         canvas.addEventListener('touchstart', (e) => {
-          e.preventDefault();
           if (e.touches && e.touches.length > 0) {
             handleCanvasPointerStart(e.touches[0]);
           }
-        }, { passive: false });
+        }, { passive: true });
 
         canvas.addEventListener('touchmove', (e) => {
-          e.preventDefault();
           if (e.touches && e.touches.length > 0) {
             handleCanvasPointerMove(e.touches[0]);
           }
-        }, { passive: false });
+        }, { passive: true });
 
         canvas.addEventListener('touchend', () => {
           handleCanvasPointerEnd();
@@ -2350,6 +2369,19 @@
         }
       }
 
+      // Draw Center Red Snap Guide Line
+      if (showCenterGuide) {
+        ctx.save();
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 4;
+        ctx.setLineDash([16, 8]);
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, 0);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.stroke();
+        ctx.restore();
+      }
+
       const previewId = document.getElementById('designer-preview-select')?.value;
       const records = getRecords();
       const sample = records.find(r => (String(r.id) === String(previewId) || String(r.__backendId) === String(previewId))) || records[0] || {
@@ -2442,6 +2474,9 @@
       const mx = (pointerEvent.clientX - rect.left) * scaleX;
       const my = (pointerEvent.clientY - rect.top) * scaleY;
 
+      touchStartX = mx;
+      touchStartY = my;
+
       const tpl = getActiveTemplate();
       selectedElementIndex = null;
 
@@ -2487,10 +2522,27 @@
       const mx = (pointerEvent.clientX - rect.left) * scaleX;
       const my = (pointerEvent.clientY - rect.top) * scaleY;
 
+      // Prevent Touch Jitter (Minimum 6px movement required)
+      const dist = Math.hypot(mx - touchStartX, my - touchStartY);
+      if (dist < 6) return;
+
       const tpl = getActiveTemplate();
       const el = tpl.elements[selectedElementIndex];
-      el.x = Math.round(mx - dragOffsetX);
-      el.y = Math.round(my - dragOffsetY);
+
+      let targetX = Math.round(mx - dragOffsetX);
+      let targetY = Math.round(my - dragOffsetY);
+
+      // Smart Snap to Center Horizontally
+      const canvasCenterX = Math.round((tpl.width || 3508) / 2);
+      if (Math.abs(targetX - canvasCenterX) < 45) {
+        targetX = canvasCenterX;
+        showCenterGuide = true;
+      } else {
+        showCenterGuide = false;
+      }
+
+      el.x = targetX;
+      el.y = targetY;
 
       renderCanvas();
       updateElementPropertiesPanel();
@@ -2501,6 +2553,8 @@
         saveCanvasState();
       }
       isDraggingElement = false;
+      showCenterGuide = false;
+      renderCanvas();
     }
 
     function zoomCanvas(delta) {
