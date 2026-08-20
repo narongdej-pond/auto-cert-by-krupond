@@ -2337,11 +2337,13 @@
         container.style.width = targetWidth + 'px';
         container.style.height = targetHeight + 'px';
         container.style.transform = `scale(${canvasZoom})`;
-        container.style.transformOrigin = 'top left';
+        
+        // 🌟 ปรับเปลี่ยนเป็น top center เพื่อให้กล่อง Canvas สัมพันธ์กับพิกัดกึ่งกลางกระดาษจริง
+        container.style.transformOrigin = 'top center'; 
       }
     }
 
-        async function renderCanvas() {
+    async function renderCanvas() {
       if (!canvas || !ctx) return;
       const tpl = getActiveTemplate();
       if (!tpl) return;
@@ -2487,7 +2489,7 @@
             const w = metrics.width + 40;
             const h = el.fontSize + 20;
             
-            // คำนวณจุดเริ่มต้น X (bx) ของกล่องสีน้ำเงินให้ตรงตามประเภทการจัดวางอักษร
+            // คำนวณจุดเริ่มต้น X (bx) ของกล่องสีน้ำเงินให้ตรงตามประเภทการจัดวางอักษรอย่างแม่นยำ
             let bx = drawX - w / 2; 
             
             if (el.textAlign === 'left') {
