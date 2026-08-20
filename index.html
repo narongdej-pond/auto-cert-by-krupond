@@ -226,8 +226,8 @@
               <i class="fas fa-award text-3xl text-yellow-400"></i>
               <span class="font-bold text-lg">วิทยาลัยเทคนิคดอนเมือง</span>
             </div>
-            <button onclick="showPage('login')" title="เข้าสู่ระบบผู้ดูแล/ครู/เจ้าหน้าที่" class="bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-semibold px-3 py-2 rounded-xl backdrop-blur transition flex items-center gap-2">
-              <i class="fas fa-user-shield"></i> <span class="hidden sm:inline">เข้าสู่ระบบ</span>
+            <button onclick="showPage('login')" title="เข้าสู่ระบบผู้ดูแล/ครู/เจ้าหน้าที่" class="bg-white/10 hover:bg-white/10 text-white text-xs md:text-sm font-semibold px-2 py-2 rounded-xl backdrop-blur transition flex items-center gap-2">
+              <i class="fas fa-user-shield"></i>
             </button>
           </div>
           <div class="relative z-10">
@@ -1390,18 +1390,40 @@
     ];
 
     /**
+     * Safe font string builder for Canvas.
+     * Prevents iOS Safari font matcher from failing on single-weight fonts like 'Chonburi'.
+     */
+    function getFontString(el) {
+      const family = el.fontFamily || 'Sarabun';
+      const size = el.fontSize || 50;
+      const singleWeightFonts = ['Chonburi'];
+      const isBold = el.bold && !singleWeightFonts.includes(family);
+      const isItalic = el.italic;
+      return `${isBold ? 'bold ' : ''}${isItalic ? 'italic ' : ''}${size}px "${family}", sans-serif`;
+    }
+
+    /**
      * Mobile WebKit & Font Loading Hydration Guarantee
      * Forces browsers (especially iOS Safari & Android Chrome) to load and activate all Thai font files
      */
     async function preloadAllThaiFonts() {
-      const fontsToLoad = [
-        'Sarabun', 'Kanit', 'Prompt', 'Chonburi', 'Mitr', 
-        'Noto Sans Thai', 'Noto Serif Thai', 'Mali', 'Charm', 'Chakra Petch', 'Kodchasan'
+      const fontSpecs = [
+        '400 50px "Sarabun"', '700 50px "Sarabun"',
+        '400 50px "Kanit"', '700 50px "Kanit"',
+        '400 50px "Prompt"', '700 50px "Prompt"',
+        '400 50px "Chonburi"',
+        '400 50px "Mitr"',
+        '400 50px "Noto Sans Thai"', '700 50px "Noto Sans Thai"',
+        '400 50px "Noto Serif Thai"', '700 50px "Noto Serif Thai"',
+        '400 50px "Mali"', '700 50px "Mali"',
+        '400 50px "Charm"', '700 50px "Charm"',
+        '400 50px "Chakra Petch"', '700 50px "Chakra Petch"',
+        '400 50px "Kodchasan"', '700 50px "Kodchasan"'
       ];
 
       if (document.fonts) {
         try {
-          const fontPromises = fontsToLoad.map(fontName => document.fonts.load(`50px "${fontName}"`));
+          const fontPromises = fontSpecs.map(spec => document.fonts.load(spec));
           await Promise.all(fontPromises);
           await document.fonts.ready;
         } catch (e) {
@@ -2135,7 +2157,7 @@
         } else {
           tctx.save();
           tctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
-          tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize || 50}px "${el.fontFamily || 'Sarabun'}", sans-serif`;
+          tctx.font = getFontString(el);
           tctx.fillStyle = el.color || '#000000';
           tctx.textAlign = el.textAlign || 'center';
           tctx.textBaseline = 'alphabetic';
@@ -2424,7 +2446,7 @@
             else sigImg.onload = drawSig;
           }
         } else {
-          ctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}", sans-serif`;
+          ctx.font = getFontString(el);
           ctx.fillStyle = el.color || '#000000';
           ctx.textAlign = el.textAlign || 'center';
           ctx.textBaseline = 'alphabetic';
@@ -2504,7 +2526,7 @@
             dragOffsetY = my - el.y;
           }
         } else {
-          ctx.font = `${el.fontSize}px "${el.fontFamily}"`;
+          ctx.font = getFontString(el);
           const metrics = ctx.measureText(el.staticText || 'Text');
           const w = metrics.width + 40;
           let bx = el.x - w / 2;
@@ -3345,7 +3367,7 @@
               tctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
             }
           } else {
-            tctx.font = `${el.bold ? 'bold ' : ''}${el.italic ? 'italic ' : ''}${el.fontSize}px "${el.fontFamily || 'Sarabun'}", sans-serif`;
+            tctx.font = getFontString(el);
             tctx.fillStyle = el.color || '#000000';
             tctx.textAlign = el.textAlign || 'center';
             tctx.textBaseline = 'alphabetic';
