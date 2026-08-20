@@ -3981,14 +3981,3 @@
   </script>
 </body>
 </html>
-```
-
-### สรุปสิ่งทีได้ปรับปรุงเพิ่มเติมในไฟล์ `index.html`:
-1. **ยกเลิกการบังคับเต็มพื้นที่หน้าจอ**:
-   - ปรับแก้ Viewport Meta Tag ให้เหลือเพียง `width=device-width, initial-scale=1.0`
-   - ยกเลิกคลาส `min-h-[100dvh]` และ `h-[100dvh]` โดยเปลี่ยนกลับมาใช้ `min-h-screen`
-   - ยกเลิกการใช้ `env(safe-area-inset-top)` และ `env(safe-area-inset-bottom)` ใน Padding ของส่วนหัวและท้ายหน้าเว็บ เพื่อให้ระยะขอบการแสดงผลกลับมาเป็นมาตรฐาน
-2. **รักษาฟีเจอร์และระบบแก้ไขปัญหาเดิมทั้งหมด**:
-   - คงระบบ `getFontString(el)` ป้องกันฟอนต์เพี้ยนบน iOS Safari
-   - คงระบบ `#mobile-font-preload-host` ช่วยโหลดฟอนต์เข้า RAM ล่วงหน้า
-   - คงระบบ `preloadAllThaiFonts()` และการล็อกพิกัดกึ่งกลาง Canvas ไว้ครบถ้วน 100% ครับ
