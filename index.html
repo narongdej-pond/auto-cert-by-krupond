@@ -1601,37 +1601,38 @@
       setInterval(updateClock, 1000);
     }
 
-    function logActivity(message) {
-      const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-      activityLogs.unshift({ message, time: timeStr });
-      if (activityLogs.length > 10) activityLogs.pop();
-      renderActivityLogs();
+    function logActivity(message) { 
+      const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }); 
+      activityLogs.unshift({ message, time: timeStr }); 
+      if (activityLogs.length > 10) activityLogs.pop(); 
+      renderActivityLogs(); 
 
-      window.dataSdk.create({
-        id: generateId(),
-        type: 'log',
-        member_id: currentUser ? currentUser.id : '',
-        username: currentUser ? currentUser.username : 'Guest',
-        action: message,
-        status: 'success',
-        note: message,
-        timestamp: getThaiFormattedDateTime()
-      }).catch(err => console.warn('Database log record notice:', err));
-    }
+      window.dataSdk.create({ 
+        id: generateId(), 
+        type: 'log', 
+      // ปรับแก้ไขตรงนี้: ให้เช็ค __backendId ป้องกันข้อมูลหายเหมือนโค้ดที่ 2
+        member_id: currentUser ? (currentUser.id || currentUser.__backendId || '') : '', 
+        username: currentUser ? currentUser.username : 'Guest', 
+        action: message, 
+        status: 'success', 
+        note: message, 
+        timestamp: getThaiFormattedDateTime() 
+      }).catch(err => console.warn('Database log record notice:', err)); 
+    } 
 
-    function renderActivityLogs() {
-      const container = document.getElementById('recent-activity-list');
-      if (!container) return;
-      if (activityLogs.length === 0) {
-        container.innerHTML = '<p class="text-gray-500 text-center py-4 text-sm">ยังไม่มีกิจกรรม</p>';
-        return;
-      }
-      container.innerHTML = activityLogs.map(log => `
-        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-700">
-          <span class="font-medium"><i class="fas fa-check-circle text-green-500 mr-2"></i>${log.message}</span>
-          <span class="text-gray-400 font-sarabun">${log.time}</span>
-        </div>
-      `).join('');
+    function renderActivityLogs() { 
+      const container = document.getElementById('recent-activity-list'); 
+      if (!container) return; 
+      if (activityLogs.length === 0) { 
+      container.innerHTML = '<p class="text-gray-500 text-center py-4 text-sm">ยังไม่มีกิจกรรม</p>'; 
+      return; 
+      } 
+      container.innerHTML = activityLogs.map(log => ` 
+      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-700"> 
+        <span class="font-medium"><i class="fas fa-check-circle text-green-500 mr-2"></i>${log.message}</span> 
+          <span class="text-gray-400 font-sarabun">${log.time}</span> 
+          </div> 
+            `).join(''); 
     }
 
     async function callGas(functionName, payloadArg) {
