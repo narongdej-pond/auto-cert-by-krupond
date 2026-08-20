@@ -1983,6 +1983,7 @@
 
       if (tpl.bgImg) {
         const img = new Image();
+        img.crossOrigin = 'Anonymous';
         img.src = tpl.bgImg;
         if (img.complete) {
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -2027,6 +2028,7 @@
         if (el.type === 'image' || el.field === 'signatureImg') {
           if (el.imgSrc) {
             const sigImg = new Image();
+            sigImg.crossOrigin = 'Anonymous';
             sigImg.src = el.imgSrc;
             const w = el.width || 300;
             const h = el.height || 120;
@@ -2157,47 +2159,86 @@
       renderCanvas();
     }
 
-    function handleBgUpload(e) {
+    async function handleBgUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(evt) {
+      reader.onload = async function(evt) {
         const tpl = getActiveTemplate();
-        tpl.bgImg = evt.target.result;
+        const base64Data = evt.target.result;
+
+        // Show it right away so the canvas doesn't sit blank while we upload.
+        tpl.bgImg = base64Data;
         renderCanvas();
-        showAlert('success', 'สำเร็จ', 'อัปเดตภาพพื้นหลัง Template เรียบร้อย');
+
+        startLoading();
+        try {
+          const uploadRes = await callGas('uploadImageToDrive', {
+            base64Data: base64Data,
+            fileName: `bg_${tpl.id || tpl.__backendId || generateId()}_${file.name}`
+          });
+          // Store the short Drive URL instead of the raw base64 — a base64 image
+          // is almost always well over Google Sheets' 50,000-character cell limit,
+          // which makes the template silently fail to save on the backend.
+          tpl.bgImg = (uploadRes && (uploadRes.directUrl || uploadRes.fileUrl)) || base64Data;
+          renderCanvas();
+          showAlert('success', 'สำเร็จ', 'อัปเดตภาพพื้นหลัง Template เรียบร้อย');
+        } catch (err) {
+          console.error('Background upload to Drive failed:', err);
+          showAlert('warning', 'อัปโหลดขึ้น Drive ไม่สำเร็จ', 'ใช้รูปนี้แสดงผลได้ชั่วคราวเท่านั้น ยังไม่ถูกบันทึกถาวร กรุณาลองใหม่อีกครั้งเมื่อเชื่อมต่ออินเทอร์เน็ตได้ปกติ หรือใช้ไฟล์รูปขนาดเล็กลง');
+        } finally {
+          stopLoading();
+        }
       };
       reader.readAsDataURL(file);
     }
 
-    function handleSignatureUpload(e) {
+    async function handleSignatureUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(evt) {
+      reader.onload = async function(evt) {
         const tpl = getActiveTemplate();
         if (!tpl.elements) tpl.elements = [];
         const centerX = Math.round((tpl.width || 3508) / 2);
         const centerY = Math.round((tpl.height || 2480) * 0.82);
+        const base64Data = evt.target.result;
 
-        tpl.elements.push({
+        const newEl = {
           id: generateId(),
           type: 'image',
           field: 'signatureImg',
           staticText: 'รูปภาพลายเซ็น',
-          imgSrc: evt.target.result,
+          imgSrc: base64Data,
           x: centerX,
           y: centerY,
           width: 350,
           height: 140
-        });
-
+        };
+        tpl.elements.push(newEl);
         selectedElementIndex = tpl.elements.length - 1;
         renderCanvas();
         updateElementPropertiesPanel();
-        showAlert('success', 'สำเร็จ', 'เพิ่มรูปภาพลายเซ็นลงใน Template เรียบร้อย');
+
+        startLoading();
+        try {
+          const uploadRes = await callGas('uploadImageToDrive', {
+            base64Data: base64Data,
+            fileName: `sig_${tpl.id || tpl.__backendId || generateId()}_${file.name}`
+          });
+          // Same reasoning as handleBgUpload: keep the template's saved data small
+          // by referencing a Drive URL instead of embedding base64 in the Sheet.
+          newEl.imgSrc = (uploadRes && (uploadRes.directUrl || uploadRes.fileUrl)) || base64Data;
+          renderCanvas();
+          showAlert('success', 'สำเร็จ', 'เพิ่มรูปภาพลายเซ็นลงใน Template เรียบร้อย');
+        } catch (err) {
+          console.error('Signature upload to Drive failed:', err);
+          showAlert('warning', 'อัปโหลดขึ้น Drive ไม่สำเร็จ', 'ใช้รูปนี้แสดงผลได้ชั่วคราวเท่านั้น ยังไม่ถูกบันทึกถาวร กรุณาลองใหม่อีกครั้งเมื่อเชื่อมต่ออินเทอร์เน็ตได้ปกติ หรือใช้ไฟล์รูปขนาดเล็กลง');
+        } finally {
+          stopLoading();
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -2836,6 +2877,7 @@
 
         if (tpl.bgImg) {
           const img = new Image();
+          img.crossOrigin = 'Anonymous';
           img.src = tpl.bgImg;
           await new Promise(res => { img.onload = res; img.onerror = res; });
           tctx.drawImage(img, 0, 0, tpl.width, tpl.height);
@@ -2848,6 +2890,7 @@
           if (el.type === 'image' || el.field === 'signatureImg') {
             if (el.imgSrc) {
               const sigImg = new Image();
+              sigImg.crossOrigin = 'Anonymous';
               sigImg.src = el.imgSrc;
               await new Promise(res => { sigImg.onload = res; sigImg.onerror = res; });
               const w = el.width || 300;
