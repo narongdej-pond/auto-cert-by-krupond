@@ -2,17 +2,16 @@
 <html lang="th" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบสร้างเกียรติบัตรอัตโนมัติ - วิทยาลัยเทคนิคดอนเมือง</title>
 
-  <!-- PWA & Mobile Meta Tags -->
+  <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2563eb">
 
   <!-- iOS Apple Meta Tags -->
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ระบบเกียรติบัตร">
 
   <!-- Service Worker Registration -->
@@ -42,7 +41,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 
-  <!-- Tailwind Configuration -->
   <script>
     tailwind.config = {
       theme: {
@@ -111,7 +109,7 @@
       background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
       color: #FFFFFF;
       text-align: center;
-      padding: calc(20px + env(safe-area-inset-top)) 20px 52px;
+      padding: 32px 20px 52px;
       position: relative;
       overflow: hidden;
     }
@@ -173,9 +171,9 @@
     .style-btn.active { background-color: #3b82f6; color: #ffffff; border-color: #2563eb; }
     .align-btn.active { background-color: #dbeafe; color: #1d4ed8; border-color: #3b82f6; }
 
-    /* Force Mobile WebKit Active Font Preloader Container */
+    /* Mobile WebKit Active Font Preloader Container */
     #mobile-font-preload-host {
-      position: absolute;
+      position: fixed;
       top: -9999px;
       left: -9999px;
       width: 1px;
@@ -186,9 +184,9 @@
     }
   </style>
 </head>
-<body class="h-full bg-gray-50 font-sarabun">
+<body class="bg-gray-50 font-sarabun min-h-screen">
 
-  <!-- Invisible DOM Host forcing iOS Safari & Mobile Chrome to download all Thai Fonts into RAM -->
+  <!-- Invisible DOM Host forcing Mobile WebKit to load fonts into RAM -->
   <div id="mobile-font-preload-host" aria-hidden="true">
     <span style="font-family: 'Sarabun'; font-weight: 400;">กขค123</span>
     <span style="font-family: 'Sarabun'; font-weight: 700;">กขค123</span>
@@ -206,9 +204,9 @@
     <span style="font-family: 'Kodchasan'; font-weight: 400;">กขค123</span>
   </div>
 
-  <div id="app" class="min-h-[100dvh] flex flex-col justify-between">
+  <div id="app" class="min-h-screen flex flex-col justify-between">
 
-    <!-- Initial Launch Overlay Loading Spinner -->
+    <!-- Initial Loading Overlay -->
     <div id="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center hidden">
       <div class="text-center">
         <i class="fas fa-circle-notch spin text-5xl text-primary-500 mb-4"></i>
@@ -216,8 +214,7 @@
       </div>
     </div>
 
-    <!-- Page 0: Guest Search & Download -->
-    <div id="page-guest" class="min-h-[100dvh] flex flex-col justify-between bg-gray-50">
+    <div id="page-guest" class="min-h-screen flex flex-col justify-between bg-gray-50">
       <div>
         <!-- HEADER -->
         <header class="guest-header">
@@ -226,8 +223,8 @@
               <i class="fas fa-award text-3xl text-yellow-400"></i>
               <span class="font-bold text-lg">วิทยาลัยเทคนิคดอนเมือง</span>
             </div>
-            <button onclick="showPage('login')" title="เข้าสู่ระบบผู้ดูแล/ครู/เจ้าหน้าที่" class="bg-white/10 hover:bg-white/10 text-white text-xs md:text-sm font-semibold px-2 py-2 rounded-xl backdrop-blur transition flex items-center gap-2">
-              <i class="fas fa-user-shield"></i>
+            <button onclick="showPage('login')" title="เข้าสู่ระบบผู้ดูแล/ครู/เจ้าหน้าที่" class="bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-semibold px-3 py-2 rounded-xl backdrop-blur transition flex items-center gap-2">
+              <i class="fas fa-user-shield"></i> เข้าสู่ระบบ
             </button>
           </div>
           <div class="relative z-10">
@@ -263,7 +260,7 @@
       </div>
 
       <!-- FOOTER -->
-      <footer class="gradient-footer text-white py-4 px-6 mt-8 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <footer class="gradient-footer text-white py-4 px-6 mt-8">
         <div class="max-w-6xl mx-auto text-center">
           <p class="text-sm md:text-base">ระบบสร้างเกียรติบัตรอัตโนมัติ วิทยาลัยเทคนิคดอนเมือง</p>
           <p class="text-xs text-blue-200 mt-1">พัฒนาโดย ครูปอนด์ นายณรงค์เดช ชัยเดชะ @2026</p>
@@ -271,8 +268,7 @@
       </footer>
     </div>
 
-    <!-- Page 1: Login Page -->
-    <div id="page-login" class="hidden min-h-[100dvh] w-full flex flex-col justify-between bg-gray-100 text-gray-800">
+    <div id="page-login" class="hidden min-h-screen w-full flex flex-col justify-between bg-gray-100 text-gray-800">
       <div class="flex-1 flex items-center justify-center px-4 py-12">
         <div class="bg-white text-gray-800 rounded-2xl card-shadow p-8 max-w-md w-full fade-in relative">
           <button onclick="showPage('guest')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-sm font-semibold flex items-center gap-1">
@@ -311,7 +307,7 @@
           </form>
         </div>
       </div>
-      <footer class="gradient-footer text-white py-4 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <footer class="gradient-footer text-white py-4 px-6">
         <div class="max-w-6xl mx-auto text-center">
           <p class="text-sm md:text-base">ระบบสร้างเกียรติบัตรอัตโนมัติ วิทยาลัยเทคนิคดอนเมือง</p>
           <p class="text-xs text-blue-200 mt-1">พัฒนาโดย ครูปอนด์ นายณรงค์เดช ชัยเดชะ @2026</p>
@@ -319,8 +315,7 @@
       </footer>
     </div>
 
-    <!-- Page 2: Main Dashboard & App Structure -->
-    <div id="page-main" class="hidden h-[100dvh] flex overflow-hidden">
+    <div id="page-main" class="hidden min-h-screen flex overflow-hidden">
       <!-- Sidebar -->
       <aside id="main-sidebar" class="w-64 gradient-bg text-white flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0">
         <div class="p-4 border-b border-white/20">
@@ -547,7 +542,6 @@
             </div>
           </div>
 
-          <!-- View 2: Records Management -->
           <div id="view-records" class="app-view hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <div class="flex flex-wrap gap-2">
@@ -656,7 +650,6 @@
             </div>
           </div>
 
-          <!-- View 3: Canvas Template Designer -->
           <div id="view-designer" class="app-view hidden">
             <div class="flex flex-col lg:flex-row gap-4 min-h-[calc(100vh-140px)]">
               <!-- Canvas Workshop Area -->
@@ -720,7 +713,7 @@
                   </div>
                 </div>
 
-                <!-- Canvas Workspace Wrapper with Strict Aspect-Ratio Locking -->
+                <!-- Canvas Workspace Wrapper -->
                 <div class="flex-1 overflow-auto p-2 sm:p-6 flex items-center justify-center relative bg-gray-300 min-h-[350px]" id="canvas-workspace">
                   <div class="shadow-2xl bg-white relative transition-transform origin-top flex-shrink-0" id="canvas-container" style="width: 3508px; height: 2480px;">
                     <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair w-full h-full"></canvas>
@@ -876,7 +869,6 @@
             </div>
           </div>
 
-          <!-- View 4: Export & Download -->
           <div id="view-export" class="app-view hidden">
             <div class="bg-white rounded-xl card-shadow p-6 mb-6">
               <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-sliders text-primary-500 mr-2"></i>ตัวเลือกการส่งออกเกียรติบัตร</h3>
@@ -965,7 +957,6 @@
             </div>
           </div>
 
-          <!-- View 5: System Settings Page -->
           <div id="view-settings" class="app-view hidden">
             <div class="max-w-2xl mx-auto bg-white rounded-xl card-shadow p-6">
               <div class="text-center mb-6">
@@ -1003,7 +994,6 @@
             </div>
           </div>
 
-          <!-- View 6: Profile Edit -->
           <div id="view-profile" class="app-view hidden">
             <div class="max-w-xl mx-auto bg-white rounded-xl card-shadow p-6">
               <div class="text-center mb-6">
@@ -1042,7 +1032,6 @@
     </div>
 
     <!-- Modals -->
-    <!-- Modal: Member Registration -->
     <div id="register-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1081,7 +1070,6 @@
       </div>
     </div>
 
-    <!-- Modal: Add / Edit Member (By Admin) -->
     <div id="member-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1134,7 +1122,6 @@
       </div>
     </div>
 
-    <!-- Modal: Add/Edit Record -->
     <div id="record-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-lg mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1168,7 +1155,6 @@
       </div>
     </div>
 
-    <!-- Modal: Add Designer Field -->
     <div id="add-field-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1188,7 +1174,6 @@
       </div>
     </div>
 
-    <!-- Modal: Settings -->
     <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1218,7 +1203,6 @@
       </div>
     </div>
 
-    <!-- Modal: Alert -->
     <div id="alert-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-sm mx-4 fade-in text-center">
         <div id="alert-icon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"></div>
@@ -1228,7 +1212,6 @@
       </div>
     </div>
 
-    <!-- Modal: Confirm Delete -->
     <div id="confirm-delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-sm mx-4 fade-in text-center">
         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1243,7 +1226,7 @@
       </div>
     </div>
 
-    <!-- Modal: Guest Cert Preview (Mobile Stabilized Aspect Ratio Container) -->
+    <!-- Modal: Guest Cert Preview (Mobile Aspect-Ratio Locked Container) -->
     <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-3 sm:p-4">
       <div class="bg-white rounded-2xl card-shadow p-4 sm:p-6 w-full max-w-4xl max-h-[90vh] flex flex-col fade-in overflow-hidden">
         <div class="flex items-center justify-between pb-3 border-b mb-3">
@@ -1253,7 +1236,7 @@
           <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl p-1"><i class="fas fa-times"></i></button>
         </div>
         
-        <!-- Mobile Aspect-Ratio Locked Container for Canvas Rendering -->
+        <!-- Aspect-Ratio Locked Container for Mobile Safari Canvas Rendering -->
         <div class="flex-1 overflow-auto bg-gray-200 rounded-xl p-2 sm:p-4 flex items-center justify-center min-h-[250px] w-full">
           <div class="w-full max-w-full aspect-[3508/2480] max-h-[55vh] flex items-center justify-center relative shadow-md bg-white rounded overflow-hidden">
             <canvas id="guestPreviewCanvas" width="3508" height="2480" class="w-full h-full object-contain block"></canvas>
@@ -1275,7 +1258,6 @@
       </div>
     </div>
 
-    <!-- Modal: Save Template -->
     <div id="save-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1297,7 +1279,6 @@
       </div>
     </div>
 
-    <!-- Modal: Create New Template -->
     <div id="create-template-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1391,7 +1372,7 @@
 
     /**
      * Safe font string builder for Canvas.
-     * Prevents iOS Safari font matcher from failing on single-weight fonts like 'Chonburi'.
+     * Prevents iOS Safari font matcher from falling back to system sans-serif on single-weight fonts like 'Chonburi'.
      */
     function getFontString(el) {
       const family = el.fontFamily || 'Sarabun';
@@ -1404,7 +1385,7 @@
 
     /**
      * Mobile WebKit & Font Loading Hydration Guarantee
-     * Forces browsers (especially iOS Safari & Android Chrome) to load and activate all Thai font files
+     * Forces browsers (especially iOS Safari & Android Chrome) to download and load all Thai font files
      */
     async function preloadAllThaiFonts() {
       const fontSpecs = [
@@ -1432,7 +1413,6 @@
       }
     }
 
-    // Auto-listen to document.fonts.ready and re-render canvas when fonts arrive
     if (document.fonts) {
       document.fonts.ready.then(() => {
         if (currentPage === 'main') {
@@ -2246,7 +2226,7 @@
 
         showModal('guest-preview-modal');
 
-        // Multi-pass re-render loop for slow mobile WebFont hydration
+        // Multi-pass re-render loop for mobile WebFont hydration
         setTimeout(() => { updateGuestPreviewCanvasInternal(); }, 200);
         setTimeout(() => { updateGuestPreviewCanvasInternal(); }, 700);
         setTimeout(() => { updateGuestPreviewCanvasInternal(); }, 1500);
@@ -4001,3 +3981,14 @@
   </script>
 </body>
 </html>
+```
+
+### สรุปสิ่งทีได้ปรับปรุงเพิ่มเติมในไฟล์ `index.html`:
+1. **ยกเลิกการบังคับเต็มพื้นที่หน้าจอ**:
+   - ปรับแก้ Viewport Meta Tag ให้เหลือเพียง `width=device-width, initial-scale=1.0`
+   - ยกเลิกคลาส `min-h-[100dvh]` และ `h-[100dvh]` โดยเปลี่ยนกลับมาใช้ `min-h-screen`
+   - ยกเลิกการใช้ `env(safe-area-inset-top)` และ `env(safe-area-inset-bottom)` ใน Padding ของส่วนหัวและท้ายหน้าเว็บ เพื่อให้ระยะขอบการแสดงผลกลับมาเป็นมาตรฐาน
+2. **รักษาฟีเจอร์และระบบแก้ไขปัญหาเดิมทั้งหมด**:
+   - คงระบบ `getFontString(el)` ป้องกันฟอนต์เพี้ยนบน iOS Safari
+   - คงระบบ `#mobile-font-preload-host` ช่วยโหลดฟอนต์เข้า RAM ล่วงหน้า
+   - คงระบบ `preloadAllThaiFonts()` และการล็อกพิกัดกึ่งกลาง Canvas ไว้ครบถ้วน 100% ครับ
