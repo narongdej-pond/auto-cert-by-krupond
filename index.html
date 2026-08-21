@@ -28,7 +28,7 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
-  <!-- Thai Google Fonts -->
+  <!-- Google Fonts - Thai Font Pack -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@300;400;500;600;700&family=Mitr:wght@300;400;500;600;700&family=Mali:wght@300;400;500;600;700&family=Charm:wght@400;700&family=Chakra+Petch:wght@300;400;500;600;700&family=Chonburi&family=Kodchasan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -96,14 +96,12 @@
     .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
     body { box-sizing: border-box; }
 
-    /* Touch Canvas Controls Rule */
     #certCanvas {
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
     }
 
-    /* GUEST SEARCH PAGE STYLES */
     .guest-header {
       width: 100%;
       background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
@@ -113,24 +111,10 @@
       position: relative;
       overflow: hidden;
     }
-    .guest-header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
-      animation: headerPulse 6s ease-in-out infinite;
-    }
-    @keyframes headerPulse {
-      0%, 100% { transform: scale(1); opacity: 0.5; }
-      50% { transform: scale(1.1); opacity: 1; }
-    }
     .search-card {
       background: #FFFFFF;
       border-radius: 20px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
       padding: 28px;
       width: 100%;
       max-width: 680px;
@@ -154,24 +138,12 @@
       border-color: #2563eb;
       background-color: #eff6ff;
     }
-    .searching-glass {
-      display: inline-block;
-      animation: glass-loop 2s ease-in-out infinite; 
-    }
-    @keyframes glass-loop {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(3px, -2px) rotate(5deg); }
-      50% { transform: translate(1px, 3px) rotate(-5deg); }
-      75% { transform: translate(-3px, 1px) rotate(3deg); }
-      100% { transform: translate(0, 0) rotate(0deg); }
-    }
 
-    /* Style Toggles */
     .style-btn { transition: all 0.15s ease; }
     .style-btn.active { background-color: #3b82f6; color: #ffffff; border-color: #2563eb; }
     .align-btn.active { background-color: #dbeafe; color: #1d4ed8; border-color: #3b82f6; }
 
-    /* Mobile WebKit Active Font Preloader Container */
+    /* Hidden Font Preloader Container for Mobile Safari/Chrome */
     #mobile-font-preload-host {
       position: fixed;
       top: -9999px;
@@ -186,7 +158,6 @@
 </head>
 <body class="bg-gray-50 font-sarabun min-h-screen">
 
-  <!-- Invisible DOM Host forcing Mobile WebKit to load fonts into RAM -->
   <div id="mobile-font-preload-host" aria-hidden="true">
     <span style="font-family: 'Sarabun'; font-weight: 400;">กขค123</span>
     <span style="font-family: 'Sarabun'; font-weight: 700;">กขค123</span>
@@ -206,17 +177,16 @@
 
   <div id="app" class="min-h-screen flex flex-col justify-between">
 
-    <!-- Initial Loading Overlay -->
+    <!-- Loading Overlay -->
     <div id="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center hidden">
       <div class="text-center">
         <i class="fas fa-circle-notch spin text-5xl text-primary-500 mb-4"></i>
-        <p id="loadingText" class="text-gray-600 text-lg transition-all duration-300">กำลังโหลด...</p>
+        <p id="loadingText" class="text-gray-600 text-lg">กำลังโหลด...</p>
       </div>
     </div>
 
     <div id="page-guest" class="min-h-screen flex flex-col justify-between bg-gray-50">
       <div>
-        <!-- HEADER -->
         <header class="guest-header">
           <div class="max-w-4xl mx-auto flex items-center justify-between px-2 mb-2">
             <div class="flex items-center gap-2">
@@ -233,7 +203,6 @@
           </div>
         </header>
 
-        <!-- SEARCH CONTAINER -->
         <main class="px-4 pb-12">
           <div class="search-card border border-gray-100">
             <label class="block font-bold text-gray-800 text-sm md:text-base mb-2" for="guest-search-input">
@@ -254,12 +223,10 @@
             </div>
           </div>
 
-          <!-- RESULTS AREA -->
           <div id="guest-results-area" class="max-w-2xl mx-auto space-y-4"></div>
         </main>
       </div>
 
-      <!-- FOOTER -->
       <footer class="gradient-footer text-white py-4 px-6 mt-8">
         <div class="max-w-6xl mx-auto text-center">
           <p class="text-sm md:text-base">ระบบสร้างเกียรติบัตรอัตโนมัติ วิทยาลัยเทคนิคดอนเมือง</p>
@@ -330,19 +297,16 @@
           </div>
         </div>
 
-        <!-- Navigation Menu -->
         <nav class="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
           <button onclick="showView('dashboard')" class="sidebar-item active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium" data-view="dashboard">
             <i class="fas fa-chart-pie w-5"></i> แดชบอร์ด
           </button>
-
           <button id="sidebar-members-btn" onclick="showView('members')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center justify-between hidden" data-view="members">
             <div class="flex items-center gap-3 text-sm font-medium">
               <i class="fas fa-users-gear w-5"></i> จัดการสมาชิก
             </div>
             <span id="sidebar-pending-member-badge" class="badge badge-warning hidden">0</span>
           </button>
-
           <button onclick="showView('records')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center justify-between" data-view="records">
             <div class="flex items-center gap-3 text-sm font-medium">
               <i class="fas fa-users-line w-5"></i> จัดการรายชื่อ
@@ -363,7 +327,6 @@
           </button>
         </nav>
 
-        <!-- User Footer & Logout -->
         <div class="p-4 border-t border-white/20">
           <div class="flex items-center gap-3 mb-3">
             <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
@@ -380,9 +343,8 @@
         </div>
       </aside>
 
-      <!-- Main Content Container -->
+      <!-- Main Content -->
       <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Top Bar Header -->
         <header class="bg-white shadow-sm px-4 py-3 flex items-center justify-between border-b border-gray-200">
           <div class="flex items-center gap-4">
             <button id="toggle-sidebar-btn" onclick="toggleSidebar()" class="text-gray-600 text-xl hover:text-primary-500 transition">
@@ -398,17 +360,14 @@
           </div>
         </header>
 
-        <!-- Dynamic Main Views -->
         <main class="flex-1 overflow-auto p-4 md:p-6 bg-gray-50">
-          <!-- View: Members Management & Approval -->
+          <!-- View: Members Management -->
           <div id="view-members" class="app-view hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <button onclick="openAddMemberModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition self-start md:self-auto">
                 <i class="fas fa-user-plus"></i> เพิ่มสมาชิก
               </button>
             </div>
-
-            <!-- Members Data Table -->
             <div class="bg-white rounded-xl card-shadow overflow-hidden">
               <div class="table-container">
                 <table class="w-full">
@@ -424,16 +383,14 @@
                     </tr>
                   </thead>
                   <tbody id="members-table-body" class="divide-y divide-gray-100">
-                    <tr>
-                      <td colspan="7" class="px-4 py-8 text-center text-gray-500">ไม่พบข้อมูลสมาชิก</td>
-                    </tr>
+                    <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">ไม่พบข้อมูลสมาชิก</td></tr>
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
 
-          <!-- View 1: Dashboard -->
+          <!-- View: Dashboard -->
           <div id="view-dashboard" class="app-view">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div onclick="showView('records')" class="bg-white rounded-xl card-shadow p-4 cursor-pointer hover:shadow-lg transition">
@@ -482,7 +439,6 @@
               </div>
             </div>
 
-            <!-- Dashboard Charts & Activity -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div class="bg-white rounded-xl card-shadow p-4">
                 <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-chart-line text-primary-500 mr-2"></i>สถิติการสร้างเกียรติบัตร</h3>
@@ -494,46 +450,25 @@
                 <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-bolt text-yellow-500 mr-2"></i>ทางลัดการทำงาน</h3>
                 <div class="grid grid-cols-2 gap-3">
                   <button onclick="showView('records'); showImportSection()" class="p-4 border-2 border-gray-100 hover:border-primary-500 rounded-xl flex items-center gap-3 hover:bg-primary-50 transition text-left">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold">
-                      <i class="fas fa-file-import"></i>
-                    </div>
-                    <div>
-                      <p class="font-bold text-gray-800 text-sm">นำเข้าข้อมูล</p>
-                      <p class="text-xs text-gray-500">Excel / CSV</p>
-                    </div>
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold"><i class="fas fa-file-import"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">นำเข้าข้อมูล</p><p class="text-xs text-gray-500">Excel / CSV</p></div>
                   </button>
                   <button onclick="showView('designer')" class="p-4 border-2 border-gray-100 hover:border-primary-500 rounded-xl flex items-center gap-3 hover:bg-primary-50 transition text-left">
-                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold">
-                      <i class="fas fa-pen-ruler"></i>
-                    </div>
-                    <div>
-                      <p class="font-bold text-gray-800 text-sm">ออกแบบ Canvas</p>
-                      <p class="text-xs text-gray-500">จัดการ Template</p>
-                    </div>
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold"><i class="fas fa-pen-ruler"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">ออกแบบ Canvas</p><p class="text-xs text-gray-500">จัดการ Template</p></div>
                   </button>
                   <button onclick="showView('export')" class="p-4 border-2 border-gray-100 hover:border-primary-500 rounded-xl flex items-center gap-3 hover:bg-primary-50 transition text-left">
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 font-bold">
-                      <i class="fas fa-file-export"></i>
-                    </div>
-                    <div>
-                      <p class="font-bold text-gray-800 text-sm">Export ZIP/PDF</p>
-                      <p class="text-xs text-gray-500">ดาวน์โหลดผลลัพธ์</p>
-                    </div>
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 font-bold"><i class="fas fa-file-export"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">Export ZIP/PDF</p><p class="text-xs text-gray-500">ดาวน์โหลดผลลัพธ์</p></div>
                   </button>
                   <button onclick="showModal('settings-modal')" class="p-4 border-2 border-gray-100 hover:border-primary-500 rounded-xl flex items-center gap-3 hover:bg-primary-50 transition text-left">
-                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center text-yellow-600 font-bold">
-                      <i class="fas fa-sliders"></i>
-                    </div>
-                    <div>
-                      <p class="font-bold text-gray-800 text-sm">ตั้งค่าระบบ</p>
-                      <p class="text-xs text-gray-500">รูปแบบรหัส/เลขที่</p>
-                    </div>
+                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center text-yellow-600 font-bold"><i class="fas fa-sliders"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">ตั้งค่าระบบ</p><p class="text-xs text-gray-500">รูปแบบรหัส/เลขที่</p></div>
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- Recent Activity Table -->
             <div class="bg-white rounded-xl card-shadow p-4">
               <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-history text-primary-500 mr-2"></i>กิจกรรมล่าสุด</h3>
               <div id="recent-activity-list" class="space-y-3">
@@ -542,22 +477,16 @@
             </div>
           </div>
 
+          <!-- View: Records Management -->
           <div id="view-records" class="app-view hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <div class="flex flex-wrap gap-2">
-                <button onclick="downloadImportTemplate()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition" title="ดาวน์โหลดตัวอย่าง Excel">
-                  <i class="fas fa-file-excel text-green-600"></i> Template Excel
-                </button>
-                <button onclick="toggleImportSection()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition">
-                  <i class="fas fa-file-import"></i> นำเข้าข้อมูล
-                </button>
-                <button onclick="openAddRecordModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition">
-                  <i class="fas fa-user-plus"></i> เพิ่มรายชื่อ
-                </button>
+                <button onclick="downloadImportTemplate()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"><i class="fas fa-file-excel text-green-600"></i> Template Excel</button>
+                <button onclick="toggleImportSection()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"><i class="fas fa-file-import"></i> นำเข้าข้อมูล</button>
+                <button onclick="openAddRecordModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"><i class="fas fa-user-plus"></i> เพิ่มรายชื่อ</button>
               </div>
             </div>
 
-            <!-- Import Section Dropzone -->
             <div id="import-section" class="bg-white rounded-xl card-shadow p-6 mb-6 hidden fade-in border-2 border-dashed border-primary-300">
               <div class="flex justify-between items-center mb-4">
                 <h4 class="font-bold text-gray-800"><i class="fas fa-cloud-arrow-up text-primary-500 mr-2"></i>นำเข้าข้อมูลไฟล์ Excel / CSV</h4>
@@ -574,12 +503,7 @@
                 <div class="table-container max-h-48 mb-4 border rounded-lg">
                   <table class="w-full text-xs text-left text-gray-600">
                     <thead class="bg-gray-100">
-                      <tr>
-                        <th class="p-2">ชื่อ-สกุล</th>
-                        <th class="p-2">โรงเรียน/หน่วยงาน</th>
-                        <th class="p-2">เลขที่</th>
-                        <th class="p-2">วันที่</th>
-                      </tr>
+                      <tr><th class="p-2">ชื่อ-สกุล</th><th class="p-2">โรงเรียน/หน่วยงาน</th><th class="p-2">เลขที่</th><th class="p-2">วันที่</th></tr>
                     </thead>
                     <tbody id="import-preview-body" class="divide-y divide-gray-100"></tbody>
                   </table>
@@ -596,7 +520,6 @@
               </div>
             </div>
 
-            <!-- Table Toolbar & Filters -->
             <div class="bg-white rounded-xl card-shadow p-4 mb-4 flex flex-col md:flex-row gap-3 justify-between items-center">
               <div class="w-full md:w-72 relative">
                 <input type="text" id="record-search-input" onkeyup="filterRecordsTable()" placeholder="ค้นหาชื่อ, โรงเรียน, เลขที่..." class="w-full pl-9 pr-4 py-2 border-2 border-gray-200 rounded-lg text-sm focus:border-primary-500 focus:outline-none">
@@ -614,7 +537,6 @@
               </div>
             </div>
 
-            <!-- Bulk Actions Bar -->
             <div id="bulk-actions-bar" class="hidden bg-primary-50 border-2 border-primary-200 rounded-xl p-3 mb-4 flex items-center justify-between">
               <span class="text-sm font-bold text-primary-800"><i class="fas fa-check-square mr-2"></i>เลือกแล้ว <span id="selected-count">0</span> รายการ</span>
               <div class="flex gap-2">
@@ -624,7 +546,6 @@
               </div>
             </div>
 
-            <!-- Records Data Table -->
             <div class="bg-white rounded-xl card-shadow overflow-hidden">
               <div class="table-container">
                 <table class="w-full">
@@ -641,9 +562,7 @@
                     </tr>
                   </thead>
                   <tbody id="records-table-body" class="divide-y divide-gray-100">
-                    <tr>
-                      <td colspan="8" class="px-4 py-8 text-center text-gray-500">ไม่พบข้อมูลรายชื่อ</td>
-                    </tr>
+                    <tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">ไม่พบข้อมูลรายชื่อ</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -652,12 +571,9 @@
 
           <div id="view-designer" class="app-view hidden">
             <div class="flex flex-col lg:flex-row gap-4 min-h-[calc(100vh-140px)]">
-              <!-- Canvas Workshop Area -->
               <div class="flex-1 bg-gray-200 rounded-xl card-shadow flex flex-col overflow-hidden relative min-h-[450px]">
-                <!-- Canvas Top Control Toolbar -->
                 <div class="bg-white px-3 py-2 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <!-- Template Selector -->
                     <div class="flex items-center gap-1.5 bg-gray-100 p-1 rounded-xl">
                       <label class="text-xs font-bold text-primary-800 flex items-center gap-1 pl-1">
                         <i class="fas fa-layer-group text-primary-600"></i>
@@ -665,62 +581,49 @@
                       <select id="designer-template-select" onchange="switchActiveTemplate(this.value)" class="px-2 py-1 bg-white text-gray-800 text-xs font-bold rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-500 max-w-[130px] sm:max-w-xs truncate">
                         <option value="">-- เลือก Template --</option>
                       </select>
-                      <button onclick="createNewTemplate()" class="bg-primary-600 hover:bg-primary-700 text-white px-2 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm" title="สร้าง Template ใหม่">
+                      <button onclick="createNewTemplate()" class="bg-primary-600 hover:bg-primary-700 text-white px-2 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
                         <i class="fas fa-plus-circle"></i> <span class="hidden sm:inline">ใหม่</span>
                       </button>
-                      <button onclick="deleteCurrentTemplate()" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm" title="ลบ Template นี้">
+                      <button onclick="deleteCurrentTemplate()" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
                         <i class="fas fa-trash-alt"></i> <span class="hidden sm:inline">ลบ</span>
                       </button>
                     </div>
 
                     <span class="h-5 w-px bg-gray-300 hidden md:block"></span>
 
-                    <!-- Undo & Redo Controls -->
                     <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
-                      <button onclick="canvasUndo()" class="bg-white hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-bold transition shadow-sm" title="Undo (Ctrl+Z)">
-                        ↩️ <span class="hidden sm:inline">เลิกทำ</span>
-                      </button>
-                      <button onclick="canvasRedo()" class="bg-white hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-bold transition shadow-sm" title="Redo (Ctrl+Y)">
-                        ↪️ <span class="hidden sm:inline">ทำซ้ำ</span>
-                      </button>
+                      <button onclick="canvasUndo()" class="bg-white hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-bold transition shadow-sm" title="Undo (Ctrl+Z)">↩️</button>
+                      <button onclick="canvasRedo()" class="bg-white hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-bold transition shadow-sm" title="Redo (Ctrl+Y)">↪️</button>
                     </div>
 
                     <span class="h-5 w-px bg-gray-300 hidden md:block"></span>
 
-                    <!-- Zoom Controls -->
                     <div class="flex items-center gap-1">
-                      <button onclick="zoomCanvas(-0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded-lg text-xs" title="ย่อ"><i class="fas fa-minus"></i></button>
+                      <button onclick="zoomCanvas(-0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded-lg text-xs"><i class="fas fa-minus"></i></button>
                       <span id="canvas-zoom-text" class="text-xs font-bold text-gray-600 w-10 text-center">30%</span>
-                      <button onclick="zoomCanvas(0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded-lg text-xs" title="ขยาย"><i class="fas fa-plus"></i></button>
-                      <button onclick="autoFitCanvasZoom()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium" title="ปรับพอดีจอภาพ">พอดี</button>
-                      <button id="btn-toggle-grid" onclick="toggleCanvasGrid()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium">
-                        <i class="fas fa-border-all"></i>
-                      </button>
+                      <button onclick="zoomCanvas(0.05)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded-lg text-xs"><i class="fas fa-plus"></i></button>
+                      <button onclick="autoFitCanvasZoom()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium">พอดี</button>
+                      <button id="btn-toggle-grid" onclick="toggleCanvasGrid()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium"><i class="fas fa-border-all"></i></button>
                     </div>
                   </div>
+
                   <div class="flex items-center gap-1.5 flex-wrap">
-                    <button onclick="openAddFieldModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
-                      <i class="fas fa-plus-circle mr-1"></i> เพิ่มข้อความ
-                    </button>
-                    <button id="btn-designer-bg" onclick="document.getElementById('designer-bg-input').click()" class="bg-purple-500 hover:bg-purple-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
-                      <i class="fas fa-image"></i> พื้นหลัง
-                    </button>
+                    <button onclick="openAddFieldModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-plus-circle mr-1"></i> เพิ่มข้อความ</button>
+                    <button id="btn-designer-bg" onclick="document.getElementById('designer-bg-input').click()" class="bg-purple-500 hover:bg-purple-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"><i class="fas fa-image"></i> พื้นหลัง</button>
                     <input type="file" id="designer-bg-input" accept="image/*" class="hidden" onchange="handleBgUpload(event)">
                     <input type="file" id="designer-signature-input" accept="image/*" class="hidden" onchange="handleSignatureUpload(event)">
-                    <button onclick="saveCurrentTemplate()" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
-                      <i class="fas fa-save mr-1"></i> บันทึก
-                    </button>
+                    <button onclick="saveCurrentTemplate()" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-save mr-1"></i> บันทึก</button>
                   </div>
                 </div>
 
-                <!-- Canvas Workspace Wrapper -->
-                <div class="flex-1 overflow-auto p-2 sm:p-6 flex items-center justify-center relative bg-gray-300 min-h-[350px]" id="canvas-workspace">
-                  <div class="shadow-2xl bg-white relative transition-transform origin-top flex-shrink-0" id="canvas-container" style="width: 3508px; height: 2480px;">
-                    <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair w-full h-full"></canvas>
+                <div class="flex-1 overflow-auto p-4 flex items-center justify-center relative bg-gray-300 min-h-[350px]" id="canvas-workspace">
+                  <div id="canvas-sizer" class="relative flex items-center justify-center transition-all duration-150">
+                    <div id="canvas-container" class="shadow-2xl bg-white relative origin-center transition-transform" style="width: 3508px; height: 2480px;">
+                      <canvas id="certCanvas" width="3508" height="2480" class="block cursor-crosshair w-full h-full"></canvas>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Preview Switch Bar -->
                 <div class="bg-white px-4 py-2 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div class="flex items-center gap-2">
                     <span class="font-bold text-gray-600"><i class="fas fa-eye text-primary-500 mr-1"></i> ตัวอย่าง:</span>
@@ -732,7 +635,7 @@
                 </div>
               </div>
 
-              <!-- Element Properties Sidebar -->
+              <!-- Element Properties Panel -->
               <div class="w-full lg:w-80 bg-white rounded-xl card-shadow p-4 flex flex-col gap-4 overflow-y-auto">
                 <div>
                   <h4 class="font-bold text-gray-800 mb-3 border-b pb-2 flex items-center justify-between">
@@ -741,38 +644,30 @@
                   <div id="designer-element-list" class="space-y-1.5 max-h-40 overflow-y-auto border rounded-lg p-2 bg-gray-50"></div>
                 </div>
 
-                <!-- Properties Panel -->
                 <div id="element-properties-panel" class="hidden space-y-3 pt-2 border-t">
                   <h4 class="font-bold text-gray-800 text-sm flex items-center justify-between">
                     <span>คุณสมบัติ</span>
                     <button onclick="deleteSelectedElement()" class="text-red-500 hover:text-red-700 text-xs font-normal"><i class="fas fa-trash mr-1"></i>ลบ</button>
                   </h4>
 
-                  <!-- Snap Center Alignment Button -->
-                  <button onclick="snapElementToCenter()" class="w-full bg-blue-50 hover:bg-blue-100 text-primary-700 font-bold py-1.5 rounded-lg text-xs border border-blue-200 transition flex items-center justify-center gap-1">
-                    <i class="fas fa-align-center"></i> 📍 จัดกึ่งกลางหน้ากระดาษ (Snap Center)
-                  </button>
-
                   <div id="prop-text-controls" class="space-y-3">
-                    <!-- Font Family -->
                     <div id="propFontFamily">
                       <label class="block text-xs font-medium text-gray-600 mb-1">ฟอนต์</label>
                       <select id="propFont" onchange="updateElementProp('fontFamily', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none">
-                        <option value="Sarabun" style="font-family: 'Sarabun'">Sarabun</option>
-                        <option value="Kanit" style="font-family: 'Kanit'">Kanit</option>
-                        <option value="Prompt" style="font-family: 'Prompt'">Prompt</option>
-                        <option value="Noto Sans Thai" style="font-family: 'Noto Sans Thai'">Noto Sans Thai</option>
-                        <option value="Noto Serif Thai" style="font-family: 'Noto Serif Thai'">Noto Serif Thai</option>
-                        <option value="Mitr" style="font-family: 'Mitr'">Mitr</option>
-                        <option value="Mali" style="font-family: 'Mali'">Mali</option>
-                        <option value="Charm" style="font-family: 'Charm'">Charm</option>
-                        <option value="Chakra Petch" style="font-family: 'Chakra Petch'">Chakra Petch</option>
-                        <option value="Chonburi" style="font-family: 'Chonburi'">Chonburi</option>
-                        <option value="Kodchasan" style="font-family: 'Kodchasan'">Kodchasan</option>
+                        <option value="Sarabun">Sarabun</option>
+                        <option value="Kanit">Kanit</option>
+                        <option value="Prompt">Prompt</option>
+                        <option value="Noto Sans Thai">Noto Sans Thai</option>
+                        <option value="Noto Serif Thai">Noto Serif Thai</option>
+                        <option value="Mitr">Mitr</option>
+                        <option value="Mali">Mali</option>
+                        <option value="Charm">Charm</option>
+                        <option value="Chakra Petch">Chakra Petch</option>
+                        <option value="Chonburi">Chonburi</option>
+                        <option value="Kodchasan">Kodchasan</option>
                       </select>
                     </div>
 
-                    <!-- Font Size -->
                     <div id="propFontSizeRow">
                       <label class="block text-xs font-medium text-gray-600 mb-1">ขนาด</label>
                       <div class="grid grid-cols-3 gap-2 items-center">
@@ -785,7 +680,6 @@
                       </div>
                     </div>
 
-                    <!-- Style Toggles -->
                     <div id="propStyleRow">
                       <label class="block text-xs font-medium text-gray-600 mb-1">สไตล์</label>
                       <div class="flex gap-1">
@@ -795,7 +689,6 @@
                       </div>
                     </div>
 
-                    <!-- Text Alignment -->
                     <div id="propAlignRow">
                       <label class="block text-xs font-medium text-gray-600 mb-1">จัดตำแหน่งข้อความ</label>
                       <div class="flex gap-1">
@@ -805,7 +698,6 @@
                       </div>
                     </div>
 
-                    <!-- Color + Opacity -->
                     <div class="grid grid-cols-2 gap-2">
                       <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">สี</label>
@@ -817,7 +709,6 @@
                       </div>
                     </div>
 
-                    <!-- Text Extras -->
                     <div class="grid grid-cols-2 gap-2" id="propTextExtras">
                       <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">ความกว้าง</label>
@@ -830,7 +721,6 @@
                     </div>
                   </div>
 
-                  <!-- Image Extras -->
                   <div id="propImageExtras" class="hidden space-y-3">
                     <div class="grid grid-cols-2 gap-2">
                       <div>
@@ -843,11 +733,10 @@
                       </div>
                     </div>
                     <button id="btn-designer-signature" onclick="document.getElementById('designer-signature-input').click()" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-1.5 rounded-lg text-xs border border-blue-200 transition flex items-center justify-center gap-1">
-                      <i class="fas fa-upload"></i> เปลี่ยนรูปภาพลายเซ็น (Google Drive)
+                      <i class="fas fa-upload"></i> เปลี่ยนรูปภาพลายเซ็น
                     </button>
                   </div>
 
-                  <!-- Position X and Y -->
                   <div class="grid grid-cols-2 gap-2">
                     <div>
                       <label class="block text-xs font-medium text-gray-600 mb-1">ตำแหน่ง X</label>
@@ -859,7 +748,6 @@
                     </div>
                   </div>
 
-                  <!-- Static Text Content -->
                   <div id="propStaticTextRow" class="hidden">
                     <label class="block text-xs font-medium text-gray-600 mb-1">ข้อความ</label>
                     <textarea id="propStaticText" rows="2" oninput="updateElementProp('staticText', this.value)" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none resize-y"></textarea>
@@ -872,8 +760,6 @@
           <div id="view-export" class="app-view hidden">
             <div class="bg-white rounded-xl card-shadow p-6 mb-6">
               <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-sliders text-primary-500 mr-2"></i>ตัวเลือกการส่งออกเกียรติบัตร</h3>
-
-              <!-- Selectable Export Source Cards -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card active" data-source="all" onclick="selectExportSource('all')">
                   <div>
@@ -882,7 +768,6 @@
                   </div>
                   <input type="radio" name="export-source-radio" value="all" checked class="w-5 h-5 text-primary-600 mt-1 cursor-pointer">
                 </div>
-
                 <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card" data-source="pending" onclick="selectExportSource('pending')">
                   <div>
                     <span class="text-yellow-600 font-bold text-lg block mb-1"><i class="fas fa-hourglass-half mr-2"></i>เฉพาะรอดำเนินการ</span>
@@ -890,7 +775,6 @@
                   </div>
                   <input type="radio" name="export-source-radio" value="pending" class="w-5 h-5 text-primary-600 mt-1 cursor-pointer">
                 </div>
-
                 <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-primary-400 transition font-medium text-gray-700 flex items-start justify-between export-source-card" data-source="selected" onclick="selectExportSource('selected')">
                   <div>
                     <span class="text-purple-600 font-bold text-lg block mb-1"><i class="fas fa-check-square mr-2"></i>เฉพาะที่เลือก (<span id="export-selected-count-badge">0</span>)</span>
@@ -900,7 +784,6 @@
                 </div>
               </div>
 
-              <!-- Export Image & File Format Settings -->
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div>
                   <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportResolution">ความละเอียด</label>
@@ -910,7 +793,6 @@
                     <option value="2">Ultra (200%)</option>
                   </select>
                 </div>
-
                 <div>
                   <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportFilename">ชื่อไฟล์ pattern</label>
                   <select id="exportFilename" class="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
@@ -920,7 +802,6 @@
                     <option value="{name}">ชื่อเท่านั้น</option>
                   </select>
                 </div>
-
                 <div>
                   <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportImageFormat">รูปแบบภาพ</label>
                   <select id="exportImageFormat" onchange="toggleJpegQuality()" class="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
@@ -929,7 +810,6 @@
                     <option value="pdf">PDF (เอกสาร, พิมพ์ง่าย)</option>
                   </select>
                 </div>
-
                 <div id="jpeg-quality-group">
                   <label class="block text-gray-700 font-medium text-sm mb-1.5" for="exportJpegQuality">คุณภาพ JPEG</label>
                   <select id="exportJpegQuality" class="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm bg-white">
@@ -945,7 +825,6 @@
               </button>
             </div>
 
-            <!-- Export Progress Bar Card -->
             <div id="export-progress-card" class="bg-white rounded-xl card-shadow p-6 mb-6 hidden border-2 border-primary-200">
               <div class="flex items-center justify-between mb-2">
                 <span class="font-bold text-gray-800 text-sm" id="export-progress-detail">กำลังเตรียมการ...</span>
@@ -957,6 +836,7 @@
             </div>
           </div>
 
+          <!-- View: System Settings -->
           <div id="view-settings" class="app-view hidden">
             <div class="max-w-2xl mx-auto bg-white rounded-xl card-shadow p-6">
               <div class="text-center mb-6">
@@ -965,20 +845,17 @@
                 </div>
                 <h3 class="text-xl font-bold text-gray-800">ตั้งค่าระบบเกียรติบัตร</h3>
               </div>
-
               <div class="space-y-5">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div class="p-4 border-2 border-gray-100 rounded-xl bg-gray-50/50">
                     <label class="block text-gray-800 font-bold mb-1 text-sm"><i class="fas fa-hashtag text-primary-500 mr-2"></i>คำนำหน้าเลขที่อัตโนมัติ</label>
                     <input type="text" id="setting-page-prefix" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm mt-1" value="CERT-2026/">
                   </div>
-
                   <div class="p-4 border-2 border-gray-100 rounded-xl bg-gray-50/50">
                     <label class="block text-gray-800 font-bold mb-1 text-sm"><i class="fas fa-list-ol text-blue-500 mr-2"></i>ลำดับเลขที่เริ่มต้นอัตโนมัติ</label>
                     <input type="number" id="setting-page-start-num" min="1" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm mt-1" value="1">
                   </div>
                 </div>
-
                 <div class="p-4 border-2 border-gray-100 rounded-xl bg-gray-50/50">
                   <label class="block text-gray-800 font-bold mb-1 text-sm"><i class="fas fa-file-lines text-purple-500 mr-2"></i>ทิศทางหน้ากระดาษ A4</label>
                   <select id="setting-page-orientation" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none text-sm mt-1 bg-white">
@@ -986,7 +863,6 @@
                     <option value="portrait">A4 แนวตั้ง (Portrait - 2480 x 3508 px)</option>
                   </select>
                 </div>
-
                 <button id="btn-save-settings-page" onclick="saveSettingsFromPage()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl btn-hover text-base flex items-center justify-center gap-2">
                   <i class="fas fa-save"></i> บันทึก
                 </button>
@@ -994,6 +870,7 @@
             </div>
           </div>
 
+          <!-- View: Profile Edit -->
           <div id="view-profile" class="app-view hidden">
             <div class="max-w-xl mx-auto bg-white rounded-xl card-shadow p-6">
               <div class="text-center mb-6">
@@ -1026,12 +903,10 @@
               </form>
             </div>
           </div>
-
         </main>
       </div>
     </div>
 
-    <!-- Modals -->
     <div id="register-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
       <div class="bg-white rounded-2xl card-shadow p-6 w-full max-w-md mx-4 fade-in">
         <div class="flex items-center justify-between mb-4 pb-2 border-b">
@@ -1226,24 +1101,23 @@
       </div>
     </div>
 
-    <!-- Modal: Guest Cert Preview (Mobile Aspect-Ratio Locked Container) -->
-    <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-3 sm:p-4">
-      <div class="bg-white rounded-2xl card-shadow p-4 sm:p-6 w-full max-w-4xl max-h-[90vh] flex flex-col fade-in overflow-hidden">
-        <div class="flex items-center justify-between pb-3 border-b mb-3">
+    <!-- Modal: Guest Cert Preview -->
+    <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-2 sm:p-4">
+      <div class="bg-white rounded-2xl card-shadow p-3 sm:p-5 w-full max-w-5xl max-h-[96vh] flex flex-col fade-in overflow-hidden">
+        <div class="flex items-center justify-between pb-2 border-b mb-2">
           <h3 id="guest-preview-title" class="font-bold text-gray-800 text-base sm:text-lg flex items-center gap-2 truncate">
             <i class="fas fa-award text-yellow-500"></i> ตัวอย่างเกียรติบัตร
           </h3>
           <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl p-1"><i class="fas fa-times"></i></button>
         </div>
         
-        <!-- Aspect-Ratio Locked Container for Mobile Safari Canvas Rendering -->
-        <div class="flex-1 overflow-auto bg-gray-200 rounded-xl p-2 sm:p-4 flex items-center justify-center min-h-[250px] w-full">
-          <div class="w-full max-w-full aspect-[3508/2480] max-h-[55vh] flex items-center justify-center relative shadow-md bg-white rounded overflow-hidden">
+        <div class="flex-1 overflow-hidden bg-gray-200 rounded-xl p-1 sm:p-2 flex items-center justify-center min-h-[300px] w-full max-h-[76vh]">
+          <div id="guest-preview-wrapper" class="w-full h-full max-w-full max-h-full flex items-center justify-center relative shadow-md bg-white rounded overflow-hidden">
             <canvas id="guestPreviewCanvas" width="3508" height="2480" class="w-full h-full object-contain block"></canvas>
           </div>
         </div>
 
-        <div class="mt-4 flex flex-wrap justify-end gap-2 pt-2 border-t">
+        <div class="mt-3 flex flex-wrap justify-end gap-2 pt-2 border-t">
           <button onclick="hideModal('guest-preview-modal')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition">ปิด</button>
           <button id="btn-download-preview-png" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
             <i class="fas fa-file-image"></i> PNG
@@ -1325,6 +1199,8 @@
     let selectedExportSource = 'all';
     let selectedRecordIds = new Set();
     let deleteCallback = null;
+    
+    // Canvas & Render State
     let canvas, ctx;
     let canvasZoom = 0.3;
     let showCanvasGrid = false;
@@ -1334,15 +1210,22 @@
     let selectedElementIndex = null;
     let activeTemplateId = null;
     let parsedImportRows = [];
-    let activityLogs = [];
     let currentPreviewRecord = null;
     let currentPreviewTemplate = null;
+
+    // Async Image Cache Map to prevent duplicate loads & flickering
+    const imageCacheMap = new Map();
+
+    // Render Queue / Lock Flag
+    let isRenderPending = false;
+    let isCurrentlyRendering = false;
 
     // Undo / Redo Stacks
     let undoStack = [];
     let redoStack = [];
     const MAX_UNDO_STACK = 30;
 
+    // Default Fallback Templates
     const defaultTemplates = [
       {
         id: 'tpl_default_1',
@@ -1354,7 +1237,7 @@
         bgImg: null,
         elements: [
           { id: 'el_1', field: 'static', staticText: 'วิทยาลัยเทคนิคดอนเมือง ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า', x: 1754, y: 750, fontSize: 60, fontFamily: 'Sarabun', color: '#1e3a8a', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 2000 },
-          { id: 'el_2', field: 'name', staticText: '[ชื่อ-นามสกุล]', x: 1754, y: 1050, fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
+          { id: 'el_2', field: 'name', staticText: '[ชื่อ-นามสกุล]', x: 1754, y: 1050, fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
           { id: 'el_3', field: 'static', staticText: 'ได้ผ่านการเข้าร่วมโครงการพัฒนาทักษะวิชาชีพและคุณธรรมจริยธรรม', x: 1754, y: 1300, fontSize: 55, fontFamily: 'Sarabun', color: '#475569', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
           { id: 'el_4', field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: 1754, y: 1500, fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
           { id: 'el_5', field: 'certNumber', staticText: 'เลขที่ CERT-2026/001', x: 3100, y: 250, fontSize: 40, fontFamily: 'Sarabun', color: '#64748b', opacity: 1.0, textAlign: 'right', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 800 },
@@ -1370,24 +1253,89 @@
       { id: 'rec_2', member_id: '', type: 'record', templateId: 'tpl_default_1', name: 'นางสาววิภาดา มีสุข', school: 'โรงเรียนดอนเมืองจาตุรจินดา', certNumber: 'CERT-2026/002', date: '16 สิงหาคม 2569', status: 'generated' }
     ];
 
-    /**
-     * Safe font string builder for Canvas.
-     * Prevents iOS Safari font matcher from falling back to system sans-serif on single-weight fonts like 'Chonburi'.
-     */
+    /* =========================================================================
+       PHASE 1 — TEMPLATE STATE LOGIC
+       ========================================================================= */
+
+    function getTemplates() {
+      const tpls = appData.filter(d => d && d.type === 'template');
+      let pool = tpls;
+
+      if (currentUser && !isAdmin()) {
+        const userTpls = pool.filter(t => !t.member_id || String(t.member_id) === String(currentUser.id));
+        if (userTpls.length > 0) pool = userTpls;
+      }
+      return pool;
+    }
+
+    function getActiveTemplate() {
+      const templates = getTemplates();
+      if (templates.length === 0) {
+        activeTemplateId = null;
+        return null;
+      }
+
+      if (!activeTemplateId) {
+        activeTemplateId = String(templates[0].id || templates[0].__backendId);
+      }
+
+      const found = templates.find(t => String(t.id) === String(activeTemplateId) || String(t.__backendId) === String(activeTemplateId));
+      if (found) return found;
+
+      activeTemplateId = String(templates[0].id || templates[0].__backendId);
+      return templates[0];
+    }
+
+    function deleteCurrentTemplate() {
+      const tpl = getActiveTemplate();
+      if (!tpl) {
+        showAlert('warning', 'เตือน', 'ไม่พบ Template ที่จะลบ');
+        return;
+      }
+
+      showConfirmDelete(`คุณต้องการลบ Template "${tpl.name || 'นี้'}" ใช่หรือไม่?`, async () => {
+        const res = await window.dataSdk.delete(tpl);
+
+        if (res.isOk) {
+          activeTemplateId = null;
+          selectedElementIndex = null;
+          undoStack = [];
+          redoStack = [];
+          logActivity(`ลบ Template: ${tpl.name}`);
+          showAlert('success', 'สำเร็จ', 'ลบ Template เรียบร้อยแล้ว');
+          
+          updateUI();
+          autoFitCanvasZoom();
+          queueRenderCanvas();
+        } else {
+          showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถลบ Template ได้');
+        }
+      });
+    }
+
+    /* =========================================================================
+       PHASE 2 — UNIFIED FONT ENGINE (iOS SAFARI COMPATIBLE)
+       ========================================================================= */
+
+    const SINGLE_WEIGHT_FONTS = ['Chonburi', 'Charm', 'Mitr', 'Kodchasan'];
+
     function getFontString(el) {
       const family = el.fontFamily || 'Sarabun';
       const size = el.fontSize || 50;
-      const singleWeightFonts = ['Chonburi'];
-      const isBold = el.bold && !singleWeightFonts.includes(family);
+      const isSingleWeight = SINGLE_WEIGHT_FONTS.includes(family);
+      const isBold = el.bold && !isSingleWeight;
       const isItalic = el.italic;
       return `${isBold ? 'bold ' : ''}${isItalic ? 'italic ' : ''}${size}px "${family}", sans-serif`;
     }
 
-    /**
-     * Mobile WebKit & Font Loading Hydration Guarantee
-     * Forces browsers (especially iOS Safari & Android Chrome) to download and load all Thai font files
-     */
-    async function preloadAllThaiFonts() {
+    function applyCanvasTextStyle(context, el) {
+      context.font = getFontString(el);
+      context.fillStyle = el.color || '#000000';
+      context.textAlign = el.textAlign || 'center';
+      context.textBaseline = 'middle';
+    }
+
+    async function ensureFontsLoaded() {
       const fontSpecs = [
         '400 50px "Sarabun"', '700 50px "Sarabun"',
         '400 50px "Kanit"', '700 50px "Kanit"',
@@ -1413,15 +1361,251 @@
       }
     }
 
-    if (document.fonts) {
-      document.fonts.ready.then(() => {
-        if (currentPage === 'main') {
-          renderCanvas();
+    /* =========================================================================
+       PHASE 3 — ASYNC ASSET LOADER & UNIFIED CANVAS RENDERER
+       ========================================================================= */
+
+    function loadImageAsync(url) {
+      if (!url) return Promise.resolve(null);
+      if (imageCacheMap.has(url)) {
+        return Promise.resolve(imageCacheMap.get(url));
+      }
+
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => {
+          imageCacheMap.set(url, img);
+          resolve(img);
+        };
+        img.onerror = () => {
+          resolve(null);
+        };
+        img.src = url;
+      });
+    }
+
+    async function drawCertificateToContext(context, tpl, recordSample, options = {}) {
+      if (!tpl) {
+        context.save();
+        context.fillStyle = '#f8fafc';
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+        context.fillStyle = '#64748b';
+        context.font = 'bold 60px "Sarabun", sans-serif';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText('ไม่พบ Template ในระบบ กรุณาเพิ่ม Template ใหม่', context.canvas.width / 2, context.canvas.height / 2);
+        context.restore();
+        return;
+      }
+
+      await ensureFontsLoaded();
+
+      const width = tpl.width || 3508;
+      const height = tpl.height || 2480;
+      const centerX = Math.round(width / 2);
+
+      // Background Image
+      if (tpl.bgImg) {
+        const bgImage = await loadImageAsync(tpl.bgImg);
+        if (bgImage) {
+          context.drawImage(bgImage, 0, 0, width, height);
+        } else {
+          context.fillStyle = '#ffffff';
+          context.fillRect(0, 0, width, height);
         }
-        if (currentPreviewRecord && currentPreviewTemplate) {
-          updateGuestPreviewCanvasInternal();
+      } else {
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, width, height);
+      }
+
+      // Canvas Grid in Designer Mode
+      if (options.showGrid) {
+        context.strokeStyle = '#e2e8f0';
+        context.lineWidth = 2;
+        for (let x = 0; x < width; x += 100) {
+          context.beginPath(); context.moveTo(x, 0); context.lineTo(x, height); context.stroke();
+        }
+        for (let y = 0; y < height; y += 100) {
+          context.beginPath(); context.moveTo(0, y); context.lineTo(width, y); context.stroke();
+        }
+      }
+
+      const elements = tpl.elements || [];
+
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i];
+        context.save();
+        context.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
+
+        if (el.type === 'image' || el.field === 'signatureImg') {
+          if (el.imgSrc) {
+            const sigImg = await loadImageAsync(el.imgSrc);
+            if (sigImg) {
+              const w = el.width || 300;
+              const h = el.height || 120;
+              context.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
+
+              if (options.highlightIndex === i) {
+                context.strokeStyle = '#2563eb';
+                context.lineWidth = 4;
+                context.strokeRect(el.x - w / 2 - 5, el.y - h / 2 - 5, w + 10, h + 10);
+              }
+            }
+          }
+        } else {
+          applyCanvasTextStyle(context, el);
+
+          let text = el.staticText || '';
+          if (recordSample) {
+            if (el.field === 'name') text = recordSample.name || '';
+            if (el.field === 'school') text = recordSample.school || '';
+            if (el.field === 'certNumber') text = recordSample.certNumber || '';
+            if (el.field === 'date') text = formatThaiDateTime(recordSample.date || '');
+            if (el.field === 'signer') text = recordSample.signer || el.staticText || '(นายธราเชฎฐ์ สุคนธ์)';
+            if (el.field === 'position') text = recordSample.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
+          }
+
+          // Pure Render Coordinate Evaluation
+          let drawX = el.x;
+          if (el.textAlign === 'center') {
+            drawX = centerX;
+          }
+
+          context.fillText(text, drawX, el.y);
+
+          if (el.underline) {
+            const metrics = context.measureText(text);
+            const w = metrics.width;
+            let startX = drawX - w / 2;
+            if (el.textAlign === 'left') startX = drawX;
+            if (el.textAlign === 'right') startX = drawX - w;
+            const lineY = el.y + Math.round(el.fontSize / 2) + 4;
+            context.strokeStyle = el.color || '#000000';
+            context.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
+            context.beginPath();
+            context.moveTo(startX, lineY);
+            context.lineTo(startX + w, lineY);
+            context.stroke();
+          }
+
+          if (options.highlightIndex === i) {
+            context.strokeStyle = '#2563eb';
+            context.lineWidth = 4;
+            const metrics = context.measureText(text);
+            const w = metrics.width + 40;
+            const h = el.fontSize + 20;
+            let bx = drawX - w / 2;
+            if (el.textAlign === 'left') bx = drawX;
+            if (el.textAlign === 'right') bx = drawX - w;
+            context.strokeRect(bx, el.y - el.fontSize / 2 - 10, w, h);
+          }
+        }
+
+        context.restore();
+      }
+    }
+
+    function queueRenderCanvas() {
+      if (isCurrentlyRendering) {
+        isRenderPending = true;
+        return;
+      }
+      isCurrentlyRendering = true;
+      renderCanvasInternal().finally(() => {
+        isCurrentlyRendering = false;
+        if (isRenderPending) {
+          isRenderPending = false;
+          queueRenderCanvas();
         }
       });
+    }
+
+    async function renderCanvasInternal() {
+      if (!canvas || !ctx) return;
+      const tpl = getActiveTemplate();
+
+      canvas.width = tpl ? (tpl.width || 3508) : 3508;
+      canvas.height = tpl ? (tpl.height || 2480) : 2480;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const resInfo = document.getElementById('canvas-resolution-info');
+      if (resInfo) {
+        const isPortrait = canvas.height > canvas.width;
+        resInfo.textContent = `A4 ${isPortrait ? 'Portrait' : 'Landscape'} (${canvas.width} x ${canvas.height} px)`;
+      }
+
+      const previewId = document.getElementById('designer-preview-select')?.value;
+      const records = getRecords();
+      const sample = records.find(r => (String(r.id) === String(previewId) || String(r.__backendId) === String(previewId))) || records[0] || {
+        name: '[ชื่อ-นามสกุล]',
+        school: '[โรงเรียน/หน่วยงาน]',
+        certNumber: 'CERT-2026/XXX',
+        date: '16 สิงหาคม 2569',
+        signer: '(นายธราเชฎฐ์ สุคนธ์)',
+        position: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง'
+      };
+
+      await drawCertificateToContext(ctx, tpl, sample, {
+        showGrid: showCanvasGrid,
+        highlightIndex: selectedElementIndex
+      });
+
+      updateDesignerElementList();
+      applyCanvasZoom();
+    }
+
+    function applyCanvasZoom() {
+      const container = document.getElementById('canvas-container');
+      const sizer = document.getElementById('canvas-sizer');
+      const tpl = getActiveTemplate();
+      
+      const baseW = tpl ? (tpl.width || 3508) : 3508;
+      const baseH = tpl ? (tpl.height || 2480) : 2480;
+
+      if (container) {
+        container.style.width = `${baseW}px`;
+        container.style.height = `${baseH}px`;
+        container.style.transform = `scale(${canvasZoom})`;
+      }
+
+      if (sizer) {
+        const scaledW = Math.round(baseW * canvasZoom);
+        const scaledH = Math.round(baseH * canvasZoom);
+        sizer.style.width = `${scaledW}px`;
+        sizer.style.height = `${scaledH}px`;
+      }
+    }
+
+    function autoFitCanvasZoom() {
+      const workspace = document.getElementById('canvas-workspace');
+      const tpl = getActiveTemplate();
+      const targetWidth = tpl ? (tpl.width || 3508) : 3508;
+
+      if (workspace && targetWidth > 0) {
+        const wsWidth = workspace.clientWidth - 48;
+        if (wsWidth > 0) {
+          let calculatedZoom = wsWidth / targetWidth;
+          calculatedZoom = Math.max(0.1, Math.min(1.0, calculatedZoom));
+          canvasZoom = Math.round(calculatedZoom * 100) / 100;
+
+          const zoomText = document.getElementById('canvas-zoom-text');
+          if (zoomText) zoomText.textContent = Math.round(canvasZoom * 100) + '%';
+          applyCanvasZoom();
+        }
+      }
+    }
+
+    function zoomCanvas(delta) {
+      canvasZoom = Math.max(0.1, Math.min(1.0, canvasZoom + delta));
+      const zoomText = document.getElementById('canvas-zoom-text');
+      if (zoomText) zoomText.textContent = Math.round(canvasZoom * 100) + '%';
+      applyCanvasZoom();
+    }
+
+    function toggleCanvasGrid() {
+      showCanvasGrid = !showCanvasGrid;
+      queueRenderCanvas();
     }
 
     function saveCanvasState() {
@@ -1438,7 +1622,7 @@
       redoStack.push(JSON.stringify(tpl.elements));
       const prevState = undoStack.pop();
       tpl.elements = JSON.parse(prevState);
-      renderCanvas();
+      queueRenderCanvas();
       updateElementPropertiesPanel();
     }
 
@@ -1448,192 +1632,315 @@
       undoStack.push(JSON.stringify(tpl.elements));
       const nextState = redoStack.pop();
       tpl.elements = JSON.parse(nextState);
-      renderCanvas();
+      queueRenderCanvas();
       updateElementPropertiesPanel();
     }
 
-    function setupKeyboardShortcuts() {
-      window.addEventListener('keydown', (e) => {
-        if (currentPage !== 'main') return;
-        const activeView = document.querySelector('.app-view:not(.hidden)')?.id;
-        if (activeView !== 'view-designer') return;
+    /* =========================================================================
+       CANVAS POINTER & INTERACTION HANDLERS
+       ========================================================================= */
 
-        const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
-        if (isInput) return;
+    function handleCanvasPointerStart(pointerEvent) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mx = (pointerEvent.clientX - rect.left) * scaleX;
+      const my = (pointerEvent.clientY - rect.top) * scaleY;
 
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
-          e.preventDefault();
-          canvasUndo();
-        } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
-          e.preventDefault();
-          canvasRedo();
+      touchStartPointerX = mx;
+      touchStartPointerY = my;
+
+      const tpl = getActiveTemplate();
+      if (!tpl) return;
+
+      selectedElementIndex = null;
+
+      (tpl.elements || []).forEach((el, idx) => {
+        if (el.type === 'image' || el.field === 'signatureImg') {
+          const w = el.width || 300;
+          const h = el.height || 120;
+          const bx = el.x - w / 2;
+          const by = el.y - h / 2;
+          if (mx >= bx && mx <= bx + w && my >= by && my <= by + h) {
+            selectedElementIndex = idx;
+            isDraggingElement = true;
+            dragOffsetX = mx - el.x;
+            dragOffsetY = my - el.y;
+          }
+        } else {
+          ctx.font = getFontString(el);
+          const metrics = ctx.measureText(el.staticText || 'Text');
+          const w = metrics.width + 40;
+          let bx = el.x - w / 2;
+          if (el.textAlign === 'left') bx = el.x;
+          if (el.textAlign === 'right') bx = el.x - w;
+
+          if (mx >= bx && mx <= bx + w && my >= el.y - el.fontSize / 2 - 10 && my <= el.y + el.fontSize / 2 + 10) {
+            selectedElementIndex = idx;
+            isDraggingElement = true;
+            dragOffsetX = mx - el.x;
+            dragOffsetY = my - el.y;
+          }
         }
       });
+
+      queueRenderCanvas();
+      updateElementPropertiesPanel();
     }
 
-    function toggleJpegQuality() {
-      const format = document.getElementById('exportImageFormat')?.value;
-      const group = document.getElementById('jpeg-quality-group');
-      if (group) {
-        group.style.display = (format === 'jpeg') ? 'block' : 'none';
+    function handleCanvasPointerMove(pointerEvent) {
+      if (!isDraggingElement || selectedElementIndex === null) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mx = (pointerEvent.clientX - rect.left) * scaleX;
+      const my = (pointerEvent.clientY - rect.top) * scaleY;
+
+      const tpl = getActiveTemplate();
+      if (!tpl) return;
+      const el = tpl.elements[selectedElementIndex];
+
+      const totalDist = Math.hypot(mx - touchStartPointerX, my - touchStartPointerY);
+      if (totalDist < 6) return;
+
+      if (el.textAlign === 'center') {
+        el.x = Math.round((tpl.width || 3508) / 2);
+      } else {
+        el.x = Math.round(mx - dragOffsetX);
       }
+
+      el.y = Math.round(my - dragOffsetY);
+
+      queueRenderCanvas();
+      updateElementPropertiesPanel();
     }
 
-    function formatThaiDateTime(raw) {
-      if (!raw) return '-';
-      let str = String(raw).trim();
+    function handleCanvasPointerEnd() {
+      if (isDraggingElement) {
+        saveCanvasState();
+      }
+      isDraggingElement = false;
+    }
 
-      if (/^\d{1,2}\s+[ก-ฮ]+\s+\d{4}/.test(str)) {
-        return str;
+    /* =========================================================================
+       PHASE 4 — UNIFIED PREVIEW & EXPORT ENGINE
+       ========================================================================= */
+
+    async function generateCertCanvasForRecord(record, tpl) {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = tpl ? (tpl.width || 3508) : 3508;
+      tempCanvas.height = tpl ? (tpl.height || 2480) : 2480;
+      const tctx = tempCanvas.getContext('2d');
+
+      await drawCertificateToContext(tctx, tpl, record, { showGrid: false });
+      return tempCanvas;
+    }
+
+    async function updateGuestPreviewCanvasInternal() {
+      if (!currentPreviewRecord || !currentPreviewTemplate) return;
+
+      const modalCanvas = document.getElementById('guestPreviewCanvas');
+      const modalWrapper = document.getElementById('guest-preview-wrapper');
+      if (!modalCanvas) return;
+
+      const tpl = currentPreviewTemplate;
+      const isPortrait = (tpl.height || 2480) > (tpl.width || 3508);
+
+      if (modalWrapper) {
+        modalWrapper.style.aspectRatio = isPortrait ? '2480 / 3508' : '3508 / 2480';
       }
 
-      const thaiMonths = [
-        'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-        'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-      ];
+      const certCanvas = await generateCertCanvasForRecord(currentPreviewRecord, currentPreviewTemplate);
+      modalCanvas.width = certCanvas.width;
+      modalCanvas.height = certCanvas.height;
+      const mctx = modalCanvas.getContext('2d');
+      mctx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+      mctx.drawImage(certCanvas, 0, 0);
+    }
 
-      let d = new Date(str);
-
-      if (isNaN(d.getTime())) {
-        let fixedStr = str.replace(/\b(25\d{2}|26\d{2})\b/g, (match) => parseInt(match) - 543);
-        d = new Date(fixedStr);
+    async function previewGuestCert(recordId, tplId = null, btnTrigger = null) {
+      const record = appData.find(d => String(d.id) === String(recordId) || String(d.__backendId) === String(recordId));
+      if (!record) {
+        showAlert('error', 'ไม่พบข้อมูล', 'ไม่พบข้อมูลเกียรติบัตรในระบบ');
+        return;
       }
+      const selectedTplId = tplId || document.getElementById('guest-template-select')?.value;
+      const tpl = getTemplateForRecord(record, selectedTplId);
 
-      if (!isNaN(d.getTime())) {
-        const day = d.getDate();
-        const month = thaiMonths[d.getMonth()];
-        let year = d.getFullYear();
-        if (year < 2200) year += 543;
+      currentPreviewRecord = record;
+      currentPreviewTemplate = tpl;
 
-        const hours = String(d.getHours()).padStart(2, '0');
-        const minutes = String(d.getMinutes()).padStart(2, '0');
-        const seconds = String(d.getSeconds()).padStart(2, '0');
+      if (btnTrigger) setButtonLoading(btnTrigger, true, "โหลด...", `<i class="fas fa-eye text-primary-500"></i> ดูตัวอย่าง`);
 
-        if (hours === '00' && minutes === '00' && seconds === '00') {
-          return `${day} ${month} ${year}`;
+      try {
+        await updateGuestPreviewCanvasInternal();
+
+        const titleEl = document.getElementById('guest-preview-title');
+        if (titleEl) {
+          titleEl.innerHTML = `<i class="fas fa-award text-yellow-500 mr-2"></i> เกียรติบัตร: ${record.name}`;
         }
-        return `${day} ${month} ${year} ${hours}:${minutes}:${seconds}`;
+
+        const btnPng = document.getElementById('btn-download-preview-png');
+        if (btnPng) btnPng.onclick = () => downloadGuestCertFormat(recordId, 'png', selectedTplId, btnPng);
+
+        const btnJpeg = document.getElementById('btn-download-preview-jpeg');
+        if (btnJpeg) btnJpeg.onclick = () => downloadGuestCertFormat(recordId, 'jpeg', selectedTplId, btnJpeg);
+
+        const btnPdf = document.getElementById('btn-download-preview-pdf');
+        if (btnPdf) btnPdf.onclick = () => downloadGuestCertFormat(recordId, 'pdf', selectedTplId, btnPdf);
+
+        showModal('guest-preview-modal');
+      } catch (err) {
+        console.error("Preview Guest Cert Error:", err);
+        showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างตัวอย่างเกียรติบัตรได้');
+      } finally {
+        if (btnTrigger) setButtonLoading(btnTrigger, false);
+      }
+    }
+
+    async function downloadGuestCertFormat(recordId, format = 'png', tplId = null, btnTrigger = null) {
+      const record = appData.find(d => String(d.id) === String(recordId) || String(d.__backendId) === String(recordId));
+      if (!record) {
+        showAlert('error', 'ไม่พบข้อมูล', 'ไม่พบข้อมูลเกียรติบัตรในระบบ');
+        return;
+      }
+      const selectedTplId = tplId || document.getElementById('guest-template-select')?.value;
+      const tpl = getTemplateForRecord(record, selectedTplId);
+
+      if (btnTrigger) setButtonLoading(btnTrigger, true, "กำลังโหลด...");
+
+      try {
+        const certCanvas = await generateCertCanvasForRecord(record, tpl);
+        const filename = `${record.certNumber || 'CERT'}_${(record.name || 'guest').replace(/\s+/g, '_')}`;
+
+        if (format === 'pdf') {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({
+            orientation: tpl.width > tpl.height ? 'landscape' : 'portrait',
+            unit: 'px',
+            format: [tpl.width, tpl.height]
+          });
+          const imgData = certCanvas.toDataURL('image/png');
+          pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
+          pdf.save(`${filename}.pdf`);
+        } else if (format === 'jpeg' || format === 'jpg') {
+          const link = document.createElement('a');
+          link.download = `${filename}.jpg`;
+          link.href = certCanvas.toDataURL('image/jpeg', 0.92);
+          link.click();
+        } else {
+          const link = document.createElement('a');
+          link.download = `${filename}.png`;
+          link.href = certCanvas.toDataURL('image/png');
+          link.click();
+        }
+        showAlert('success', 'ดาวน์โหลดสำเร็จ', `ดาวน์โหลดเกียรติบัตร (${format.toUpperCase()}) ของ ${record.name} เรียบร้อยแล้ว`);
+      } catch (err) {
+        showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างไฟล์ดาวน์โหลดได้');
+      } finally {
+        if (btnTrigger) setButtonLoading(btnTrigger, false);
+      }
+    }
+
+    async function startBatchExport() {
+      let targets = getRecords();
+      if (selectedExportSource === 'pending') targets = targets.filter(r => r.status === 'pending');
+      if (selectedExportSource === 'selected') targets = targets.filter(r => selectedRecordIds.has(String(r.id || r.__backendId)));
+
+      if (targets.length === 0) {
+        showAlert('warning', 'ไม่มีรายการ', 'ไม่พบรายชื่อที่จะส่งออกเกียรติบัตร');
+        return;
       }
 
-      return str;
-    }
+      const btnExport = document.getElementById('btn-start-export');
+      setButtonLoading(btnExport, true, "กำลังประมวลผล...", `<i class="fas fa-rocket"></i> เริ่มสร้างเกียรติบัตร`);
 
-    function isAdmin() {
-      return currentUser && (currentUser.role === 'admin' || currentUser.role === 'Admin');
-    }
+      const resolutionScale = parseFloat(document.getElementById('exportResolution')?.value) || 1.0;
+      const filenamePattern = document.getElementById('exportFilename')?.value || '{certNumber}_{name}';
+      const outputFormat = document.getElementById('exportImageFormat')?.value || 'png';
+      const jpegQuality = parseFloat(document.getElementById('exportJpegQuality')?.value) || 0.92;
 
-    function getMembers() {
-      return appData.filter(d => d && d.type === 'member');
-    }
+      const tpl = getActiveTemplate();
+      const currentTplId = tpl ? String(tpl.id || tpl.__backendId || '') : '';
 
-    function getTemplates() {
-      const tpls = appData.filter(d => d && d.type === 'template');
-      const pool = tpls.length > 0 ? tpls : defaultTemplates;
+      const card = document.getElementById('export-progress-card');
+      const bar = document.getElementById('export-progress-bar-fill');
+      const percentEl = document.getElementById('export-progress-percent');
+      const detailEl = document.getElementById('export-progress-detail');
 
-      if (!currentUser || isAdmin()) return pool;
+      if (card) card.classList.remove('hidden');
 
-      const userTpls = pool.filter(t => !t.member_id || String(t.member_id) === String(currentUser.id));
-      return userTpls.length > 0 ? userTpls : defaultTemplates;
-    }
+      const zip = new JSZip();
+      const isPortrait = tpl ? ((tpl.height || 2480) > (tpl.width || 3508)) : false;
+      const pdf = (outputFormat === 'pdf') ? new window.jspdf.jsPDF(isPortrait ? 'portrait' : 'landscape', 'px', [tpl ? tpl.width : 3508, tpl ? tpl.height : 2480]) : null;
 
-    function getRecords() {
-      const recs = appData.filter(d => d && d.type === 'record');
-      const pool = recs.length > 0 ? recs : defaultRecords;
+      for (let i = 0; i < targets.length; i++) {
+        const r = targets[i];
+        const pct = Math.round(((i + 1) / targets.length) * 100);
+        if (bar) bar.style.width = pct + '%';
+        if (percentEl) percentEl.textContent = pct + '%';
+        if (detailEl) detailEl.textContent = `กำลังสร้าง (${i + 1}/${targets.length}): ${r.name}`;
 
-      if (!currentUser || isAdmin()) return pool;
+        const baseCanvas = await generateCertCanvasForRecord(r, tpl);
+        let finalCanvas = baseCanvas;
 
-      return pool.filter(r => !r.member_id || String(r.member_id) === String(currentUser.id));
-    }
+        if (resolutionScale !== 1.0) {
+          finalCanvas = document.createElement('canvas');
+          finalCanvas.width = baseCanvas.width * resolutionScale;
+          finalCanvas.height = baseCanvas.height * resolutionScale;
+          const fctx = finalCanvas.getContext('2d');
+          fctx.drawImage(baseCanvas, 0, 0, finalCanvas.width, finalCanvas.height);
+        }
 
-    function getActiveTemplate() {
-      const templates = getTemplates();
-      if (!activeTemplateId && templates.length > 0) {
-        activeTemplateId = String(templates[0].id || templates[0].__backendId);
+        let mimeType = 'image/png';
+        let ext = 'png';
+        if (outputFormat === 'jpeg') {
+          mimeType = 'image/jpeg';
+          ext = 'jpg';
+        }
+
+        const imgData = finalCanvas.toDataURL(mimeType, jpegQuality);
+
+        let cleanFileName = filenamePattern
+          .replace('{certNumber}', r.certNumber || 'CERT')
+          .replace('{name}', r.name || 'guest')
+          .replace(/[\/\\?%*:|"<>]/g, '_');
+
+        if (outputFormat === 'jpeg' || outputFormat === 'png') {
+          zip.file(`${cleanFileName}.${ext}`, imgData.split(',')[1], { base64: true });
+        } else if (outputFormat === 'pdf') {
+          if (i > 0) pdf.addPage([tpl.width, tpl.height], isPortrait ? 'portrait' : 'landscape');
+          pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
+        }
+
+        r.status = 'generated';
+        r.templateId = currentTplId;
+        r.template_id = currentTplId;
+        await window.dataSdk.update(r);
       }
-      return templates.find(t => String(t.id) === String(activeTemplateId) || String(t.__backendId) === String(activeTemplateId)) || templates[0];
+
+      if (detailEl) detailEl.textContent = 'กำลังรวบรวมไฟล์ดาวน์โหลด...';
+
+      if (outputFormat === 'jpeg' || outputFormat === 'png') {
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Certificates_${Date.now()}.zip`;
+        link.click();
+      } else if (outputFormat === 'pdf') {
+        pdf.save(`Certificates_${Date.now()}.pdf`);
+      }
+
+      if (card) card.classList.add('hidden');
+      setButtonLoading(btnExport, false);
+      logActivity(`Export เกียรติบัตรสำเร็จจำนวน ${targets.length} รายการ (${outputFormat.toUpperCase()})`);
+      showAlert('success', 'สำเร็จ', 'สร้างและดาวน์โหลดไฟล์เกียรติบัตรเรียบร้อยแล้ว');
+      updateUI();
     }
 
-    function generateId() {
-      return 'id_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-    }
-
-    function getThaiTodayDate() {
-      const now = new Date();
-      const thaiMonths = [
-        'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-        'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-      ];
-      const day = now.getDate();
-      const month = thaiMonths[now.getMonth()];
-      const year = now.getFullYear() + 543;
-      return `${day} ${month} ${year}`;
-    }
-
-    function getThaiFormattedDateTime() {
-      const now = new Date();
-      const year = now.getFullYear() + 543;
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    }
-
-    function startLiveClock() {
-      const updateClock = () => {
-        const el = document.getElementById('app-datetime');
-        if (!el) return;
-        const now = new Date();
-        const days = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
-        const thaiMonths = [
-          'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-          'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-        ];
-        const dayName = days[now.getDay()];
-        const day = now.getDate();
-        const month = thaiMonths[now.getMonth()];
-        const year = now.getFullYear() + 543;
-        const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        el.textContent = `${dayName}ที่ ${day} ${month} ${year} เวลา ${timeStr} น.`;
-      };
-      updateClock();
-      setInterval(updateClock, 1000);
-    }
-
-    function logActivity(message) { 
-      const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }); 
-      activityLogs.unshift({ message, time: timeStr }); 
-      if (activityLogs.length > 10) activityLogs.pop(); 
-      renderActivityLogs(); 
-
-      window.dataSdk.create({ 
-        id: generateId(), 
-        type: 'log', 
-      // ปรับแก้ไขตรงนี้: ให้เช็ค __backendId ป้องกันข้อมูลหายเหมือนโค้ดที่ 2
-        member_id: currentUser ? (currentUser.id || currentUser.__backendId || '') : '', 
-        username: currentUser ? currentUser.username : 'Guest', 
-        action: message, 
-        status: 'success', 
-        note: message, 
-        timestamp: getThaiFormattedDateTime() 
-      }).catch(err => console.warn('Database log record notice:', err)); 
-    } 
-
-    function renderActivityLogs() { 
-      const container = document.getElementById('recent-activity-list'); 
-      if (!container) return; 
-      if (activityLogs.length === 0) { 
-      container.innerHTML = '<p class="text-gray-500 text-center py-4 text-sm">ยังไม่มีกิจกรรม</p>'; 
-      return; 
-      } 
-      container.innerHTML = activityLogs.map(log => ` 
-      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-700"> 
-        <span class="font-medium"><i class="fas fa-check-circle text-green-500 mr-2"></i>${log.message}</span> 
-          <span class="text-gray-400 font-sarabun">${log.time}</span> 
-          </div> 
-            `).join(''); 
-    }
+    /* =========================================================================
+       SYSTEM UTILITIES & UI BINDINGS
+       ========================================================================= */
 
     async function callGas(functionName, payloadArg) {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
@@ -1648,17 +1955,11 @@
         try {
           const response = await fetch(GAS_URL, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify({
-              action: functionName,
-              payload: payloadArg
-            })
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: functionName, payload: payloadArg })
           });
 
           const resJson = await response.json();
-
           if (resJson && resJson.status === 'success') {
             return resJson.data;
           } else {
@@ -1679,13 +1980,8 @@
 
     async function uploadAssetToDrive(base64Data, fileName) {
       try {
-        const result = await callGas('uploadImageToDrive', {
-          base64Data: base64Data,
-          fileName: fileName
-        });
-        if (result && result.directUrl) {
-          return result.directUrl;
-        }
+        const result = await callGas('uploadImageToDrive', { base64Data, fileName });
+        if (result && result.directUrl) return result.directUrl;
       } catch (err) {
         console.warn('Google Drive Image Upload fallback to base64:', err);
       }
@@ -1777,19 +2073,13 @@
         const showPass = (e) => {
           e.preventDefault();
           input.type = 'text';
-          if (icon) {
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-          }
+          if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
         };
 
         const hidePass = (e) => {
           e.preventDefault();
           input.type = 'password';
-          if (icon) {
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-          }
+          if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
         };
 
         btn.addEventListener('mousedown', showPass);
@@ -1863,13 +2153,9 @@
 
     function showPage(pageName) {
       currentPage = pageName;
-      const pGuest = document.getElementById('page-guest');
-      const pLogin = document.getElementById('page-login');
-      const pMain = document.getElementById('page-main');
-
-      if (pGuest) pGuest.classList.add('hidden');
-      if (pLogin) pLogin.classList.add('hidden');
-      if (pMain) pMain.classList.add('hidden');
+      document.getElementById('page-guest')?.classList.add('hidden');
+      document.getElementById('page-login')?.classList.add('hidden');
+      document.getElementById('page-main')?.classList.add('hidden');
 
       const targetPage = document.getElementById(`page-${pageName}`);
       if (targetPage) targetPage.classList.remove('hidden');
@@ -1906,7 +2192,7 @@
         updateTemplateSelectors();
         setTimeout(() => {
           autoFitCanvasZoom();
-          renderCanvas();
+          queueRenderCanvas();
         }, 100);
       }
       if (viewName === 'export') {
@@ -1933,7 +2219,7 @@
     }
 
     function handleLogout() {
-      logActivity(`ผู้ใช้ ${currentUser?.fullname || ''} ออกจากระบบ`);
+      logActivity(`ผู้ใช้ ${currentUser?.fullname || currentUser?.username || ''} ออกจากระบบ`);
       currentUser = null;
       showPage('guest');
       showAlert('info', 'ออกจากระบบ', 'คุณออกจากระบบเรียบร้อยแล้ว');
@@ -1966,18 +2252,18 @@
 
     function getTemplateForRecord(record, selectedTemplateId) {
       const templates = getTemplates();
-      
+
       if (record && (record.templateId || record.template_id)) {
         const recTplId = String(record.templateId || record.template_id);
         const found = templates.find(t => String(t.id) === recTplId || String(t.__backendId) === recTplId);
         if (found) return found;
       }
-      
+
       if (selectedTemplateId && selectedTemplateId !== 'all') {
         const found = templates.find(t => String(t.id) === String(selectedTemplateId) || String(t.__backendId) === String(selectedTemplateId));
         if (found) return found;
       }
-      
+
       return getActiveTemplate();
     }
 
@@ -2003,7 +2289,7 @@
 
       resultsArea.innerHTML = `
         <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500">
-          <i class="fa-solid fa-magnifying-glass text-4xl text-primary-500 mb-3 block searching-glass"></i>
+          <i class="fa-solid fa-magnifying-glass text-4xl text-primary-500 mb-3 block spin"></i>
           <p class="font-medium text-gray-700">กำลังค้นหาเกียรติบัตรของคุณ...</p>
         </div>
       `;
@@ -2062,16 +2348,16 @@
                   </div>
                 </div>
                 <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
-                  <button id="btn-preview-${recId}" onclick="previewGuestCert('${recId}', '${boundTplId}', this)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5" title="ดูตัวอย่าง">
+                  <button id="btn-preview-${recId}" onclick="previewGuestCert('${recId}', '${boundTplId}', this)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5">
                     <i class="fas fa-eye text-primary-500"></i> ดูตัวอย่าง
                   </button>
-                  <button id="btn-dl-png-${recId}" onclick="downloadGuestCertFormat('${recId}', 'png', '${boundTplId}', this)" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-2 rounded-xl text-xs sm:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ PNG">
+                  <button id="btn-dl-png-${recId}" onclick="downloadGuestCertFormat('${recId}', 'png', '${boundTplId}', this)" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-2 rounded-xl text-xs sm:text-sm btn-hover transition flex items-center justify-center gap-1.5">
                     <i class="fas fa-file-image"></i> PNG
                   </button>
-                  <button id="btn-dl-jpeg-${recId}" onclick="downloadGuestCertFormat('${recId}', 'jpeg', '${boundTplId}', this)" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-3 py-2 rounded-xl text-xs sm:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์รูปภาพ JPEG">
+                  <button id="btn-dl-jpeg-${recId}" onclick="downloadGuestCertFormat('${recId}', 'jpeg', '${boundTplId}', this)" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-3 py-2 rounded-xl text-xs sm:text-sm btn-hover transition flex items-center justify-center gap-1.5">
                     <i class="fas fa-image"></i> JPEG
                   </button>
-                  <button id="btn-dl-pdf-${recId}" onclick="downloadGuestCertFormat('${recId}', 'pdf', '${boundTplId}', this)" class="bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-2 rounded-xl text-xs sm:text-sm btn-hover transition flex items-center justify-center gap-1.5" title="ดาวน์โหลดไฟล์เอกสาร PDF">
+                  <button id="btn-dl-pdf-${recId}" onclick="downloadGuestCertFormat('${recId}', 'pdf', '${boundTplId}', this)" class="bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-2 rounded-xl text-xs sm:text-sm btn-hover transition flex items-center justify-center gap-1.5">
                     <i class="fas fa-file-pdf"></i> PDF
                   </button>
                 </div>
@@ -2082,205 +2368,9 @@
 
       } catch (err) {
         console.error("Guest Search Error:", err);
-        resultsArea.innerHTML = `
-          <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-sm">
-            เกิดข้อผิดพลาดในการค้นหา
-          </div>
-        `;
+        resultsArea.innerHTML = `<div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-sm">เกิดข้อผิดพลาดในการค้นหา</div>`;
       } finally {
         setButtonLoading(btnSearch, false);
-      }
-    }
-
-    async function generateCertCanvasForRecord(record, tpl) {
-      await preloadAllThaiFonts();
-
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = tpl.width || 3508;
-      tempCanvas.height = tpl.height || 2480;
-      const tctx = tempCanvas.getContext('2d');
-
-      if (tpl.bgImg) {
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        img.src = tpl.bgImg;
-        await new Promise(res => {
-          img.onload = res;
-          img.onerror = () => {
-            tctx.fillStyle = '#ffffff';
-            tctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            res();
-          };
-        });
-        tctx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
-      } else {
-        tctx.fillStyle = '#ffffff';
-        tctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-      }
-
-      for (let el of (tpl.elements || [])) {
-        if (el.type === 'image' || el.field === 'signatureImg') {
-          if (el.imgSrc) {
-            const sigImg = new Image();
-            sigImg.crossOrigin = 'Anonymous';
-            sigImg.src = el.imgSrc;
-            await new Promise(res => {
-              sigImg.onload = res;
-              sigImg.onerror = res;
-            });
-            const w = el.width || 300;
-            const h = el.height || 120;
-            tctx.save();
-            tctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
-            tctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
-            tctx.restore();
-          }
-        } else {
-          tctx.save();
-          tctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
-          tctx.font = getFontString(el);
-          tctx.fillStyle = el.color || '#000000';
-          tctx.textAlign = el.textAlign || 'center';
-          tctx.textBaseline = 'alphabetic';
-
-          let text = el.staticText || '';
-          if (el.field === 'name') text = record.name || '';
-          if (el.field === 'school') text = record.school || '';
-          if (el.field === 'certNumber') text = record.certNumber || '';
-          if (el.field === 'date') text = formatThaiDateTime(record.date || '');
-          if (el.field === 'signer') text = record.signer || el.staticText || '(นายธราเชฎฐ์ สุคนธ์)';
-          if (el.field === 'position') text = record.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
-
-          let targetX = el.x;
-          if (el.textAlign === 'center') {
-            targetX = Math.round((tpl.width || 3508) / 2);
-          }
-
-          tctx.fillText(text, targetX, el.y);
-
-          if (el.underline) {
-            const metrics = tctx.measureText(text);
-            const w = metrics.width;
-            let startX = targetX - w / 2;
-            if (el.textAlign === 'left') startX = targetX;
-            if (el.textAlign === 'right') startX = targetX - w;
-            const lineY = el.y + 8;
-            tctx.strokeStyle = el.color || '#000000';
-            tctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
-            tctx.beginPath();
-            tctx.moveTo(startX, lineY);
-            tctx.lineTo(startX + w, lineY);
-            tctx.stroke();
-          }
-
-          tctx.restore();
-        }
-      }
-
-      return tempCanvas;
-    }
-
-    async function updateGuestPreviewCanvasInternal() {
-      if (!currentPreviewRecord || !currentPreviewTemplate) return;
-      
-      const modalCanvas = document.getElementById('guestPreviewCanvas');
-      if (!modalCanvas) return;
-
-      const certCanvas = await generateCertCanvasForRecord(currentPreviewRecord, currentPreviewTemplate);
-      modalCanvas.width = certCanvas.width;
-      modalCanvas.height = certCanvas.height;
-      const mctx = modalCanvas.getContext('2d');
-      mctx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
-      mctx.drawImage(certCanvas, 0, 0);
-    }
-
-    async function previewGuestCert(recordId, tplId = null, btnTrigger = null) {
-      const record = appData.find(d => String(d.id) === String(recordId) || String(d.__backendId) === String(recordId));
-      if (!record) {
-        showAlert('error', 'ไม่พบข้อมูล', 'ไม่พบข้อมูลเกียรติบัตรในระบบ');
-        return;
-      }
-      const selectedTplId = tplId || document.getElementById('guest-template-select')?.value;
-      const tpl = getTemplateForRecord(record, selectedTplId);
-
-      currentPreviewRecord = record;
-      currentPreviewTemplate = tpl;
-
-      if (btnTrigger) setButtonLoading(btnTrigger, true, "โหลด...", `<i class="fas fa-eye text-primary-500"></i> ดูตัวอย่าง`);
-
-      try {
-        await updateGuestPreviewCanvasInternal();
-
-        const titleEl = document.getElementById('guest-preview-title');
-        if (titleEl) {
-          titleEl.innerHTML = `<i class="fas fa-award text-yellow-500 mr-2"></i> เกียรติบัตร: ${record.name}`;
-        }
-
-        const btnPng = document.getElementById('btn-download-preview-png');
-        if (btnPng) btnPng.onclick = () => downloadGuestCertFormat(recordId, 'png', selectedTplId, btnPng);
-
-        const btnJpeg = document.getElementById('btn-download-preview-jpeg');
-        if (btnJpeg) btnJpeg.onclick = () => downloadGuestCertFormat(recordId, 'jpeg', selectedTplId, btnJpeg);
-
-        const btnPdf = document.getElementById('btn-download-preview-pdf');
-        if (btnPdf) btnPdf.onclick = () => downloadGuestCertFormat(recordId, 'pdf', selectedTplId, btnPdf);
-
-        showModal('guest-preview-modal');
-
-        // Multi-pass re-render loop for mobile WebFont hydration
-        setTimeout(() => { updateGuestPreviewCanvasInternal(); }, 200);
-        setTimeout(() => { updateGuestPreviewCanvasInternal(); }, 700);
-        setTimeout(() => { updateGuestPreviewCanvasInternal(); }, 1500);
-
-      } catch (err) {
-        console.error("Preview Guest Cert Error:", err);
-        showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างตัวอย่างเกียรติบัตรได้');
-      } finally {
-        if (btnTrigger) setButtonLoading(btnTrigger, false);
-      }
-    }
-
-    async function downloadGuestCertFormat(recordId, format = 'png', tplId = null, btnTrigger = null) {
-      const record = appData.find(d => String(d.id) === String(recordId) || String(d.__backendId) === String(recordId));
-      if (!record) {
-        showAlert('error', 'ไม่พบข้อมูล', 'ไม่พบข้อมูลเกียรติบัตรในระบบ');
-        return;
-      }
-      const selectedTplId = tplId || document.getElementById('guest-template-select')?.value;
-      const tpl = getTemplateForRecord(record, selectedTplId);
-
-      if (btnTrigger) setButtonLoading(btnTrigger, true, "กำลังโหลด...");
-
-      try {
-        const certCanvas = await generateCertCanvasForRecord(record, tpl);
-        const filename = `${record.certNumber || 'CERT'}_${(record.name || 'guest').replace(/\s+/g, '_')}`;
-
-        if (format === 'pdf') {
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF({
-            orientation: tpl.width > tpl.height ? 'landscape' : 'portrait',
-            unit: 'px',
-            format: [tpl.width, tpl.height]
-          });
-          const imgData = certCanvas.toDataURL('image/png');
-          pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
-          pdf.save(`${filename}.pdf`);
-        } else if (format === 'jpeg' || format === 'jpg') {
-          const link = document.createElement('a');
-          link.download = `${filename}.jpg`;
-          link.href = certCanvas.toDataURL('image/jpeg', 0.92);
-          link.click();
-        } else {
-          const link = document.createElement('a');
-          link.download = `${filename}.png`;
-          link.href = certCanvas.toDataURL('image/png');
-          link.click();
-        }
-        showAlert('success', 'ดาวน์โหลดสำเร็จ', `ดาวน์โหลดเกียรติบัตร (${format.toUpperCase()}) ของ ${record.name} เรียบร้อยแล้ว`);
-      } catch (err) {
-        showAlert('error', 'ผิดพลาด', 'ไม่สามารถสร้างไฟล์ดาวน์โหลดได้');
-      } finally {
-        if (btnTrigger) setButtonLoading(btnTrigger, false);
       }
     }
 
@@ -2289,303 +2379,28 @@
       if (canvas) {
         ctx = canvas.getContext('2d');
         
-        // Mouse Events
         canvas.addEventListener('mousedown', handleCanvasPointerStart);
         canvas.addEventListener('mousemove', handleCanvasPointerMove);
         canvas.addEventListener('mouseup', handleCanvasPointerEnd);
 
-        // Touch Events
         canvas.addEventListener('touchstart', (e) => {
           e.preventDefault();
-          if (e.touches && e.touches.length > 0) {
-            handleCanvasPointerStart(e.touches[0]);
-          }
+          if (e.touches && e.touches.length > 0) handleCanvasPointerStart(e.touches[0]);
         }, { passive: false });
 
         canvas.addEventListener('touchmove', (e) => {
           e.preventDefault();
-          if (e.touches && e.touches.length > 0) {
-            handleCanvasPointerMove(e.touches[0]);
-          }
+          if (e.touches && e.touches.length > 0) handleCanvasPointerMove(e.touches[0]);
         }, { passive: false });
 
-        canvas.addEventListener('touchend', (e) => {
-          handleCanvasPointerEnd();
-        });
+        canvas.addEventListener('touchend', () => { handleCanvasPointerEnd(); });
       }
-      
+
       window.addEventListener('resize', () => {
         if (currentPage === 'main') {
           autoFitCanvasZoom();
         }
       });
-    }
-
-    function autoFitCanvasZoom() {
-      const workspace = document.getElementById('canvas-workspace');
-      const tpl = getActiveTemplate();
-      if (!workspace || !tpl) return;
-
-      const wsWidth = workspace.clientWidth - 32;
-      const targetWidth = tpl.width || 3508;
-
-      if (wsWidth > 0 && targetWidth > 0) {
-        let calculatedZoom = wsWidth / targetWidth;
-        calculatedZoom = Math.max(0.08, Math.min(1.0, calculatedZoom));
-        canvasZoom = Math.round(calculatedZoom * 100) / 100;
-        
-        const zoomText = document.getElementById('canvas-zoom-text');
-        const container = document.getElementById('canvas-container');
-        if (zoomText) zoomText.textContent = Math.round(canvasZoom * 100) + '%';
-        if (container) container.style.transform = `scale(${canvasZoom})`;
-      }
-    }
-
-    async function renderCanvas() {
-      if (!canvas || !ctx) return;
-      const tpl = getActiveTemplate();
-      if (!tpl) return;
-
-      await preloadAllThaiFonts();
-
-      canvas.width = tpl.width || 3508;
-      canvas.height = tpl.height || 2480;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const resInfo = document.getElementById('canvas-resolution-info');
-      if (resInfo) {
-        const isPortrait = canvas.height > canvas.width;
-        resInfo.textContent = `A4 ${isPortrait ? 'Portrait' : 'Landscape'} (${canvas.width} x ${canvas.height} px)`;
-      }
-
-      if (tpl.bgImg) {
-        const img = new Image();
-        img.src = tpl.bgImg;
-        if (img.complete) {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          renderCanvasElements(tpl);
-        } else {
-          img.onload = () => {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            renderCanvasElements(tpl);
-          };
-        }
-      } else {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        renderCanvasElements(tpl);
-      }
-    }
-
-    function renderCanvasElements(tpl) {
-      const centerX = Math.round((tpl.width || 3508) / 2);
-
-      if (showCanvasGrid) {
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 2;
-        for (let x = 0; x < canvas.width; x += 100) {
-          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-        }
-        for (let y = 0; y < canvas.height; y += 100) {
-          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-        }
-      }
-
-      const previewId = document.getElementById('designer-preview-select')?.value;
-      const records = getRecords();
-      const sample = records.find(r => (String(r.id) === String(previewId) || String(r.__backendId) === String(previewId))) || records[0] || {
-        name: '[ชื่อ-นามสกุล]',
-        school: '[โรงเรียน/หน่วยงาน]',
-        certNumber: 'CERT-2026/XXX',
-        date: '16 สิงหาคม 2569',
-        signer: '(นายธราเชฎฐ์ สุคนธ์)',
-        position: 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง'
-      };
-
-      (tpl.elements || []).forEach((el, index) => {
-        ctx.save();
-        ctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
-
-        if (el.type === 'image' || el.field === 'signatureImg') {
-          if (el.imgSrc) {
-            const sigImg = new Image();
-            sigImg.src = el.imgSrc;
-            const w = el.width || 300;
-            const h = el.height || 120;
-            const drawSig = () => {
-              ctx.save();
-              ctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
-              ctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
-              if (index === selectedElementIndex) {
-                ctx.strokeStyle = '#2563eb';
-                ctx.lineWidth = 4;
-                ctx.strokeRect(el.x - w / 2 - 5, el.y - h / 2 - 5, w + 10, h + 10);
-              }
-              ctx.restore();
-            };
-            if (sigImg.complete) drawSig();
-            else sigImg.onload = drawSig;
-          }
-        } else {
-          ctx.font = getFontString(el);
-          ctx.fillStyle = el.color || '#000000';
-          ctx.textAlign = el.textAlign || 'center';
-          ctx.textBaseline = 'alphabetic';
-
-          let text = el.staticText || '';
-          if (el.field === 'name') text = sample.name;
-          if (el.field === 'school') text = sample.school;
-          if (el.field === 'certNumber') text = sample.certNumber;
-          if (el.field === 'date') text = formatThaiDateTime(sample.date);
-          if (el.field === 'signer') text = sample.signer || el.staticText || '(นายธราเชฎฐ์ สุคนธ์)';
-          if (el.field === 'position') text = sample.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
-
-          let drawX = el.x;
-          if (el.textAlign === 'center') {
-            drawX = centerX;
-            el.x = centerX;
-          }
-
-          ctx.fillText(text, drawX, el.y);
-
-          if (el.underline) {
-            const metrics = ctx.measureText(text);
-            const w = metrics.width;
-            let startX = drawX - w / 2;
-            if (el.textAlign === 'left') startX = drawX;
-            if (el.textAlign === 'right') startX = drawX - w;
-            const lineY = el.y + 8;
-            ctx.strokeStyle = el.color || '#000000';
-            ctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
-            ctx.beginPath();
-            ctx.moveTo(startX, lineY);
-            ctx.lineTo(startX + w, lineY);
-            ctx.stroke();
-          }
-
-          if (index === selectedElementIndex) {
-            ctx.strokeStyle = '#2563eb';
-            ctx.lineWidth = 4;
-            const metrics = ctx.measureText(text);
-            const w = metrics.width + 40;
-            const h = el.fontSize + 20;
-            let bx = drawX - w / 2;
-            if (el.textAlign === 'left') bx = drawX;
-            if (el.textAlign === 'right') bx = drawX - w;
-            ctx.strokeRect(bx, el.y - el.fontSize, w, h);
-          }
-        }
-        ctx.restore();
-      });
-
-      updateDesignerElementList();
-    }
-
-    function handleCanvasPointerStart(pointerEvent) {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const mx = (pointerEvent.clientX - rect.left) * scaleX;
-      const my = (pointerEvent.clientY - rect.top) * scaleY;
-
-      touchStartPointerX = mx;
-      touchStartPointerY = my;
-
-      const tpl = getActiveTemplate();
-      selectedElementIndex = null;
-
-      (tpl.elements || []).forEach((el, idx) => {
-        if (el.type === 'image' || el.field === 'signatureImg') {
-          const w = el.width || 300;
-          const h = el.height || 120;
-          const bx = el.x - w / 2;
-          const by = el.y - h / 2;
-          if (mx >= bx && mx <= bx + w && my >= by && my <= by + h) {
-            selectedElementIndex = idx;
-            isDraggingElement = true;
-            dragOffsetX = mx - el.x;
-            dragOffsetY = my - el.y;
-          }
-        } else {
-          ctx.font = getFontString(el);
-          const metrics = ctx.measureText(el.staticText || 'Text');
-          const w = metrics.width + 40;
-          let bx = el.x - w / 2;
-          if (el.textAlign === 'left') bx = el.x;
-          if (el.textAlign === 'right') bx = el.x - w;
-
-          if (mx >= bx && mx <= bx + w && my >= el.y - el.fontSize && my <= el.y + 20) {
-            selectedElementIndex = idx;
-            isDraggingElement = true;
-            dragOffsetX = mx - el.x;
-            dragOffsetY = my - el.y;
-          }
-        }
-      });
-
-      renderCanvas();
-      updateElementPropertiesPanel();
-    }
-
-    function handleCanvasPointerMove(pointerEvent) {
-      if (!isDraggingElement || selectedElementIndex === null) return;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const mx = (pointerEvent.clientX - rect.left) * scaleX;
-      const my = (pointerEvent.clientY - rect.top) * scaleY;
-
-      const tpl = getActiveTemplate();
-      const el = tpl.elements[selectedElementIndex];
-
-      // Anti-Jitter Touch Guard
-      const totalDist = Math.hypot(mx - touchStartPointerX, my - touchStartPointerY);
-      if (totalDist < 6) return;
-
-      if (el.textAlign === 'center') {
-        el.x = Math.round((tpl.width || 3508) / 2);
-      } else {
-        el.x = Math.round(mx - dragOffsetX);
-      }
-
-      el.y = Math.round(my - dragOffsetY);
-
-      renderCanvas();
-      updateElementPropertiesPanel();
-    }
-
-    function handleCanvasPointerEnd() {
-      if (isDraggingElement) {
-        saveCanvasState();
-      }
-      isDraggingElement = false;
-    }
-
-    function zoomCanvas(delta) {
-      canvasZoom = Math.max(0.08, Math.min(1.0, canvasZoom + delta));
-      document.getElementById('canvas-zoom-text').textContent = Math.round(canvasZoom * 100) + '%';
-      document.getElementById('canvas-container').style.transform = `scale(${canvasZoom})`;
-    }
-
-    function resetCanvasZoom() {
-      autoFitCanvasZoom();
-    }
-
-    function toggleCanvasGrid() {
-      showCanvasGrid = !showCanvasGrid;
-      renderCanvas();
-    }
-
-    function snapElementToCenter() {
-      if (selectedElementIndex === null) return;
-      saveCanvasState();
-      const tpl = getActiveTemplate();
-      const el = tpl.elements[selectedElementIndex];
-      const centerX = Math.round((tpl.width || 3508) / 2);
-      el.x = centerX;
-      el.textAlign = 'center';
-      renderCanvas();
-      updateElementPropertiesPanel();
     }
 
     async function handleBgUpload(e) {
@@ -2602,8 +2417,10 @@
         const driveUrl = await uploadAssetToDrive(base64Data, 'bg_' + Date.now() + '_' + file.name);
 
         const tpl = getActiveTemplate();
-        tpl.bgImg = driveUrl;
-        renderCanvas();
+        if (tpl) {
+          tpl.bgImg = driveUrl;
+          queueRenderCanvas();
+        }
 
         if (btn) setButtonLoading(btn, false);
         showAlert('success', 'สำเร็จ', 'อัปเดตภาพพื้นหลังเรียบร้อยแล้ว');
@@ -2625,29 +2442,31 @@
         const driveUrl = await uploadAssetToDrive(base64Data, 'sig_' + Date.now() + '_' + file.name);
 
         const tpl = getActiveTemplate();
-        if (!tpl.elements) tpl.elements = [];
-        const centerX = Math.round((tpl.width || 3508) / 2);
-        const centerY = Math.round((tpl.height || 2480) * 0.82);
+        if (tpl) {
+          if (!tpl.elements) tpl.elements = [];
+          const centerX = Math.round((tpl.width || 3508) / 2);
+          const centerY = Math.round((tpl.height || 2480) * 0.82);
 
-        tpl.elements.push({
-          id: generateId(),
-          type: 'image',
-          field: 'signatureImg',
-          staticText: 'รูปภาพลายเซ็น',
-          imgSrc: driveUrl,
-          x: centerX,
-          y: centerY,
-          width: 350,
-          height: 140,
-          opacity: 1.0
-        });
+          tpl.elements.push({
+            id: generateId(),
+            type: 'image',
+            field: 'signatureImg',
+            staticText: 'รูปภาพลายเซ็น',
+            imgSrc: driveUrl,
+            x: centerX,
+            y: centerY,
+            width: 350,
+            height: 140,
+            opacity: 1.0
+          });
 
-        selectedElementIndex = tpl.elements.length - 1;
-        renderCanvas();
-        updateElementPropertiesPanel();
+          selectedElementIndex = tpl.elements.length - 1;
+          queueRenderCanvas();
+          updateElementPropertiesPanel();
+        }
 
         if (btn) setButtonLoading(btn, false);
-        showAlert('success', 'สำเร็จ', 'เพิ่มรูปภาพลายเซ็นขึ้น Google Drive เรียบร้อยแล้ว');
+        showAlert('success', 'สำเร็จ', 'เพิ่มรูปภาพลายเซ็นเรียบร้อยแล้ว');
       };
       reader.readAsDataURL(file);
     }
@@ -2663,13 +2482,18 @@
     }
 
     function changePreviewRecord() {
-      renderCanvas();
+      queueRenderCanvas();
     }
 
     function updateDesignerElementList() {
       const container = document.getElementById('designer-element-list');
       if (!container) return;
       const tpl = getActiveTemplate();
+      if (!tpl) {
+        container.innerHTML = '<p class="text-xs text-gray-400 p-2 text-center">ไม่มีข้อมูล Template</p>';
+        return;
+      }
+
       const fieldNames = {
         'name': 'ชื่อ-นามสกุล',
         'school': 'โรงเรียน/หน่วยงาน',
@@ -2691,7 +2515,7 @@
 
     function selectElement(index) {
       selectedElementIndex = index;
-      renderCanvas();
+      queueRenderCanvas();
       updateElementPropertiesPanel();
     }
 
@@ -2705,8 +2529,9 @@
       panel.classList.remove('hidden');
 
       const tpl = getActiveTemplate();
-      const el = tpl.elements[selectedElementIndex];
+      if (!tpl || !tpl.elements[selectedElementIndex]) return;
 
+      const el = tpl.elements[selectedElementIndex];
       const textControls = document.getElementById('prop-text-controls');
       const imgControls = document.getElementById('propImageExtras');
 
@@ -2752,13 +2577,14 @@
       if (selectedElementIndex === null) return;
       saveCanvasState();
       const tpl = getActiveTemplate();
-      
+      if (!tpl || !tpl.elements[selectedElementIndex]) return;
+
       if (key === 'textAlign' && value === 'center') {
         tpl.elements[selectedElementIndex].x = Math.round((tpl.width || 3508) / 2);
       }
 
       tpl.elements[selectedElementIndex][key] = value;
-      renderCanvas();
+      queueRenderCanvas();
       updateElementPropertiesPanel();
     }
 
@@ -2766,9 +2592,11 @@
       if (selectedElementIndex === null) return;
       saveCanvasState();
       const tpl = getActiveTemplate();
+      if (!tpl || !tpl.elements[selectedElementIndex]) return;
+
       const el = tpl.elements[selectedElementIndex];
       el[styleKey] = !el[styleKey];
-      renderCanvas();
+      queueRenderCanvas();
       updateElementPropertiesPanel();
     }
 
@@ -2779,6 +2607,8 @@
     function addCanvasElement(fieldType) {
       saveCanvasState();
       const tpl = getActiveTemplate();
+      if (!tpl) return;
+
       if (!tpl.elements) tpl.elements = [];
       const centerX = Math.round((tpl.width || 3508) / 2);
       const centerY = Math.round((tpl.height || 2480) / 2);
@@ -2805,9 +2635,10 @@
         lineHeight: 1.4,
         width: 800
       });
+
       hideModal('add-field-modal');
       selectedElementIndex = tpl.elements.length - 1;
-      renderCanvas();
+      queueRenderCanvas();
       updateElementPropertiesPanel();
     }
 
@@ -2815,9 +2646,11 @@
       if (selectedElementIndex === null) return;
       saveCanvasState();
       const tpl = getActiveTemplate();
+      if (!tpl) return;
+
       tpl.elements.splice(selectedElementIndex, 1);
       selectedElementIndex = null;
-      renderCanvas();
+      queueRenderCanvas();
       updateElementPropertiesPanel();
     }
 
@@ -2834,38 +2667,6 @@
       showModal('create-template-modal');
     }
 
-    function deleteCurrentTemplate() {
-      const tpl = getActiveTemplate();
-      if (!tpl) {
-        showAlert('warning', 'เตือน', 'ไม่พบ Template ที่จะลบ');
-        return;
-      }
-
-      const templates = getTemplates();
-      if (templates.length <= 1) {
-        showAlert('warning', 'ไม่สามารถลบได้', 'ต้องมี Template อย่างน้อย 1 รายการในระบบ');
-        return;
-      }
-
-      showConfirmDelete(`คุณต้องการลบ Template "${tpl.name || 'นี้'}" ใช่หรือไม่?`, async () => {
-        const res = await window.dataSdk.delete(tpl);
-
-        if (res.isOk) {
-          activeTemplateId = null;
-          selectedElementIndex = null;
-          undoStack = [];
-          redoStack = [];
-          logActivity(`ลบ Template: ${tpl.name}`);
-          showAlert('success', 'สำเร็จ', 'ลบ Template เรียบร้อยแล้ว');
-          updateUI();
-          autoFitCanvasZoom();
-          renderCanvas();
-        } else {
-          showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถลบ Template ได้');
-        }
-      });
-    }
-
     function switchActiveTemplate(id) {
       if (!id) return;
       activeTemplateId = String(id);
@@ -2874,7 +2675,7 @@
       redoStack = [];
       updateTemplateSelectors();
       autoFitCanvasZoom();
-      renderCanvas();
+      queueRenderCanvas();
       updateElementPropertiesPanel();
     }
 
@@ -2913,8 +2714,7 @@
     }
 
     function openRegisterModal() {
-      const form = document.getElementById('register-form');
-      if (form) form.reset();
+      document.getElementById('register-form')?.reset();
       showModal('register-modal');
     }
 
@@ -2977,9 +2777,7 @@
               if (!isNaN(num)) {
                 if (num > maxFoundNum) {
                   maxFoundNum = num;
-                  if (lastNumStr.length > padLength) {
-                    padLength = lastNumStr.length;
-                  }
+                  if (lastNumStr.length > padLength) padLength = lastNumStr.length;
                 }
               }
             }
@@ -3044,11 +2842,8 @@
 
     function toggleRecordSelection(id) {
       const idStr = String(id);
-      if (selectedRecordIds.has(idStr)) {
-        selectedRecordIds.delete(idStr);
-      } else {
-        selectedRecordIds.add(idStr);
-      }
+      if (selectedRecordIds.has(idStr)) selectedRecordIds.delete(idStr);
+      else selectedRecordIds.add(idStr);
       updateBulkActionsBar();
     }
 
@@ -3085,13 +2880,11 @@
     }
 
     function showImportSection() {
-      const sec = document.getElementById('import-section');
-      if (sec) sec.classList.remove('hidden');
+      document.getElementById('import-section')?.classList.remove('hidden');
     }
 
     function toggleImportSection() {
-      const sec = document.getElementById('import-section');
-      if (sec) sec.classList.toggle('hidden');
+      document.getElementById('import-section')?.classList.toggle('hidden');
     }
 
     function downloadImportTemplate() {
@@ -3210,17 +3003,10 @@
         default_font: systemSettings.defaultFont || 'Sarabun'
       };
 
-      if (existingSetting) {
-        await window.dataSdk.update(settingItem);
-      } else {
-        await window.dataSdk.create(settingItem);
-      }
+      if (existingSetting) await window.dataSdk.update(settingItem);
+      else await window.dataSdk.create(settingItem);
 
       setButtonLoading(btn, false);
-
-      const modalPrefix = document.getElementById('setting-prefix');
-      if (modalPrefix) modalPrefix.value = systemSettings.prefix;
-
       logActivity('บันทึกการตั้งค่าระบบ');
       showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว');
     }
@@ -3248,23 +3034,10 @@
         default_font: systemSettings.defaultFont || 'Sarabun'
       };
 
-      if (existingSetting) {
-        await window.dataSdk.update(settingItem);
-      } else {
-        await window.dataSdk.create(settingItem);
-      }
+      if (existingSetting) await window.dataSdk.update(settingItem);
+      else await window.dataSdk.create(settingItem);
 
       setButtonLoading(btn, false);
-
-      const pagePrefix = document.getElementById('setting-page-prefix');
-      if (pagePrefix) pagePrefix.value = systemSettings.prefix;
-
-      const pageStartNum = document.getElementById('setting-page-start-num');
-      if (pageStartNum) pageStartNum.value = systemSettings.startNumber;
-
-      const pageOrient = document.getElementById('setting-page-orientation');
-      if (pageOrient) pageOrient.value = systemSettings.paperOrientation;
-
       hideModal('settings-modal');
       logActivity('บันทึกการตั้งค่าระบบ');
       showAlert('success', 'สำเร็จ', 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว');
@@ -3275,161 +3048,6 @@
       document.querySelectorAll('.export-source-card').forEach(card => {
         card.classList.toggle('active', card.dataset.source === source);
       });
-    }
-
-    async function startBatchExport() {
-      let targets = getRecords();
-      if (selectedExportSource === 'pending') targets = targets.filter(r => r.status === 'pending');
-      if (selectedExportSource === 'selected') targets = targets.filter(r => selectedRecordIds.has(String(r.id || r.__backendId)));
-
-      if (targets.length === 0) {
-        showAlert('warning', 'ไม่มีรายการ', 'ไม่พบรายชื่อที่จะส่งออกเกียรติบัตร');
-        return;
-      }
-
-      const btnExport = document.getElementById('btn-start-export');
-      setButtonLoading(btnExport, true, "กำลังประมวลผล...", `<i class="fas fa-rocket"></i> เริ่มสร้างเกียรติบัตร`);
-
-      const resolutionScale = parseFloat(document.getElementById('exportResolution')?.value) || 1.0;
-      const filenamePattern = document.getElementById('exportFilename')?.value || '{certNumber}_{name}';
-      const outputFormat = document.getElementById('exportImageFormat')?.value || 'png';
-      const jpegQuality = parseFloat(document.getElementById('exportJpegQuality')?.value) || 0.92;
-
-      const tpl = getActiveTemplate();
-      const currentTplId = String(tpl.id || tpl.__backendId || '');
-
-      const card = document.getElementById('export-progress-card');
-      const bar = document.getElementById('export-progress-bar-fill');
-      const percentEl = document.getElementById('export-progress-percent');
-      const detailEl = document.getElementById('export-progress-detail');
-
-      if (card) card.classList.remove('hidden');
-
-      const zip = new JSZip();
-      const isPortrait = (tpl.height || 2480) > (tpl.width || 3508);
-      const pdf = (outputFormat === 'pdf') ? new window.jspdf.jsPDF(isPortrait ? 'portrait' : 'landscape', 'px', [tpl.width, tpl.height]) : null;
-
-      for (let i = 0; i < targets.length; i++) {
-        const r = targets[i];
-        const pct = Math.round(((i + 1) / targets.length) * 100);
-        if (bar) bar.style.width = pct + '%';
-        if (percentEl) percentEl.textContent = pct + '%';
-        if (detailEl) detailEl.textContent = `กำลังสร้าง (${i + 1}/${targets.length}): ${r.name}`;
-
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = tpl.width * resolutionScale;
-        tempCanvas.height = tpl.height * resolutionScale;
-        const tctx = tempCanvas.getContext('2d');
-        tctx.scale(resolutionScale, resolutionScale);
-
-        if (tpl.bgImg) {
-          const img = new Image();
-          img.crossOrigin = 'Anonymous';
-          img.src = tpl.bgImg;
-          await new Promise(res => { img.onload = res; img.onerror = res; });
-          tctx.drawImage(img, 0, 0, tpl.width, tpl.height);
-        } else {
-          tctx.fillStyle = '#ffffff';
-          tctx.fillRect(0, 0, tpl.width, tpl.height);
-        }
-
-        for (let el of (tpl.elements || [])) {
-          tctx.save();
-          tctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
-
-          if (el.type === 'image' || el.field === 'signatureImg') {
-            if (el.imgSrc) {
-              const sigImg = new Image();
-              sigImg.crossOrigin = 'Anonymous';
-              sigImg.src = el.imgSrc;
-              await new Promise(res => { sigImg.onload = res; sigImg.onerror = res; });
-              const w = el.width || 300;
-              const h = el.height || 120;
-              tctx.drawImage(sigImg, el.x - w / 2, el.y - h / 2, w, h);
-            }
-          } else {
-            tctx.font = getFontString(el);
-            tctx.fillStyle = el.color || '#000000';
-            tctx.textAlign = el.textAlign || 'center';
-            tctx.textBaseline = 'alphabetic';
-
-            let text = el.staticText || '';
-            if (el.field === 'name') text = r.name;
-            if (el.field === 'school') text = r.school;
-            if (el.field === 'certNumber') text = r.certNumber;
-            if (el.field === 'date') text = formatThaiDateTime(r.date);
-            if (el.field === 'signer') text = r.signer || el.staticText || '(นายธราเชฎฐ์ สุคนธ์)';
-            if (el.field === 'position') text = r.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
-
-            let drawX = el.x;
-            if (el.textAlign === 'center') {
-              drawX = Math.round((tpl.width || 3508) / 2);
-            }
-
-            tctx.fillText(text, drawX, el.y);
-
-            if (el.underline) {
-              const metrics = tctx.measureText(text);
-              const w = metrics.width;
-              let startX = drawX - w / 2;
-              if (el.textAlign === 'left') startX = drawX;
-              if (el.textAlign === 'right') startX = drawX - w;
-              const lineY = el.y + 8;
-              tctx.strokeStyle = el.color || '#000000';
-              tctx.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
-              tctx.beginPath();
-              tctx.moveTo(startX, lineY);
-              tctx.lineTo(startX + w, lineY);
-              tctx.stroke();
-            }
-          }
-          tctx.restore();
-        }
-
-        let mimeType = 'image/png';
-        let ext = 'png';
-        if (outputFormat === 'jpeg') {
-          mimeType = 'image/jpeg';
-          ext = 'jpg';
-        }
-
-        const imgData = tempCanvas.toDataURL(mimeType, jpegQuality);
-
-        let cleanFileName = filenamePattern
-          .replace('{certNumber}', r.certNumber || 'CERT')
-          .replace('{name}', r.name || 'guest')
-          .replace(/[\/\\?%*:|"<>]/g, '_');
-
-        if (outputFormat === 'jpeg' || outputFormat === 'png') {
-          zip.file(`${cleanFileName}.${ext}`, imgData.split(',')[1], { base64: true });
-        } else if (outputFormat === 'pdf') {
-          if (i > 0) pdf.addPage([tpl.width, tpl.height], isPortrait ? 'portrait' : 'landscape');
-          pdf.addImage(imgData, 'PNG', 0, 0, tpl.width, tpl.height);
-        }
-
-        r.status = 'generated';
-        r.templateId = currentTplId;
-        r.template_id = currentTplId;
-        await window.dataSdk.update(r);
-      }
-
-      if (detailEl) detailEl.textContent = 'กำลังรวบรวมไฟล์ดาวน์โหลด...';
-
-      if (outputFormat === 'jpeg' || outputFormat === 'png') {
-        const blob = await zip.generateAsync({ type: 'blob' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `Certificates_${Date.now()}.zip`;
-        link.click();
-      } else if (outputFormat === 'pdf') {
-        pdf.save(`Certificates_${Date.now()}.pdf`);
-      }
-
-      if (card) card.classList.add('hidden');
-      setButtonLoading(btnExport, false);
-      logActivity(`Export เกียรติบัตรสำเร็จจำนวน ${targets.length} รายการ (${outputFormat.toUpperCase()})`);
-      showAlert('success', 'สำเร็จ', 'สร้างและดาวน์โหลดไฟล์เกียรติบัตรเรียบร้อยแล้ว');
-      updateUI();
     }
 
     async function refreshData() {
@@ -3466,14 +3084,12 @@
       updateMembersTable();
       updateRecordsTable();
       updateDesignerPreviewSelect();
+      renderActivityLogs();
 
       const membersBtn = document.getElementById('sidebar-members-btn');
       if (membersBtn) {
-        if (isAdmin()) {
-          membersBtn.classList.remove('hidden');
-        } else {
-          membersBtn.classList.add('hidden');
-        }
+        if (isAdmin()) membersBtn.classList.remove('hidden');
+        else membersBtn.classList.add('hidden');
       }
     }
 
@@ -3555,12 +3171,12 @@
           </td>
           <td class="px-4 py-3 text-center flex items-center justify-center gap-1">
             ${m.status === 'pending' ? `
-              <button onclick="approveMember('${m.__backendId || m.id}', this)" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1" title="อนุมัติสมาชิก">
+              <button onclick="approveMember('${m.__backendId || m.id}', this)" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1">
                 <i class="fas fa-check"></i> อนุมัติ
               </button>
             ` : ''}
-            <button onclick="openEditMemberModal('${m.__backendId || m.id}')" class="text-primary-500 hover:text-primary-700 px-2 py-1" title="แก้ไข"><i class="fas fa-edit"></i></button>
-            <button onclick="deleteMember('${m.__backendId || m.id}')" class="text-red-500 hover:text-red-700 px-2 py-1" title="ลบ"><i class="fas fa-trash"></i></button>
+            <button onclick="openEditMemberModal('${m.__backendId || m.id}')" class="text-primary-500 hover:text-primary-700 px-2 py-1"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteMember('${m.__backendId || m.id}')" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fas fa-trash"></i></button>
           </td>
         </tr>
       `).join('');
@@ -3621,18 +3237,186 @@
               </span>
             </td>
             <td class="px-4 py-3 text-center">
-              <button onclick="openEditRecordModal('${r.__backendId || r.id}')" class="text-primary-500 hover:text-primary-700 mx-1" title="แก้ไข"><i class="fas fa-edit"></i></button>
-              <button onclick="deleteRecord('${r.__backendId || r.id}')" class="text-red-500 hover:text-red-700 mx-1" title="ลบ"><i class="fas fa-trash"></i></button>
+              <button onclick="openEditRecordModal('${r.__backendId || r.id}')" class="text-primary-500 hover:text-primary-700 mx-1"><i class="fas fa-edit"></i></button>
+              <button onclick="deleteRecord('${r.__backendId || r.id}')" class="text-red-500 hover:text-red-700 mx-1"><i class="fas fa-trash"></i></button>
             </td>
           </tr>
         `;
       }).join('');
     }
 
+    function formatThaiDateTime(raw) {
+      if (!raw) return '-';
+      let str = String(raw).trim();
+      if (/^\d{1,2}\s+[ก-ฮ]+\s+\d{4}/.test(str)) return str;
+
+      const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+      let d = new Date(str);
+
+      if (isNaN(d.getTime())) {
+        let fixedStr = str.replace(/\b(25\d{2}|26\d{2})\b/g, (match) => parseInt(match) - 543);
+        d = new Date(fixedStr);
+      }
+
+      if (!isNaN(d.getTime())) {
+        const day = d.getDate();
+        const month = thaiMonths[d.getMonth()];
+        let year = d.getFullYear();
+        if (year < 2200) year += 543;
+        return `${day} ${month} ${year}`;
+      }
+      return str;
+    }
+
+    function isAdmin() {
+      return currentUser && (currentUser.role === 'admin' || currentUser.role === 'Admin');
+    }
+
+    function getMembers() {
+      return appData.filter(d => d && d.type === 'member');
+    }
+
+    function getRecords() {
+      const recs = appData.filter(d => d && d.type === 'record');
+      const pool = recs.length > 0 ? recs : defaultRecords;
+
+      if (!currentUser || isAdmin()) return pool;
+      return pool.filter(r => !r.member_id || String(r.member_id) === String(currentUser.id));
+    }
+
+    function generateId() {
+      return 'id_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    }
+
+    function getThaiTodayDate() {
+      const now = new Date();
+      const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+      return `${now.getDate()} ${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}`;
+    }
+
+    function getThaiFormattedDateTime() {
+      const now = new Date();
+      const year = now.getFullYear() + 543;
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    function startLiveClock() {
+      const updateClock = () => {
+        const el = document.getElementById('app-datetime');
+        if (!el) return;
+        const now = new Date();
+        const days = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+        const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        const dayName = days[now.getDay()];
+        const day = now.getDate();
+        const month = thaiMonths[now.getMonth()];
+        const year = now.getFullYear() + 543;
+        const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        el.textContent = `${dayName}ที่ ${day} ${month} ${year} เวลา ${timeStr} น.`;
+      };
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+    function logActivity(message) {
+      const logObj = {
+        id: generateId(),
+        type: 'log',
+        member_id: currentUser ? (currentUser.id || currentUser.__backendId || '') : '',
+        username: currentUser ? currentUser.username : 'Guest',
+        action: message,
+        status: 'success',
+        note: message,
+        timestamp: getThaiFormattedDateTime()
+      };
+
+      window.dataSdk.create(logObj).catch(err => console.warn('Database log record notice:', err));
+    }
+
+    function getRecentLogs() {
+      const logs = appData.filter(d => d && d.type === 'log');
+      logs.sort((a, b) => {
+        const timeA = a.timestamp || a.created_at || '';
+        const timeB = b.timestamp || b.created_at || '';
+        return timeB.localeCompare(timeA);
+      });
+      return logs.slice(0, 10);
+    }
+
+    function formatLogTime(raw) {
+      if (!raw) return '-';
+      const str = String(raw).trim();
+      const match = str.match(/\b(\d{1,2}:\d{2})/);
+      if (match) {
+        const parts = match[1].split(':');
+        const hh = parts[0].padStart(2, '0');
+        const mm = parts[1];
+        return `${hh}:${mm}`;
+      }
+      return str;
+    }
+
+    function renderActivityLogs() {
+      const container = document.getElementById('recent-activity-list');
+      if (!container) return;
+
+      const logs = getRecentLogs();
+
+      if (logs.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-4 text-sm">ยังไม่มีกิจกรรม</p>';
+        return;
+      }
+
+      container.innerHTML = logs.map(log => {
+        let msg = log.action || log.note || log.message || 'กิจกรรมระบบ';
+        let userStr = log.username || 'Guest';
+        let displayText = msg;
+        if (!msg.startsWith('ผู้ใช้')) {
+          displayText = `ผู้ใช้ ${userStr} ${msg}`;
+        }
+        const displayTime = formatLogTime(log.timestamp || log.created_at || log.time || '');
+
+        return `
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-700">
+            <span class="font-medium truncate"><i class="fas fa-check-circle text-green-500 mr-2"></i>${displayText}</span>
+            <span class="text-gray-400 font-sarabun ml-2 flex-shrink-0 font-semibold">${displayTime}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleJpegQuality() {
+      const format = document.getElementById('exportImageFormat')?.value;
+      const group = document.getElementById('jpeg-quality-group');
+      if (group) group.style.display = (format === 'jpeg') ? 'block' : 'none';
+    }
+
+    function setupKeyboardShortcuts() {
+      window.addEventListener('keydown', (e) => {
+        if (currentPage !== 'main') return;
+        const activeView = document.querySelector('.app-view:not(.hidden)')?.id;
+        if (activeView !== 'view-designer') return;
+
+        const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+        if (isInput) return;
+
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+          e.preventDefault(); canvasUndo();
+        } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+          e.preventDefault(); canvasRedo();
+        }
+      });
+    }
+
     async function initApp() {
       showFullPageLoading("กำลังโหลด...");
       try {
-        await preloadAllThaiFonts();
+        await ensureFontsLoaded();
         const data = await callGas('getData');
         if (Array.isArray(data) && data.length > 0) {
           appData = data;
@@ -3677,9 +3461,7 @@
 
         try {
           const freshData = await callGas('getData');
-          if (Array.isArray(freshData) && freshData.length > 0) {
-            appData = freshData;
-          }
+          if (Array.isArray(freshData) && freshData.length > 0) appData = freshData;
         } catch (err) {
           console.warn("Could not sync fresh member data before login:", err);
         } finally {
@@ -3691,7 +3473,7 @@
 
         if (foundMember) {
           if (foundMember.status === 'pending') {
-            showAlert('warning', 'รอการอนุมัติ', 'บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากผู้ดูแลระบบหลัก กรุณาติดต่อผู้ดูแลระบบเพื่อเปิดใช้งานบัญชี');
+            showAlert('warning', 'รอการอนุมัติ', 'บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากผู้ดูแลระบบหลัก');
             return;
           }
 
@@ -3711,63 +3493,15 @@
           showPage('main');
           showView('dashboard');
           updateUI();
-          logActivity(`ผู้ใช้ ${currentUser.fullname} เข้าสู่ระบบ`);
+          logActivity('เข้าสู่ระบบ');
           showAlert('success', 'เข้าสู่ระบบสำเร็จ', `ยินดีต้อนรับ ${currentUser.fullname}`);
-          return;
         } else {
           showAlert('error', 'เข้าสู่ระบบไม่สำเร็จ', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
         }
       });
 
-      document.getElementById('register-form')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('btn-register-submit');
-        setButtonLoading(btn, true, "กำลังสมัครสมาชิก...", `<i class="fas fa-paper-plane"></i> สมัครสมาชิก`);
-
-        const username = document.getElementById('reg-username').value.trim();
-        const password = document.getElementById('reg-password').value;
-        const fullname = document.getElementById('reg-fullname').value.trim();
-        const email = document.getElementById('reg-email').value.trim();
-
-        const existingMembers = getMembers();
-        if (existingMembers.some(m => m.username.toLowerCase() === username.toLowerCase())) {
-          setButtonLoading(btn, false);
-          showAlert('warning', 'คำเตือน', 'ชื่อผู้ใช้นี้มีผู้ใช้งานแล้ว กรุณาใช้ชื่อผู้ใช้อื่น');
-          return;
-        }
-
-        const isFirstMember = existingMembers.length === 0;
-        const newMember = {
-          id: generateId(),
-          type: 'member',
-          username,
-          password,
-          fullname,
-          email,
-          role: isFirstMember ? 'admin' : 'teacher',
-          status: isFirstMember ? 'active' : 'pending',
-          createdAt: new Date().toISOString()
-        };
-
-        const res = await window.dataSdk.create(newMember);
-        setButtonLoading(btn, false);
-        hideModal('register-modal');
-
-        if (res.isOk) {
-          logActivity(`สมาชิกใหม่ลงทะเบียน: ${fullname} (${username})`);
-          if (isFirstMember) {
-            showAlert('success', 'สมัครสมาชิกสำเร็จ', 'คุณเป็นสมาชิกคนแรกของระบบ ได้รับอนุมัติสิทธิ์ผู้ดูแลระบบหลักอัตโนมัติ! สามารถเข้าสู่ระบบได้ทันที');
-          } else {
-            showAlert('info', 'ส่งคำขอสมัครสมาชิกแล้ว', 'การสมัครสมาชิกสำเร็จ! บัญชีของคุณอยู่ระหว่างรอการอนุมัติจากผู้ดูแลระบบหลักก่อนเข้าใช้งาน');
-          }
-        } else {
-          showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง');
-        }
-      });
-
       document.getElementById('member-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!isAdmin()) return;
         const btn = document.getElementById('btn-save-member');
         setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก`);
 
@@ -3780,24 +3514,22 @@
         const status = document.getElementById('member-status').value;
 
         if (editId) {
-          const member = appData.find(d => String(d.id) === String(editId) || String(d.__backendId) === String(editId));
-          if (member) {
-            const updated = { ...member, username, fullname, email, role, status };
-            if (password) updated.password = password;
-            const res = await window.dataSdk.update(updated);
+          const existing = appData.find(d => String(d.id) === String(editId) || String(d.__backendId) === String(editId));
+          if (existing) {
+            const updatedItem = { ...existing, username, fullname, email, role, status };
+            if (password) updatedItem.password = password;
+
+            hideModal('member-modal');
+            const res = await window.dataSdk.update(updatedItem);
+            setButtonLoading(btn, false);
             if (res.isOk) {
-              logActivity(`แก้ไขข้อมูลสมาชิก: ${fullname}`);
-              showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
+              logActivity(`แก้ไขข้อมูลสมาชิก: ${fullname || username}`);
+              showAlert('success', 'สำเร็จ', 'บันทึกข้อมูลสมาชิกเรียบร้อยแล้ว');
+            } else {
+              showAlert('error', 'ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลสมาชิกได้');
             }
           }
         } else {
-          const existingMembers = getMembers();
-          if (existingMembers.some(m => m.username.toLowerCase() === username.toLowerCase())) {
-            setButtonLoading(btn, false);
-            showAlert('warning', 'คำเตือน', 'ชื่อผู้ใช้นี้มีผู้ใช้งานแล้ว');
-            return;
-          }
-
           const newMember = {
             id: generateId(),
             type: 'member',
@@ -3807,17 +3539,60 @@
             email,
             role,
             status,
-            createdAt: new Date().toISOString()
+            created_at: getThaiFormattedDateTime()
           };
+
+          hideModal('member-modal');
           const res = await window.dataSdk.create(newMember);
+          setButtonLoading(btn, false);
           if (res.isOk) {
-            logActivity(`เพิ่มสมาชิกใหม่: ${fullname}`);
+            logActivity(`เพิ่มสมาชิกใหม่: ${fullname || username}`);
             showAlert('success', 'สำเร็จ', 'เพิ่มสมาชิกใหม่เรียบร้อยแล้ว');
+          } else {
+            showAlert('error', 'ผิดพลาด', 'ไม่สามารถเพิ่มสมาชิกได้');
           }
         }
+      });
 
+      document.getElementById('register-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-register-submit');
+        setButtonLoading(btn, true, "กำลังสมัคร...", `<i class="fas fa-paper-plane"></i> สมัครสมาชิก`);
+
+        const username = document.getElementById('reg-username').value.trim();
+        const fullname = document.getElementById('reg-fullname').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value;
+
+        const members = getMembers();
+        const isFirstMember = members.length === 0;
+
+        const newMember = {
+          id: generateId(),
+          type: 'member',
+          username,
+          password,
+          fullname,
+          email,
+          role: isFirstMember ? 'admin' : 'teacher',
+          status: isFirstMember ? 'active' : 'pending',
+          created_at: getThaiFormattedDateTime()
+        };
+
+        hideModal('register-modal');
+        const res = await window.dataSdk.create(newMember);
         setButtonLoading(btn, false);
-        hideModal('member-modal');
+
+        if (res.isOk) {
+          logActivity(`สมัครสมาชิกใหม่: ${fullname || username}`);
+          if (isFirstMember) {
+            showAlert('success', 'สมัครสมาชิกสำเร็จ', 'คุณเป็นสมาชิกคนแรกของระบบ ได้รับอนุมัติสิทธิ์เป็นผู้ดูแลระบบอัตโนมัติ');
+          } else {
+            showAlert('success', 'สมัครสมาชิกสำเร็จ', 'กรอกข้อมูลเรียบร้อยแล้ว โปรดรอผู้ดูแลระบบอนุมัติสิทธิ์ใช้งาน');
+          }
+        } else {
+          showAlert('error', 'ผิดพลาด', 'ไม่สามารถสมัครสมาชิกได้');
+        }
       });
 
       document.getElementById('record-form')?.addEventListener('submit', async (e) => {
@@ -3826,38 +3601,48 @@
         setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก`);
 
         const editId = document.getElementById('record-edit-id').value;
-        const name = document.getElementById('record-name').value;
-        const school = document.getElementById('record-school').value;
-        const certNumber = document.getElementById('record-cert-number').value;
-        const date = document.getElementById('record-date').value;
+        const name = document.getElementById('record-name').value.trim();
+        const school = document.getElementById('record-school').value.trim();
+        const certNumber = document.getElementById('record-cert-number').value.trim();
+        const date = document.getElementById('record-date').value.trim();
 
         if (editId) {
-          const record = appData.find(d => String(d.id) === String(editId) || String(d.__backendId) === String(editId));
-          if (record) {
-            const updated = { ...record, name, school, certNumber, date };
-            const res = await window.dataSdk.update(updated);
+          const existing = appData.find(d => String(d.id) === String(editId) || String(d.__backendId) === String(editId));
+          if (existing) {
+            const updatedRecord = { ...existing, name, school, certNumber, date };
+            hideModal('record-modal');
+            const res = await window.dataSdk.update(updatedRecord);
+            setButtonLoading(btn, false);
             if (res.isOk) {
-              logActivity(`แก้ไขข้อมูลรายชื่อ: ${name}`);
-              showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลรายชื่อเรียบร้อยแล้ว');
+              logActivity(`แก้ไขรายชื่อ: ${name}`);
+              showAlert('success', 'สำเร็จ', 'บันทึกข้อมูลรายชื่อเรียบร้อยแล้ว');
+            } else {
+              showAlert('error', 'ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้');
             }
           }
         } else {
+          const activeTpl = getActiveTemplate();
           const newRecord = {
             id: generateId(),
             member_id: currentUser ? currentUser.id : '',
             type: 'record',
-            name, school, certNumber, date,
+            templateId: activeTpl ? String(activeTpl.id || activeTpl.__backendId) : '',
+            name,
+            school,
+            certNumber,
+            date,
             status: 'pending'
           };
+          hideModal('record-modal');
           const res = await window.dataSdk.create(newRecord);
+          setButtonLoading(btn, false);
           if (res.isOk) {
-            logActivity(`เพิ่มรายชื่อผู้รับเกียรติบัตร: ${name}`);
-            showAlert('success', 'สำเร็จ', 'เพิ่มรายชื่อใหม่เรียบร้อยแล้ว');
+            logActivity(`เพิ่มรายชื่อใหม่: ${name}`);
+            showAlert('success', 'สำเร็จ', 'เพิ่มรายชื่อเรียบร้อยแล้ว');
+          } else {
+            showAlert('error', 'ผิดพลาด', 'ไม่สามารถเพิ่มรายชื่อได้');
           }
         }
-
-        setButtonLoading(btn, false);
-        hideModal('record-modal');
       });
 
       document.getElementById('user-profile-form')?.addEventListener('submit', async (e) => {
@@ -3870,24 +3655,25 @@
         const email = document.getElementById('profile-email').value.trim();
         const password = document.getElementById('profile-password').value;
 
-        const member = appData.find(d => String(d.id) === String(currentUser.id) || String(d.__backendId) === String(currentUser.id) || d.username === currentUser.username);
-        if (member) {
-          const updated = { ...member, fullname, email };
-          if (password) updated.password = password;
+        const memberItem = appData.find(d => String(d.id) === String(currentUser.id) || String(d.__backendId) === String(currentUser.id));
+        if (memberItem) {
+          memberItem.fullname = fullname;
+          memberItem.email = email;
+          if (password) memberItem.password = password;
 
-          const res = await window.dataSdk.update(updated);
+          const res = await window.dataSdk.update(memberItem);
+          currentUser.fullname = fullname;
+          currentUser.email = email;
+
+          const displayNameEl = document.getElementById('user-display-name');
+          if (displayNameEl) displayNameEl.textContent = currentUser.fullname;
+
           setButtonLoading(btn, false);
-
           if (res.isOk) {
-            currentUser.fullname = fullname;
-            currentUser.email = email;
-            const displayNameEl = document.getElementById('user-display-name');
-            if (displayNameEl) displayNameEl.textContent = fullname;
-            document.getElementById('profile-password').value = '';
-            logActivity('อัปเดตข้อมูลส่วนตัว');
-            showAlert('success', 'สำเร็จ', 'บันทึกข้อมูลส่วนตัวเรียบร้อยแล้ว');
+            logActivity(`แก้ไขข้อมูลส่วนตัว`);
+            showAlert('success', 'สำเร็จ', 'อัปเดตข้อมูลส่วนตัวเรียบร้อยแล้ว');
           } else {
-            showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลส่วนตัวได้');
+            showAlert('error', 'ผิดพลาด', 'ไม่สามารถอัปเดตข้อมูลได้');
           }
         } else {
           setButtonLoading(btn, false);
@@ -3900,25 +3686,26 @@
         setButtonLoading(btn, true, "กำลังบันทึก...", `<i class="fas fa-save"></i> บันทึก Template`);
 
         const newName = document.getElementById('save-template-name-input').value.trim();
-        if (!newName) {
-          setButtonLoading(btn, false);
-          return;
-        }
+        if (!newName) { setButtonLoading(btn, false); return; }
 
         const tpl = getActiveTemplate();
-        tpl.name = newName;
-        if (currentUser && !tpl.member_id) tpl.member_id = currentUser.id;
+        if (tpl) {
+          tpl.name = newName;
+          if (currentUser && !tpl.member_id) tpl.member_id = currentUser.id;
 
-        hideModal('save-template-modal');
-        const res = await window.dataSdk.update(tpl);
-        setButtonLoading(btn, false);
+          hideModal('save-template-modal');
+          const res = await window.dataSdk.update(tpl);
+          setButtonLoading(btn, false);
 
-        if (res.isOk) {
-          updateUI();
-          logActivity(`บันทึก Template: ${tpl.name}`);
-          showAlert('success', 'สำเร็จ', `บันทึก Template "${tpl.name}" เรียบร้อยแล้ว`);
+          if (res.isOk) {
+            updateUI();
+            logActivity(`บันทึก Template: ${tpl.name}`);
+            showAlert('success', 'สำเร็จ', `บันทึก Template "${tpl.name}" เรียบร้อยแล้ว`);
+          } else {
+            showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถบันทึก Template ได้');
+          }
         } else {
-          showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถบันทึก Template ได้');
+          setButtonLoading(btn, false);
         }
       });
 
@@ -3928,10 +3715,7 @@
         setButtonLoading(btn, true, "กำลังสร้าง...", `<i class="fas fa-check"></i> ยืนยันสร้างใหม่`);
 
         const name = document.getElementById('create-template-name-input').value.trim();
-        if (!name) {
-          setButtonLoading(btn, false);
-          return;
-        }
+        if (!name) { setButtonLoading(btn, false); return; }
 
         const isPortrait = systemSettings.paperOrientation === 'portrait';
         const w = isPortrait ? 2480 : 3508;
@@ -3948,7 +3732,7 @@
           bgImg: null,
           elements: [
             { id: generateId(), field: 'static', staticText: 'วิทยาลัยเทคนิคดอนเมือง ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า', x: centerX, y: Math.round(h * 0.32), fontSize: 60, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#1e3a8a', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 2000 },
-            { id: generateId(), field: 'name', staticText: '[ชื่อ-นามสกุล]', x: centerX, y: Math.round(h * 0.44), fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
+            { id: generateId(), field: 'name', staticText: '[ชื่อ-นามสกุล]', x: centerX, y: Math.round(h * 0.44), fontSize: 110, fontFamily: 'Chonburi', color: '#2563eb', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
             { id: generateId(), field: 'school', staticText: '[โรงเรียน/หน่วยงาน]', x: centerX, y: Math.round(h * 0.58), fontSize: 65, fontFamily: 'Prompt', color: '#0f172a', opacity: 1.0, textAlign: 'center', bold: true, italic: false, underline: false, lineHeight: 1.4, width: 2200 },
             { id: generateId(), field: 'certNumber', staticText: 'เลขที่ ' + systemSettings.prefix + '001', x: w - 400, y: Math.round(h * 0.1), fontSize: 40, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', opacity: 1.0, textAlign: 'right', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 800 },
             { id: generateId(), field: 'date', staticText: 'ให้ไว้ ณ วันที่ 16 สิงหาคม 2569', x: centerX, y: Math.round(h * 0.74), fontSize: 45, fontFamily: systemSettings.defaultFont || 'Sarabun', color: '#64748b', opacity: 1.0, textAlign: 'center', bold: false, italic: false, underline: false, lineHeight: 1.4, width: 1600 },
@@ -3966,7 +3750,7 @@
           redoStack = [];
           updateUI();
           showView('designer');
-          renderCanvas();
+          queueRenderCanvas();
           updateElementPropertiesPanel();
           logActivity(`สร้าง Template ใหม่: ${newTpl.name}`);
           showAlert('success', 'สำเร็จ', `สร้าง Template "${newTpl.name}" เรียบร้อยแล้ว`);
