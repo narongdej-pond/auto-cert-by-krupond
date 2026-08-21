@@ -154,6 +154,18 @@
       opacity: 0.01;
       pointer-events: none;
     }
+
+    .searching-glass {
+      display: inline-block;
+      animation: glass-loop 2s ease-in-out infinite; 
+    }
+    @keyframes glass-loop {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(3px, -2px) rotate(5deg); }
+      50% { transform: translate(1px, 3px) rotate(-5deg); }
+      75% { transform: translate(-3px, 1px) rotate(3deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-50 font-sarabun min-h-screen">
@@ -1879,7 +1891,7 @@
         const pct = Math.round(((i + 1) / targets.length) * 100);
         if (bar) bar.style.width = pct + '%';
         if (percentEl) percentEl.textContent = pct + '%';
-        if (detailEl) detailEl.textContent = `กำลังสร้าง (${i + 1}/${targets.length}): ${r.name}`;
+        if (detailEl) detailEl.textContent = `กำลังสร้าง... (${i + 1}/${targets.length}): ${r.name}`;
 
         const baseCanvas = await generateCertCanvasForRecord(r, tpl);
         let finalCanvas = baseCanvas;
@@ -2289,7 +2301,7 @@
 
       resultsArea.innerHTML = `
         <div class="bg-white rounded-2xl card-shadow p-8 text-center text-gray-500">
-          <i class="fa-solid fa-magnifying-glass text-4xl text-primary-500 mb-3 block spin"></i>
+          <i class="fa-solid fa-magnifying-glass text-4xl text-primary-500 mb-3 block searching-glass"></i>
           <p class="font-medium text-gray-700">กำลังค้นหาเกียรติบัตรของคุณ...</p>
         </div>
       `;
