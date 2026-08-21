@@ -1113,33 +1113,41 @@
       </div>
     </div>
 
-    <!-- Modal: Guest Cert Preview -->
+    <!-- Modal: Guest Cert Preview (Enhanced Full-Size / Full-Paper Viewing) -->
     <div id="guest-preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-2 sm:p-4">
-      <div class="bg-white rounded-2xl card-shadow p-3 sm:p-5 w-full max-w-5xl max-h-[96vh] flex flex-col fade-in overflow-hidden">
+      <div class="bg-white rounded-2xl card-shadow p-3 sm:p-5 w-full max-w-6xl max-h-[99vh] flex flex-col fade-in overflow-hidden">
         <div class="flex items-center justify-between pb-2 border-b mb-2">
           <h3 id="guest-preview-title" class="font-bold text-gray-800 text-base sm:text-lg flex items-center gap-2 truncate">
-            <i class="fas fa-award text-yellow-500"></i> ตัวอย่างเกียรติบัตร
+            <i class="fas fa-award text-yellow-500"></i> ตัวอย่างเกียรติบัตร (ขนาดจริงเต็มแผ่น)
           </h3>
-          <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl p-1"><i class="fas fa-times"></i></button>
+          <div class="flex items-center gap-2">
+            <button id="btn-toggle-preview-zoom" onclick="toggleGuestPreviewScale()" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition flex items-center gap-1" title="สลับสเกลขนาดจริง/พอดีหน้าจอ">
+              <i class="fas fa-expand"></i> <span id="preview-scale-label">ขนาดจริง</span>
+            </button>
+            <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl p-1"><i class="fas fa-times"></i></button>
+          </div>
         </div>
         
-        <div class="flex-1 overflow-hidden bg-gray-200 rounded-xl p-1 sm:p-2 flex items-center justify-center min-h-[300px] w-full max-h-[76vh]">
-          <div id="guest-preview-wrapper" class="w-full h-full max-w-full max-h-full flex items-center justify-center relative shadow-md bg-white rounded overflow-hidden">
-            <canvas id="guestPreviewCanvas" width="3508" height="2480" class="w-full h-full object-contain block"></canvas>
+        <div id="guest-preview-scroll-container" class="flex-1 overflow-auto bg-gray-200 rounded-xl p-2 sm:p-4 flex items-center justify-center min-h-[320px] w-full max-h-[78vh]">
+          <div id="guest-preview-wrapper" class="relative shadow-2xl bg-white rounded transition-all duration-200 flex items-center justify-center my-auto">
+            <canvas id="guestPreviewCanvas" width="3508" height="2480" class="block w-full h-auto rounded"></canvas>
           </div>
         </div>
 
-        <div class="mt-3 flex flex-wrap justify-end gap-2 pt-2 border-t">
-          <button onclick="hideModal('guest-preview-modal')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition">ปิด</button>
-          <button id="btn-download-preview-png" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
-            <i class="fas fa-file-image"></i> PNG
-          </button>
-          <button id="btn-download-preview-jpeg" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
-            <i class="fas fa-image"></i> JPEG
-          </button>
-          <button id="btn-download-preview-pdf" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
-            <i class="fas fa-file-pdf"></i> PDF
-          </button>
+        <div class="mt-3 flex flex-wrap justify-between items-center gap-2 pt-2 border-t">
+          <p class="text-xs text-red-400 hidden sm:block"><i class="fas fa-info-circle mr-1"></i>กรุณาดาวน์โหลดเกียรติบัตรของคุณบนคอมพิวเตอร์<br><span>เพื่อป้องกันการคลาดเคลื่อนของข้อความ</span></p>
+          <div class="flex flex-wrap gap-2 ml-auto">
+            <button onclick="hideModal('guest-preview-modal')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition">ปิด</button>
+            <button id="btn-download-preview-png" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
+              <i class="fas fa-file-image"></i> PNG
+            </button>
+            <button id="btn-download-preview-jpeg" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
+              <i class="fas fa-image"></i> JPEG
+            </button>
+            <button id="btn-download-preview-pdf" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
+              <i class="fas fa-file-pdf"></i> PDF
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1224,6 +1232,7 @@
     let parsedImportRows = [];
     let currentPreviewRecord = null;
     let currentPreviewTemplate = null;
+    let guestPreviewIsActualSize = false;
 
     // Async Image Cache Map to prevent duplicate loads & flickering
     const imageCacheMap = new Map();
@@ -1753,14 +1762,12 @@
 
       const modalCanvas = document.getElementById('guestPreviewCanvas');
       const modalWrapper = document.getElementById('guest-preview-wrapper');
-      if (!modalCanvas) return;
+      const scrollContainer = document.getElementById('guest-preview-scroll-container');
+      if (!modalCanvas || !modalWrapper) return;
 
       const tpl = currentPreviewTemplate;
-      const isPortrait = (tpl.height || 2480) > (tpl.width || 3508);
-
-      if (modalWrapper) {
-        modalWrapper.style.aspectRatio = isPortrait ? '2480 / 3508' : '3508 / 2480';
-      }
+      const w = tpl.width || 3508;
+      const h = tpl.height || 2480;
 
       const certCanvas = await generateCertCanvasForRecord(currentPreviewRecord, currentPreviewTemplate);
       modalCanvas.width = certCanvas.width;
@@ -1768,6 +1775,37 @@
       const mctx = modalCanvas.getContext('2d');
       mctx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
       mctx.drawImage(certCanvas, 0, 0);
+
+      // Render scale view (Fit-to-Screen vs Actual 100% Full Paper Size)
+      if (guestPreviewIsActualSize) {
+        modalWrapper.style.width = `${w}px`;
+        modalWrapper.style.height = `${h}px`;
+        modalWrapper.style.maxWidth = 'none';
+        modalWrapper.style.maxHeight = 'none';
+        if (scrollContainer) {
+          scrollContainer.classList.remove('items-center');
+          scrollContainer.classList.add('items-start');
+        }
+      } else {
+        modalWrapper.style.width = '100%';
+        modalWrapper.style.height = 'auto';
+        modalWrapper.style.maxWidth = '100%';
+        modalWrapper.style.maxHeight = '100%';
+        modalWrapper.style.aspectRatio = `${w} / ${h}`;
+        if (scrollContainer) {
+          scrollContainer.classList.add('items-center');
+          scrollContainer.classList.remove('items-start');
+        }
+      }
+    }
+
+    function toggleGuestPreviewScale() {
+      guestPreviewIsActualSize = !guestPreviewIsActualSize;
+      const label = document.getElementById('preview-scale-label');
+      if (label) {
+        label.textContent = guestPreviewIsActualSize ? 'พอดีหน้าจอ' : 'ขนาดจริง';
+      }
+      updateGuestPreviewCanvasInternal();
     }
 
     async function previewGuestCert(recordId, tplId = null, btnTrigger = null) {
@@ -1781,6 +1819,10 @@
 
       currentPreviewRecord = record;
       currentPreviewTemplate = tpl;
+      guestPreviewIsActualSize = false;
+
+      const label = document.getElementById('preview-scale-label');
+      if (label) label.textContent = 'ขนาดจริง';
 
       if (btnTrigger) setButtonLoading(btnTrigger, true, "โหลด...", `<i class="fas fa-eye text-primary-500"></i> ดูตัวอย่าง`);
 
@@ -2554,7 +2596,7 @@
         document.getElementById('propImgHeight').value = el.height || 120;
       } else {
         if (textControls) textControls.classList.remove('hidden');
-        if (imgControls) imgControls.classList.add('hidden');
+        if (imgControls) imgControls.add('hidden');
         document.getElementById('propFont').value = el.fontFamily || 'Sarabun';
         document.getElementById('propFontSize').value = el.fontSize || 48;
         document.getElementById('propFontSizeSlider').value = el.fontSize || 48;
