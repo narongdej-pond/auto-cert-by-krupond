@@ -744,9 +744,10 @@
                     <div id="propAlignRow">
                       <label class="block text-xs font-medium text-gray-600 mb-1">จัดตำแหน่งข้อความ</label>
                       <div class="flex gap-1">
-                        <button id="prop-align-left" onclick="updateElementProp('textAlign', 'left')" data-align="left" class="align-btn flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">◀</button>
-                        <button id="prop-align-center" onclick="updateElementProp('textAlign', 'center')" data-align="center" class="align-btn active flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">☰</button>
-                        <button id="prop-align-right" onclick="updateElementProp('textAlign', 'right')" data-align="right" class="align-btn flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">▶</button>
+                        <button id="prop-align-right" onclick="updateElementProp('textAlign', 'right')" data-align="right" class="align-btn flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">◀</button>
+                        <button id="prop-align-center" onclick="updateElementProp('textAlign', 'center')" data-align="center" class="align-btn flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">☰</button>
+                        <button id="prop-align-left" onclick="updateElementProp('textAlign', 'left')" data-align="left" class="align-btn flex-1 py-1 border border-gray-200 rounded text-xs hover:bg-gray-100">▶</button>
+  
                       </div>
                     </div>
 
@@ -1167,14 +1168,15 @@
             <button onclick="hideModal('guest-preview-modal')" class="text-gray-400 hover:text-gray-600 text-xl p-1"><i class="fas fa-times"></i></button>
           </div>
         </div>
-
-        <!-- Popup Notice Banner inside preview modal for all screen sizes -->
+        
         <div id="guest-preview-scroll-container" class="flex-1 overflow-auto bg-gray-200 rounded-xl p-2 sm:p-4 flex items-center justify-center min-h-[320px] w-full max-h-[78vh]">
           <div id="guest-preview-wrapper" class="relative shadow-2xl bg-white rounded transition-all duration-200 flex items-center justify-center my-auto">
             <canvas id="guestPreviewCanvas" width="3508" height="2480" class="block w-full h-auto rounded"></canvas>
           </div>
         </div>
 
+        <div class="mt-3 flex flex-wrap justify-between items-center gap-2 pt-2 border-t">
+          <p class="text-xs text-red-400 hidden sm:block"><i class="fas fa-info-circle mr-1"></i>กรุณาดาวน์โหลดเกียรติบัตรของคุณบนคอมพิวเตอร์<br><span>เพื่อป้องกันการคลาดเคลื่อนของข้อความ</span></p>
           <div class="flex flex-wrap gap-2 ml-auto">
             <button onclick="hideModal('guest-preview-modal')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition">ปิด</button>
             <button id="btn-download-preview-png" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
