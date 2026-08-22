@@ -96,6 +96,46 @@
     .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
     body { box-sizing: border-box; }
 
+    /* ===== Designer Layout / Scroll Fix ===== */
+    html, body { width: 100%; height: 100%; }
+    #page-main { height: 100vh; min-height: 100vh; }
+    #page-main > .flex-1 { min-width: 0; min-height: 0; height: 100%; }
+    #page-main > .flex-1 > main { min-width: 0; min-height: 0; }
+    #page-main.designer-mode > .flex-1 > main { overflow: hidden !important; padding: 0 !important; }
+    #view-designer { height: 100%; min-height: 0; }
+    #view-designer > .designer-layout { height: 100%; min-height: 0; }
+    #canvas-workspace {
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x pan-y;
+    }
+    #canvas-sizer {
+      position: relative;
+      flex: 0 0 auto;
+      transition: width .15s ease, height .15s ease;
+    }
+    #canvas-container {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: center center;
+      flex: none;
+      will-change: transform;
+    }
+    #certCanvas { display: block; width: 100%; height: 100%; }
+    body.designer-active #app { height: 100vh; min-height: 100vh; }
+
+    @media (max-width: 1023px) {
+      #page-main.designer-mode > .flex-1 > main { overflow-y: auto !important; }
+      #view-designer { height: auto; min-height: calc(100vh - 64px); }
+      #view-designer > .designer-layout { height: auto; min-height: calc(100vh - 64px); }
+      #view-designer .designer-canvas-panel { min-height: 65vh; }
+      #canvas-workspace { min-height: 48vh; }
+    }
+
     #certCanvas {
       touch-action: none;
       user-select: none;
@@ -582,8 +622,8 @@
           </div>
 
           <div id="view-designer" class="app-view hidden">
-            <div class="flex flex-col lg:flex-row gap-4 min-h-[calc(100vh-140px)]">
-              <div class="flex-1 bg-gray-200 rounded-xl card-shadow flex flex-col overflow-hidden relative min-h-[450px]">
+            <div class="designer-layout flex flex-col lg:flex-row gap-4">
+              <div class="designer-canvas-panel flex-1 bg-gray-200 rounded-xl card-shadow flex flex-col overflow-hidden relative min-h-[450px]">
                 <div class="bg-white px-3 py-2 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
                   <div class="flex items-center gap-2 flex-wrap">
                     <div class="flex items-center gap-1.5 bg-gray-100 p-1 rounded-xl">
@@ -1291,20 +1331,22 @@
 
     function getActiveTemplate() {
       const templates = getTemplates();
-      if (templates.length === 0) {
+
+      // No Template selected: do not silently fall back to the first one.
+      if (!activeTemplateId) return null;
+
+      const found = templates.find(t =>
+        String(t.id || '') === String(activeTemplateId) ||
+        String(t.__backendId || '') === String(activeTemplateId)
+      );
+
+      // The selected Template was removed or is no longer accessible.
+      if (!found) {
         activeTemplateId = null;
         return null;
       }
 
-      if (!activeTemplateId) {
-        activeTemplateId = String(templates[0].id || templates[0].__backendId);
-      }
-
-      const found = templates.find(t => String(t.id) === String(activeTemplateId) || String(t.__backendId) === String(activeTemplateId));
-      if (found) return found;
-
-      activeTemplateId = String(templates[0].id || templates[0].__backendId);
-      return templates[0];
+      return found;
     }
 
     function deleteCurrentTemplate() {
@@ -1353,10 +1395,15 @@
       context.font = getFontString(el);
       context.fillStyle = el.color || '#000000';
       context.textAlign = el.textAlign || 'center';
-      context.textBaseline = 'middle';
+      context.textBaseline = 'alphabetic';
     }
 
+    let fontLoadPromise = null;
+
     async function ensureFontsLoaded() {
+      if (!document.fonts) return;
+      if (fontLoadPromise) return fontLoadPromise;
+
       const fontSpecs = [
         '400 50px "Sarabun"', '700 50px "Sarabun"',
         '400 50px "Kanit"', '700 50px "Kanit"',
@@ -1366,20 +1413,21 @@
         '400 50px "Noto Sans Thai"', '700 50px "Noto Sans Thai"',
         '400 50px "Noto Serif Thai"', '700 50px "Noto Serif Thai"',
         '400 50px "Mali"', '700 50px "Mali"',
-        '400 50px "Charm"', '700 50px "Charm"',
+        '400 50px "Charm"',
         '400 50px "Chakra Petch"', '700 50px "Chakra Petch"',
         '400 50px "Kodchasan"', '700 50px "Kodchasan"'
       ];
 
-      if (document.fonts) {
+      fontLoadPromise = (async () => {
         try {
-          const fontPromises = fontSpecs.map(spec => document.fonts.load(spec));
-          await Promise.all(fontPromises);
+          await Promise.all(fontSpecs.map(spec => document.fonts.load(spec)));
           await document.fonts.ready;
         } catch (e) {
-          console.warn("Font loading notice:", e);
+          console.warn('Font loading notice:', e);
         }
-      }
+      })();
+
+      return fontLoadPromise;
     }
 
     /* =========================================================================
@@ -1487,12 +1535,9 @@
             if (el.field === 'position') text = recordSample.position || el.staticText || 'ผู้อำนวยการวิทยาลัยเทคนิคดอนเมือง';
           }
 
-          // Pure Render Coordinate Evaluation
-          let drawX = el.x;
-          if (el.textAlign === 'center') {
-            drawX = centerX;
-          }
-
+          // Pure render: never mutate Template data while drawing.
+          // Element.x is the source of truth; newly-created centered elements already start at centerX.
+          const drawX = Number.isFinite(Number(el.x)) ? Number(el.x) : centerX;
           context.fillText(text, drawX, el.y);
 
           if (el.underline) {
@@ -1501,7 +1546,7 @@
             let startX = drawX - w / 2;
             if (el.textAlign === 'left') startX = drawX;
             if (el.textAlign === 'right') startX = drawX - w;
-            const lineY = el.y + Math.round(el.fontSize / 2) + 4;
+            const lineY = el.y + Math.round(el.fontSize * 0.18) + 4;
             context.strokeStyle = el.color || '#000000';
             context.lineWidth = Math.max(2, Math.round(el.fontSize / 15));
             context.beginPath();
@@ -1552,8 +1597,25 @@
 
       const resInfo = document.getElementById('canvas-resolution-info');
       if (resInfo) {
-        const isPortrait = canvas.height > canvas.width;
-        resInfo.textContent = `A4 ${isPortrait ? 'Portrait' : 'Landscape'} (${canvas.width} x ${canvas.height} px)`;
+        if (!tpl) {
+          resInfo.textContent = 'ยังไม่ได้เลือก Template';
+        } else {
+          const isPortrait = canvas.height > canvas.width;
+          resInfo.textContent = `A4 ${isPortrait ? 'Portrait' : 'Landscape'} (${canvas.width} x ${canvas.height} px)`;
+        }
+      }
+
+      if (!tpl) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 56px "Sarabun", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('กรุณาเลือก Template', canvas.width / 2, canvas.height / 2);
+        updateDesignerElementList();
+        applyCanvasZoom();
+        return;
       }
 
       const previewId = document.getElementById('designer-preview-select')?.value;
@@ -1580,21 +1642,20 @@
       const container = document.getElementById('canvas-container');
       const sizer = document.getElementById('canvas-sizer');
       const tpl = getActiveTemplate();
-      
+
       const baseW = tpl ? (tpl.width || 3508) : 3508;
       const baseH = tpl ? (tpl.height || 2480) : 2480;
+      const safeZoom = Number.isFinite(canvasZoom) ? canvasZoom : 0.3;
 
       if (container) {
         container.style.width = `${baseW}px`;
         container.style.height = `${baseH}px`;
-        container.style.transform = `scale(${canvasZoom})`;
+        container.style.transform = `translate(-50%, -50%) scale(${safeZoom})`;
       }
 
       if (sizer) {
-        const scaledW = Math.round(baseW * canvasZoom);
-        const scaledH = Math.round(baseH * canvasZoom);
-        sizer.style.width = `${scaledW}px`;
-        sizer.style.height = `${scaledH}px`;
+        sizer.style.width = `${Math.max(1, Math.round(baseW * safeZoom))}px`;
+        sizer.style.height = `${Math.max(1, Math.round(baseH * safeZoom))}px`;
       }
     }
 
@@ -1602,19 +1663,24 @@
       const workspace = document.getElementById('canvas-workspace');
       const tpl = getActiveTemplate();
       const targetWidth = tpl ? (tpl.width || 3508) : 3508;
+      const targetHeight = tpl ? (tpl.height || 2480) : 2480;
 
-      if (workspace && targetWidth > 0) {
-        const wsWidth = workspace.clientWidth - 48;
-        if (wsWidth > 0) {
-          let calculatedZoom = wsWidth / targetWidth;
-          calculatedZoom = Math.max(0.1, Math.min(1.0, calculatedZoom));
-          canvasZoom = Math.round(calculatedZoom * 100) / 100;
+      if (!workspace || targetWidth <= 0 || targetHeight <= 0) return;
 
-          const zoomText = document.getElementById('canvas-zoom-text');
-          if (zoomText) zoomText.textContent = Math.round(canvasZoom * 100) + '%';
-          applyCanvasZoom();
-        }
-      }
+      const wsWidth = Math.max(1, workspace.clientWidth - 48);
+      const wsHeight = Math.max(1, workspace.clientHeight - 48);
+      const zoomX = wsWidth / targetWidth;
+      const zoomY = wsHeight / targetHeight;
+
+      // Fit both dimensions so portrait/landscape and mobile behave consistently.
+      let calculatedZoom = Math.min(zoomX, zoomY);
+      calculatedZoom = Math.max(0.1, Math.min(1.0, calculatedZoom));
+      canvasZoom = Math.round(calculatedZoom * 100) / 100;
+
+      const zoomText = document.getElementById('canvas-zoom-text');
+      if (zoomText) zoomText.textContent = Math.round(canvasZoom * 100) + '%';
+
+      applyCanvasZoom();
     }
 
     function zoomCanvas(delta) {
@@ -1696,7 +1762,7 @@
           if (el.textAlign === 'left') bx = el.x;
           if (el.textAlign === 'right') bx = el.x - w;
 
-          if (mx >= bx && mx <= bx + w && my >= el.y - el.fontSize / 2 - 10 && my <= el.y + el.fontSize / 2 + 10) {
+          if (mx >= bx && mx <= bx + w && my >= el.y - el.fontSize * 0.9 - 10 && my <= el.y + el.fontSize * 0.25 + 10) {
             selectedElementIndex = idx;
             isDraggingElement = true;
             dragOffsetX = mx - el.x;
@@ -2225,6 +2291,11 @@
       const targetView = document.getElementById(`view-${viewName}`);
       if (targetView) targetView.classList.remove('hidden');
 
+      const pageMain = document.getElementById('page-main');
+      const appRoot = document.getElementById('app');
+      if (pageMain) pageMain.classList.toggle('designer-mode', viewName === 'designer');
+      if (appRoot) appRoot.classList.toggle('designer-active', viewName === 'designer');
+
       document.querySelectorAll('.sidebar-item').forEach(item => {
         item.classList.remove('active');
         if (item.dataset.view === viewName) item.classList.add('active');
@@ -2722,8 +2793,7 @@
     }
 
     function switchActiveTemplate(id) {
-      if (!id) return;
-      activeTemplateId = String(id);
+      activeTemplateId = id ? String(id) : null;
       selectedElementIndex = null;
       undoStack = [];
       redoStack = [];
